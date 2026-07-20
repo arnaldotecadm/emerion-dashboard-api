@@ -1,0 +1,259 @@
+openapi: 3.0.3
+info:
+  title: Emerion Dashboard API
+  description: >
+    ERP API responsible for (1) receiving already-mapped data from
+    emerion-load-service (which extracts from the legacy Firebird database)
+    and persisting it into PostgreSQL, and (2) serving that data to the
+    React frontend. This file is the single source of truth for the API
+    contract (contract-first). Kotlin interfaces and models are generated
+    from this spec via the openapi-generator-gradle-plugin
+    (see build.gradle.kts `openApiGenerate` task) — do not hand-write
+    controller interfaces or request/response models, edit this file instead
+    and regenerate.
+  version: "1.0.0"
+servers:
+  - url: /api/v1
+tags:
+  - name: customer-ingestion
+    description: >
+      Endpoints called by emerion-load-service to push migrated Firebird
+      data into PostgreSQL. Not consumed by the React app.
+  - name: customers
+    description: Read endpoints consumed by the React frontend.
+
+paths:
+  /ingestion/customers:
+    post:
+      tags:
+        - customer-ingestion
+      operationId: ingestCustomers
+      summary: Ingest a batch of customers from emerion-load-service
+      description: >
+        Accepts a batch of customer records already transformed by
+        emerion-load-service. Upserts by externalId (the legacy Firebird ID)
+        so the operation is idempotent and safe to re-run.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerIngestionBatch'
+      responses:
+        '200':
+          description: Batch processed (see per-item results for partial failures)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionResult'
+        '400':
+          description: Malformed request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /customers:
+    get:
+      tags:
+        - customers
+      operationId: listCustomers
+      summary: List customers (paginated) for the React dashboard
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: status
+          in: query
+          description: Filter by customer status
+          required: false
+          schema:
+            $ref: '#/components/schemas/CustomerStatus'
+        - name: name
+          in: query
+          description: Partial, case-insensitive match on customer name
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated list of customers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerPage'
+
+  /customers/{id}:
+    get:
+      tags:
+        - customers
+      operationId: getCustomerById
+      summary: Get a single customer by internal (PostgreSQL) id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Customer found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerResponse'
+        '404':
+          description: Customer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    CustomerStatus:
+      type: string
+      enum: [ACTIVE, INACTIVE, UNKNOWN]
+
+    CustomerIngestionItem:
+      type: object
+      description: One customer record as produced by emerion-load-service.
+      required:
+        - externalId
+        - name
+      properties:
+        externalId:
+          type: string
+          description: Original Firebird primary key, used as the upsert/idempotency key.
+        name:
+          type: string
+        email:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/CustomerStatus'
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    CustomerIngestionBatch:
+      type: object
+      required:
+        - batchId
+        - items
+      properties:
+        batchId:
+          type: string
+          description: Correlation id supplied by emerion-load-service for tracing/logging.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerIngestionItem'
+
+    IngestionItemResult:
+      type: object
+      properties:
+        externalId:
+          type: string
+        outcome:
+          type: string
+          enum: [CREATED, UPDATED, FAILED]
+        errorMessage:
+          type: string
+          nullable: true
+
+    IngestionResult:
+      type: object
+      properties:
+        batchId:
+          type: string
+        totalReceived:
+          type: integer
+        totalSucceeded:
+          type: integer
+        totalFailed:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/IngestionItemResult'
+
+    CustomerResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        externalId:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/CustomerStatus'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CustomerPage:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerResponse'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+
+    PaginationInfo:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+        page:
+          type: integer
+        size:
+          type: integer
+        totalPages:
+          type: integer
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: string
+              nullable: true
+        timestamp:
+          type: string
+          format: date-time
