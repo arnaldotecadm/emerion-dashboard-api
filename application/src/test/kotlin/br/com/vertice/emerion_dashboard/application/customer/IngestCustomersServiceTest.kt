@@ -109,4 +109,40 @@ class IngestCustomersServiceTest {
         assertEquals(1, result.totalSucceeded)
         assertEquals(1, result.totalFailed)
     }
+
+    @Test
+    fun `ingestSingle creates a new customer when externalId is not known yet`() {
+        every { customerRepository.findByExternalId("FB-4") } returns null
+        val savedSlot = slot<Customer>()
+        every { customerRepository.save(capture(savedSlot)) } answers { savedSlot.captured.copy(id = 1L) }
+
+        val result = service.ingestSingle(
+            IngestCustomerCommand(
+                externalId = "FB-4",
+                nomeFantasia = "Acme",
+                razaoSocial = "Acme Corp Ltda",
+                cpfCnpj = "12345678000190",
+                inscricaoEstadual = null,
+                regimeTributario = null,
+                bloqueado = false,
+                createdAt = null,
+            ),
+        )
+
+        assertEquals(IngestOutcome.CREATED, result.outcome)
+        assertEquals("FB-4", result.externalId)
+        verify(exactly = 1) { customerRepository.save(any()) }
+    }
+
+    @Test
+    fun `ingestSingle reports a failure without throwing when the item fails`() {
+        every { customerRepository.findByExternalId("FB-5") } throws RuntimeException("db down")
+
+        val result = service.ingestSingle(
+            IngestCustomerCommand("FB-5", "Bad Co", "Bad Co Ltda", "12345678000190", null, null, false, null),
+        )
+
+        assertEquals(IngestOutcome.FAILED, result.outcome)
+        assertEquals("db down", result.errorMessage)
+    }
 }

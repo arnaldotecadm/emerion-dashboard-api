@@ -3,6 +3,8 @@ package br.com.vertice.emerion_dashboard.infrastructure.rest.customer
 import br.com.vertice.emerion_dashboard.application.customer.IngestCustomersUseCase
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.api.CustomerIngestionApi
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerIngestionBatch
+import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerIngestionItem
+import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IngestionItemResult
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IngestionResult
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
@@ -21,5 +23,11 @@ class CustomerIngestionController(
         val command = CustomerIngestionRestMapper.toCommand(customerIngestionBatch)
         val result = ingestCustomersUseCase.ingest(command)
         return ResponseEntity.ok(CustomerIngestionRestMapper.toResponse(result))
+    }
+
+    override fun ingestSingleCustomer(customerIngestionItem: CustomerIngestionItem): ResponseEntity<IngestionItemResult> {
+        val command = CustomerIngestionRestMapper.toItemCommand(customerIngestionItem)
+        val result = ingestCustomersUseCase.ingestSingle(command)
+        return ResponseEntity.ok(CustomerIngestionRestMapper.toItemResponse(result))
     }
 }

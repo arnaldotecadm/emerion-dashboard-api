@@ -36,6 +36,12 @@ class IngestCustomersService(
         return IngestBatchResult(batchId = command.batchId, results = results)
     }
 
+    @Transactional
+    override fun ingestSingle(command: IngestCustomerCommand): IngestItemResult {
+        logger.info("Ingesting single customer externalId='{}'", command.externalId)
+        return ingestItem(command, Instant.now(clock))
+    }
+
     private fun ingestItem(item: IngestCustomerCommand, now: Instant): IngestItemResult {
         return try {
             val existing = customerRepository.findByExternalId(item.externalId)

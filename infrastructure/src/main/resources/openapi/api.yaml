@@ -59,6 +59,44 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /ingestion/customers/single:
+    post:
+      tags:
+        - customer-ingestion
+      operationId: ingestSingleCustomer
+      summary: Ingest a single customer record from emerion-load-service
+      description: >
+        Accepts one customer record already transformed by
+        emerion-load-service. Equivalent to sending a batch of one item to
+        POST /ingestion/customers, but avoids the batch envelope for
+        callers that send records one at a time. Same upsert-by-externalId
+        idempotency guarantee applies.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerIngestionItem'
+      responses:
+        '200':
+          description: Item processed (outcome reflects CREATED/UPDATED/FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionItemResult'
+        '400':
+          description: Malformed request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /customers:
     get:
       tags:

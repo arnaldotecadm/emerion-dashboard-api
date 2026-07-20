@@ -3,6 +3,7 @@ package br.com.vertice.emerion_dashboard.infrastructure.rest.customer
 import br.com.vertice.emerion_dashboard.application.customer.IngestBatchCommand
 import br.com.vertice.emerion_dashboard.application.customer.IngestBatchResult
 import br.com.vertice.emerion_dashboard.application.customer.IngestCustomerCommand
+import br.com.vertice.emerion_dashboard.application.customer.IngestItemResult
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerIngestionBatch
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerIngestionItem
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IngestionItemResult
@@ -17,7 +18,7 @@ object CustomerIngestionRestMapper {
             items = dto.items.map(::toItemCommand),
         )
 
-    private fun toItemCommand(dto: CustomerIngestionItem): IngestCustomerCommand =
+    fun toItemCommand(dto: CustomerIngestionItem): IngestCustomerCommand =
         IngestCustomerCommand(
             externalId = dto.externalId,
             nomeFantasia = dto.nomeFantasia,
@@ -35,12 +36,13 @@ object CustomerIngestionRestMapper {
             totalReceived = result.totalReceived,
             totalSucceeded = result.totalSucceeded,
             totalFailed = result.totalFailed,
-            results = result.results.map {
-                IngestionItemResult(
-                    externalId = it.externalId,
-                    outcome = IngestionItemResult.Outcome.valueOf(it.outcome.name),
-                    errorMessage = it.errorMessage,
-                )
-            },
+            results = result.results.map(::toItemResponse),
+        )
+
+    fun toItemResponse(result: IngestItemResult): IngestionItemResult =
+        IngestionItemResult(
+            externalId = result.externalId,
+            outcome = IngestionItemResult.Outcome.valueOf(result.outcome.name),
+            errorMessage = result.errorMessage,
         )
 }

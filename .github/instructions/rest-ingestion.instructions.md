@@ -32,6 +32,18 @@ POST /ingestion/<resource>
 }
 ```
 
+### Single-Record Variant
+Every ingestion resource also gets a `POST /ingestion/<resource>/single`
+endpoint that accepts one record directly (no `batchId`/`items` envelope)
+and returns a single `{ "externalId", "outcome", "errorMessage" }` result —
+for callers (like the first version of emerion-load-service) that send
+records one at a time instead of batching them. It is not a separate code
+path: the inbound use-case interface exposes both `ingest(batchCommand)`
+and `ingestSingle(itemCommand)`, and `ingestSingle` is implemented by
+reusing the exact same per-item upsert logic as the batch path (see
+`IngestCustomersUseCase`/`IngestCustomersService`) — never duplicate the
+upsert/idempotency logic between the two.
+
 ## Idempotency Is Mandatory
 - Every ingested item must carry an `externalId` (the original Firebird
   primary key) — this is the upsert key.
