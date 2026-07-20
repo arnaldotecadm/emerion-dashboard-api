@@ -2,12 +2,6 @@ package br.com.vertice.emerion_dashboard.domain.customer
 
 import java.time.Instant
 
-enum class CustomerStatus {
-    ACTIVE,
-    INACTIVE,
-    UNKNOWN,
-}
-
 /**
  * Domain model for a Customer. Plain Kotlin, no JPA/Jakarta/OpenAPI
  * annotations — this is what use cases and ports operate on. Persistence
@@ -18,9 +12,12 @@ enum class CustomerStatus {
 data class Customer(
     val id: Long?,
     val externalId: String,
-    val name: String,
-    val email: String?,
-    val status: CustomerStatus,
+    val nomeFantasia: String,
+    val razaoSocial: String,
+    val cpfCnpj: String,
+    val inscricaoEstadual: String?,
+    val regimeTributario: String?,
+    val bloqueado: Boolean,
     val createdAt: Instant,
     val updatedAt: Instant,
 ) {
@@ -28,17 +25,23 @@ data class Customer(
         /** Factory for a brand-new customer coming from ingestion (no id yet). */
         fun newFromIngestion(
             externalId: String,
-            name: String,
-            email: String?,
-            status: CustomerStatus,
+            nomeFantasia: String,
+            razaoSocial: String,
+            cpfCnpj: String,
+            inscricaoEstadual: String?,
+            regimeTributario: String?,
+            bloqueado: Boolean,
             createdAt: Instant?,
             now: Instant,
         ) = Customer(
             id = null,
             externalId = externalId,
-            name = name,
-            email = email,
-            status = status,
+            nomeFantasia = nomeFantasia,
+            razaoSocial = razaoSocial,
+            cpfCnpj = cpfCnpj,
+            inscricaoEstadual = inscricaoEstadual,
+            regimeTributario = regimeTributario,
+            bloqueado = bloqueado,
             createdAt = createdAt ?: now,
             updatedAt = now,
         )
@@ -46,9 +49,20 @@ data class Customer(
 
     /** Applies an ingestion update on top of an existing customer, bumping updatedAt. */
     fun mergeFromIngestion(
-        name: String,
-        email: String?,
-        status: CustomerStatus,
+        nomeFantasia: String,
+        razaoSocial: String,
+        cpfCnpj: String,
+        inscricaoEstadual: String?,
+        regimeTributario: String?,
+        bloqueado: Boolean,
         now: Instant,
-    ) = copy(name = name, email = email, status = status, updatedAt = now)
+    ) = copy(
+        nomeFantasia = nomeFantasia,
+        razaoSocial = razaoSocial,
+        cpfCnpj = cpfCnpj,
+        inscricaoEstadual = inscricaoEstadual,
+        regimeTributario = regimeTributario,
+        bloqueado = bloqueado,
+        updatedAt = now,
+    )
 }

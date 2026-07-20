@@ -2,7 +2,6 @@ package br.com.vertice.emerion_dashboard.application.customer
 
 import br.com.vertice.emerion_dashboard.domain.customer.Customer
 import br.com.vertice.emerion_dashboard.domain.customer.CustomerRepository
-import br.com.vertice.emerion_dashboard.domain.customer.CustomerStatus
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -31,9 +30,12 @@ class IngestCustomersServiceTest {
                 items = listOf(
                     IngestCustomerCommand(
                         externalId = "FB-1",
-                        name = "Acme Corp",
-                        email = "billing@acme.test",
-                        status = CustomerStatus.ACTIVE,
+                        nomeFantasia = "Acme",
+                        razaoSocial = "Acme Corp Ltda",
+                        cpfCnpj = "12345678000190",
+                        inscricaoEstadual = "123456789",
+                        regimeTributario = "SIMPLES_NACIONAL",
+                        bloqueado = false,
                         createdAt = null,
                     ),
                 ),
@@ -53,9 +55,12 @@ class IngestCustomersServiceTest {
         val existing = Customer(
             id = 42L,
             externalId = "FB-2",
-            name = "Old Name",
-            email = null,
-            status = CustomerStatus.INACTIVE,
+            nomeFantasia = "Old Name",
+            razaoSocial = "Old Razao Social Ltda",
+            cpfCnpj = "12345678000190",
+            inscricaoEstadual = null,
+            regimeTributario = null,
+            bloqueado = true,
             createdAt = Instant.parse("2025-01-01T00:00:00Z"),
             updatedAt = Instant.parse("2025-01-01T00:00:00Z"),
         )
@@ -68,9 +73,12 @@ class IngestCustomersServiceTest {
                 items = listOf(
                     IngestCustomerCommand(
                         externalId = "FB-2",
-                        name = "New Name",
-                        email = "new@acme.test",
-                        status = CustomerStatus.ACTIVE,
+                        nomeFantasia = "New Name",
+                        razaoSocial = "New Razao Social Ltda",
+                        cpfCnpj = "12345678000190",
+                        inscricaoEstadual = "987654321",
+                        regimeTributario = "LUCRO_PRESUMIDO",
+                        bloqueado = false,
                         createdAt = null,
                     ),
                 ),
@@ -78,7 +86,7 @@ class IngestCustomersServiceTest {
         )
 
         assertEquals(IngestOutcome.UPDATED, result.results.single().outcome)
-        verify(exactly = 1) { customerRepository.save(match { it.id == 42L && it.name == "New Name" }) }
+        verify(exactly = 1) { customerRepository.save(match { it.id == 42L && it.nomeFantasia == "New Name" }) }
     }
 
     @Test
@@ -91,8 +99,8 @@ class IngestCustomersServiceTest {
             IngestBatchCommand(
                 batchId = "batch-3",
                 items = listOf(
-                    IngestCustomerCommand("FB-OK", "Ok Co", null, CustomerStatus.ACTIVE, null),
-                    IngestCustomerCommand("FB-BAD", "Bad Co", null, CustomerStatus.ACTIVE, null),
+                    IngestCustomerCommand("FB-OK", "Ok Co", "Ok Co Ltda", "12345678000190", null, null, false, null),
+                    IngestCustomerCommand("FB-BAD", "Bad Co", "Bad Co Ltda", "12345678000190", null, null, false, null),
                 ),
             ),
         )

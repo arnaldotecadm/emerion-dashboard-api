@@ -3,7 +3,6 @@ package br.com.vertice.emerion_dashboard.application.customer
 import br.com.vertice.emerion_dashboard.domain.customer.Customer
 import br.com.vertice.emerion_dashboard.domain.customer.CustomerNotFoundException
 import br.com.vertice.emerion_dashboard.domain.customer.CustomerRepository
-import br.com.vertice.emerion_dashboard.domain.customer.CustomerStatus
 import br.com.vertice.emerion_dashboard.domain.shared.Page
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import org.springframework.stereotype.Service
@@ -12,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional
 data class ListCustomersQuery(
     val page: Int,
     val size: Int,
-    val status: CustomerStatus?,
-    val nameContains: String?,
+    val bloqueado: Boolean?,
+    val nomeFantasiaContains: String?,
 )
 
 /** Inbound port for fetching a single customer, consumed by the REST query adapter. */
@@ -39,7 +38,7 @@ class CustomerQueryService(
     override fun list(query: ListCustomersQuery): Page<Customer> =
         customerRepository.findAll(
             pageRequest = PageRequest(page = query.page, size = query.size),
-            status = query.status,
-            nameContains = query.nameContains,
+            bloqueado = query.bloqueado,
+            nomeFantasiaContains = query.nomeFantasiaContains,
         )
 }

@@ -3,11 +3,8 @@ package br.com.vertice.emerion_dashboard.infrastructure.rest.customer
 import br.com.vertice.emerion_dashboard.application.customer.IngestBatchCommand
 import br.com.vertice.emerion_dashboard.application.customer.IngestBatchResult
 import br.com.vertice.emerion_dashboard.application.customer.IngestCustomerCommand
-import br.com.vertice.emerion_dashboard.application.customer.IngestOutcome
-import br.com.vertice.emerion_dashboard.domain.customer.CustomerStatus as DomainCustomerStatus
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerIngestionBatch
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerIngestionItem
-import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerStatus as ApiCustomerStatus
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IngestionItemResult
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IngestionResult
 
@@ -23,9 +20,12 @@ object CustomerIngestionRestMapper {
     private fun toItemCommand(dto: CustomerIngestionItem): IngestCustomerCommand =
         IngestCustomerCommand(
             externalId = dto.externalId,
-            name = dto.name,
-            email = dto.email,
-            status = toDomainStatus(dto.status),
+            nomeFantasia = dto.nomeFantasia,
+            razaoSocial = dto.razaoSocial,
+            cpfCnpj = dto.cpfCnpj,
+            inscricaoEstadual = dto.inscricaoEstadual,
+            regimeTributario = dto.regimeTributario,
+            bloqueado = dto.bloqueado,
             createdAt = dto.createdAt?.toInstant(),
         )
 
@@ -43,11 +43,4 @@ object CustomerIngestionRestMapper {
                 )
             },
         )
-
-    private fun toDomainStatus(status: ApiCustomerStatus?): DomainCustomerStatus =
-        when (status) {
-            ApiCustomerStatus.ACTIVE -> DomainCustomerStatus.ACTIVE
-            ApiCustomerStatus.INACTIVE -> DomainCustomerStatus.INACTIVE
-            ApiCustomerStatus.UNKNOWN, null -> DomainCustomerStatus.UNKNOWN
-        }
 }

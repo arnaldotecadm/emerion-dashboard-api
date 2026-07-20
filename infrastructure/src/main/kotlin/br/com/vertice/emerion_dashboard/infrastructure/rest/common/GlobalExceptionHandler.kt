@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.servlet.NoHandlerFoundException
+import org.springframework.web.servlet.resource.NoResourceFoundException
 import java.time.OffsetDateTime
 
 @RestControllerAdvice
@@ -19,6 +21,17 @@ class GlobalExceptionHandler {
     @ExceptionHandler(CustomerNotFoundException::class)
     fun handleNotFound(ex: CustomerNotFoundException): ResponseEntity<ErrorResponse> =
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody("RESOURCE_NOT_FOUND", ex.message))
+
+    /**
+     * Any request path that doesn't match a controller or a static resource
+     * (e.g. a typo'd endpoint) lands here as `NoResourceFoundException`
+     * (Spring MVC's resource-handler fallback) rather than as a business
+     * exception. Without this handler it would otherwise fall through to
+     * the generic `Exception` handler below and be misreported as a 500.
+     */
+    @ExceptionHandler(NoResourceFoundException::class, NoHandlerFoundException::class)
+    fun handleRouteNotFound(ex: Exception): ResponseEntity<ErrorResponse> =
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody("ROUTE_NOT_FOUND", "No endpoint matches this request"))
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleValidation(ex: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {

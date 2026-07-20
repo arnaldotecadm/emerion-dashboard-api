@@ -16,8 +16,8 @@ interface CustomerRepository {
 
     fun findAll(
         pageRequest: PageRequest,
-        status: CustomerStatus?,
-        nameContains: String?,
+        bloqueado: Boolean?,
+        nomeFantasiaContains: String?,
     ): Page<Customer>
 
     /** Insert or update (by externalId) and return the persisted customer. */

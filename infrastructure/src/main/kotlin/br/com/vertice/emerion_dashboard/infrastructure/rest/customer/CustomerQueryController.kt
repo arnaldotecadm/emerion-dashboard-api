@@ -6,7 +6,6 @@ import br.com.vertice.emerion_dashboard.application.customer.ListCustomersUseCas
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.api.CustomersApi
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerPage
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerResponse
-import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
@@ -29,14 +28,14 @@ class CustomerQueryController(
     override fun listCustomers(
         page: Int,
         size: Int,
-        status: CustomerStatus?,
-        name: String?,
+        bloqueado: Boolean?,
+        nomeFantasia: String?,
     ): ResponseEntity<CustomerPage> {
         val query = ListCustomersQuery(
             page = page,
             size = size,
-            status = CustomerQueryRestMapper.toDomainStatus(status),
-            nameContains = name,
+            bloqueado = bloqueado,
+            nomeFantasiaContains = nomeFantasia,
         )
         val result = listCustomersUseCase.list(query)
         return ResponseEntity.ok(CustomerQueryRestMapper.toPageResponse(result))

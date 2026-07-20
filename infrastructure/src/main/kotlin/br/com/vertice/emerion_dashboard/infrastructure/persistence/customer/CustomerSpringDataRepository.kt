@@ -13,13 +13,13 @@ interface CustomerSpringDataRepository : JpaRepository<CustomerJpaEntity, Long> 
     @Query(
         """
         SELECT c FROM CustomerJpaEntity c
-        WHERE (:status IS NULL OR c.status = :status)
-          AND (:nameContains IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', :nameContains, '%')))
+        WHERE (:bloqueado IS NULL OR c.bloqueado = :bloqueado)
+          AND (:nomeFantasiaContains IS NULL OR LOWER(c.nomeFantasia) LIKE LOWER(CONCAT('%', :nomeFantasiaContains, '%')))
         """,
     )
     fun search(
-        @Param("status") status: CustomerStatusJpa?,
-        @Param("nameContains") nameContains: String?,
+        @Param("bloqueado") bloqueado: Boolean?,
+        @Param("nomeFantasiaContains") nomeFantasiaContains: String?,
         pageable: Pageable,
     ): SpringPage<CustomerJpaEntity>
 }

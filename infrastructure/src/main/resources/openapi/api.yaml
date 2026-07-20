@@ -79,15 +79,15 @@ paths:
             minimum: 1
             maximum: 100
             default: 20
-        - name: status
+        - name: bloqueado
           in: query
-          description: Filter by customer status
+          description: Filter by blocked/unblocked status
           required: false
           schema:
-            $ref: '#/components/schemas/CustomerStatus'
-        - name: name
+            type: boolean
+        - name: nomeFantasia
           in: query
-          description: Partial, case-insensitive match on customer name
+          description: Partial, case-insensitive match on customer nomeFantasia
           required: false
           schema:
             type: string
@@ -128,27 +128,33 @@ paths:
 
 components:
   schemas:
-    CustomerStatus:
-      type: string
-      enum: [ACTIVE, INACTIVE, UNKNOWN]
-
     CustomerIngestionItem:
       type: object
       description: One customer record as produced by emerion-load-service.
       required:
         - externalId
-        - name
+        - nomeFantasia
+        - razaoSocial
+        - cpfCnpj
+        - bloqueado
       properties:
         externalId:
           type: string
           description: Original Firebird primary key, used as the upsert/idempotency key.
-        name:
+        nomeFantasia:
           type: string
-        email:
+        razaoSocial:
+          type: string
+        cpfCnpj:
+          type: string
+        inscricaoEstadual:
           type: string
           nullable: true
-        status:
-          $ref: '#/components/schemas/CustomerStatus'
+        regimeTributario:
+          type: string
+          nullable: true
+        bloqueado:
+          type: boolean
         createdAt:
           type: string
           format: date-time
@@ -204,13 +210,20 @@ components:
           format: int64
         externalId:
           type: string
-        name:
+        nomeFantasia:
           type: string
-        email:
+        razaoSocial:
+          type: string
+        cpfCnpj:
+          type: string
+        inscricaoEstadual:
           type: string
           nullable: true
-        status:
-          $ref: '#/components/schemas/CustomerStatus'
+        regimeTributario:
+          type: string
+          nullable: true
+        bloqueado:
+          type: boolean
         createdAt:
           type: string
           format: date-time

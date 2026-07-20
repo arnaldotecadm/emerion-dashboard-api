@@ -2,7 +2,6 @@ package br.com.vertice.emerion_dashboard.infrastructure.persistence.customer
 
 import br.com.vertice.emerion_dashboard.domain.customer.Customer
 import br.com.vertice.emerion_dashboard.domain.customer.CustomerRepository
-import br.com.vertice.emerion_dashboard.domain.customer.CustomerStatus
 import br.com.vertice.emerion_dashboard.domain.shared.Page
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import org.springframework.data.domain.PageRequest as SpringPageRequest
@@ -26,12 +25,11 @@ class CustomerRepositoryAdapter(
 
     override fun findAll(
         pageRequest: PageRequest,
-        status: CustomerStatus?,
-        nameContains: String?,
+        bloqueado: Boolean?,
+        nomeFantasiaContains: String?,
     ): Page<Customer> {
-        val jpaStatus = status?.let(CustomerPersistenceMapper::toJpaStatus)
         val springPageable = SpringPageRequest.of(pageRequest.page, pageRequest.size)
-        val result = springDataRepository.search(jpaStatus, nameContains?.takeIf { it.isNotBlank() }, springPageable)
+        val result = springDataRepository.search(bloqueado, nomeFantasiaContains?.takeIf { it.isNotBlank() }, springPageable)
         return Page(
             content = result.content.map(CustomerPersistenceMapper::toDomain),
             page = pageRequest.page,

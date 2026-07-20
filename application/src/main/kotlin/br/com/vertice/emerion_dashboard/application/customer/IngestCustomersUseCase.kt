@@ -1,14 +1,16 @@
 package br.com.vertice.emerion_dashboard.application.customer
 
-import br.com.vertice.emerion_dashboard.domain.customer.CustomerStatus
 import java.time.Instant
 
 /** Input command for a single customer inside an ingestion batch. */
 data class IngestCustomerCommand(
     val externalId: String,
-    val name: String,
-    val email: String?,
-    val status: CustomerStatus,
+    val nomeFantasia: String,
+    val razaoSocial: String,
+    val cpfCnpj: String,
+    val inscricaoEstadual: String?,
+    val regimeTributario: String?,
+    val bloqueado: Boolean,
     val createdAt: Instant?,
 )
 

@@ -1,11 +1,9 @@
 package br.com.vertice.emerion_dashboard.infrastructure.rest.customer
 
 import br.com.vertice.emerion_dashboard.domain.customer.Customer
-import br.com.vertice.emerion_dashboard.domain.customer.CustomerStatus as DomainCustomerStatus
 import br.com.vertice.emerion_dashboard.domain.shared.Page as DomainPage
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerPage
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerResponse
-import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerStatus as ApiCustomerStatus
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.PaginationInfo
 import java.time.ZoneOffset
 
@@ -16,9 +14,12 @@ object CustomerQueryRestMapper {
         CustomerResponse(
             id = customer.id,
             externalId = customer.externalId,
-            name = customer.name,
-            email = customer.email,
-            status = toApiStatus(customer.status),
+            nomeFantasia = customer.nomeFantasia,
+            razaoSocial = customer.razaoSocial,
+            cpfCnpj = customer.cpfCnpj,
+            inscricaoEstadual = customer.inscricaoEstadual,
+            regimeTributario = customer.regimeTributario,
+            bloqueado = customer.bloqueado,
             createdAt = customer.createdAt.atOffset(ZoneOffset.UTC),
             updatedAt = customer.updatedAt.atOffset(ZoneOffset.UTC),
         )
@@ -33,19 +34,4 @@ object CustomerQueryRestMapper {
                 totalPages = page.totalPages,
             ),
         )
-
-    fun toDomainStatus(status: ApiCustomerStatus?): DomainCustomerStatus? =
-        when (status) {
-            ApiCustomerStatus.ACTIVE -> DomainCustomerStatus.ACTIVE
-            ApiCustomerStatus.INACTIVE -> DomainCustomerStatus.INACTIVE
-            ApiCustomerStatus.UNKNOWN -> DomainCustomerStatus.UNKNOWN
-            null -> null
-        }
-
-    private fun toApiStatus(status: DomainCustomerStatus): ApiCustomerStatus =
-        when (status) {
-            DomainCustomerStatus.ACTIVE -> ApiCustomerStatus.ACTIVE
-            DomainCustomerStatus.INACTIVE -> ApiCustomerStatus.INACTIVE
-            DomainCustomerStatus.UNKNOWN -> ApiCustomerStatus.UNKNOWN
-        }
 }

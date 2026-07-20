@@ -40,15 +40,21 @@ class IngestCustomersService(
         return try {
             val existing = customerRepository.findByExternalId(item.externalId)
             val toSave = existing?.mergeFromIngestion(
-                name = item.name,
-                email = item.email,
-                status = item.status,
+                nomeFantasia = item.nomeFantasia,
+                razaoSocial = item.razaoSocial,
+                cpfCnpj = item.cpfCnpj,
+                inscricaoEstadual = item.inscricaoEstadual,
+                regimeTributario = item.regimeTributario,
+                bloqueado = item.bloqueado,
                 now = now,
             ) ?: Customer.newFromIngestion(
                 externalId = item.externalId,
-                name = item.name,
-                email = item.email,
-                status = item.status,
+                nomeFantasia = item.nomeFantasia,
+                razaoSocial = item.razaoSocial,
+                cpfCnpj = item.cpfCnpj,
+                inscricaoEstadual = item.inscricaoEstadual,
+                regimeTributario = item.regimeTributario,
+                bloqueado = item.bloqueado,
                 createdAt = item.createdAt,
                 now = now,
             )
