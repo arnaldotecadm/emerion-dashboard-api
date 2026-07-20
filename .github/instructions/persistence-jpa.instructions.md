@@ -7,12 +7,13 @@ PostgreSQL + Spring Data JPA, behind the domain's outbound port (defined in
 the `:domain` module).
 
 ## The Four Files, Every Time
-(all under `infrastructure/src/main/kotlin/.../infrastructure/persistence/<resource>/`)
+(all under `infrastructure/src/main/kotlin/.../infrastructure/persistence/<resource>/`,
+except the mapper which lives in a dedicated `mapper/` subpackage)
 ```
-<Resource>JpaEntity.kt           # @Entity, mutable var properties, JPA annotations only
-<Resource>SpringDataRepository.kt # interface : JpaRepository<XJpaEntity, Long>
-<Resource>RepositoryAdapter.kt    # @Component, implements domain.<x>.<Resource>Repository
-<Resource>PersistenceMapper.kt    # object, toDomain()/toEntity(), no Spring annotations
+<Resource>JpaEntity.kt                  # @Entity, mutable var properties, JPA annotations only
+<Resource>SpringDataRepository.kt       # interface : JpaRepository<XJpaEntity, Long>
+<Resource>RepositoryAdapter.kt          # @Component, implements domain.<x>.<Resource>Repository
+mapper/<Resource>PersistenceMapper.kt   # object, toDomain()/toEntity(), no Spring annotations
 ```
 
 ## JPA Entity Conventions

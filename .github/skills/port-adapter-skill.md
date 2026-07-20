@@ -90,9 +90,10 @@ Copy `application/src/main/kotlin/.../application/customer/IngestCustomersUseCas
 
 ## Step 3 — Persistence Adapter (`:infrastructure` module)
 Copy `infrastructure/src/main/kotlin/.../infrastructure/persistence/customer/CustomerJpaEntity.kt`,
-`CustomerSpringDataRepository.kt`, `CustomerRepositoryAdapter.kt`,
-`CustomerPersistenceMapper.kt` verbatim into
-`infrastructure/src/main/kotlin/.../infrastructure/persistence/widget/`,
+`CustomerSpringDataRepository.kt`, `CustomerRepositoryAdapter.kt` into
+`infrastructure/src/main/kotlin/.../infrastructure/persistence/widget/`, and
+`infrastructure/src/main/kotlin/.../infrastructure/persistence/customer/mapper/CustomerPersistenceMapper.kt`
+into `infrastructure/src/main/kotlin/.../infrastructure/persistence/widget/mapper/`,
 renaming. Add a matching Flyway migration
 (`infrastructure/src/main/resources/db/migration/V<n>__create_widget_table.sql`,
 see `.github/instructions/flyway-migrations.instructions.md`).

@@ -36,7 +36,7 @@ application/src/test/kotlin/br/com/vertice/emerion_dashboard/application/x/Inges
 infrastructure/src/main/kotlin/br/com/vertice/emerion_dashboard/infrastructure/persistence/x/XJpaEntity.kt
 infrastructure/src/main/kotlin/br/com/vertice/emerion_dashboard/infrastructure/persistence/x/XSpringDataRepository.kt
 infrastructure/src/main/kotlin/br/com/vertice/emerion_dashboard/infrastructure/persistence/x/XRepositoryAdapter.kt      # implements domain.x.XRepository
-infrastructure/src/main/kotlin/br/com/vertice/emerion_dashboard/infrastructure/persistence/x/XPersistenceMapper.kt      # object, JPA entity <-> domain model
+infrastructure/src/main/kotlin/br/com/vertice/emerion_dashboard/infrastructure/persistence/x/mapper/XPersistenceMapper.kt      # object, JPA entity <-> domain model
 infrastructure/src/main/resources/db/migration/V<n>__create_x_table.sql
 
 infrastructure/src/main/kotlin/br/com/vertice/emerion_dashboard/infrastructure/rest/x/controller/XIngestionController.kt           # implements generated XIngestionApi
@@ -72,7 +72,8 @@ full-context/Testcontainers tests, which cover every resource generically.
 - **Repository adapter** (`infrastructure/persistence/<x>/...RepositoryAdapter.kt`):
   implements the domain's outbound port on top of Spring Data JPA. Same
   rule — translate and delegate, no business rules.
-- **Mappers** (`infrastructure/rest/<x>/mapper/...RestMapper.kt`) are plain
+- **Mappers** (`infrastructure/rest/<x>/mapper/...RestMapper.kt` and
+  `infrastructure/persistence/<x>/mapper/...PersistenceMapper.kt`) are plain
   Kotlin `object`s with pure functions (`toDomain`,
   `toEntity`, `toResponse`, `toCommand`). Never annotate them `@Component` —
   they don't need DI, and keeping them as `object`s makes them trivially

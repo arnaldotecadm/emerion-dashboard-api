@@ -80,7 +80,8 @@ emerion-dashboard/
 │       │   │       ├── <Resource>JpaEntity.kt
 │       │   │       ├── <Resource>SpringDataRepository.kt   # Spring Data JpaRepository
 │       │   │       ├── <Resource>RepositoryAdapter.kt       # implements the domain's outbound port
-│       │   │       └── <Resource>PersistenceMapper.kt       # JPA entity <-> domain model, object with pure functions
+│       │   │       └── mapper/
+│       │   │           └── <Resource>PersistenceMapper.kt   # JPA entity <-> domain model, object with pure functions
 │       │   └── config/               # CorsConfig, OpenApiConfig, etc.
 │       └── resources/
 │           ├── openapi/api.yaml               # contract-first spec, codegen input + runtime static resource

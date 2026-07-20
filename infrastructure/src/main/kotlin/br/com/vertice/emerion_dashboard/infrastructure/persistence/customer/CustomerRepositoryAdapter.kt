@@ -4,6 +4,7 @@ import br.com.vertice.emerion_dashboard.domain.customer.Customer
 import br.com.vertice.emerion_dashboard.domain.customer.CustomerRepository
 import br.com.vertice.emerion_dashboard.domain.shared.Page
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
+import br.com.vertice.emerion_dashboard.infrastructure.persistence.customer.mapper.CustomerPersistenceMapper
 import org.springframework.data.domain.PageRequest as SpringPageRequest
 import org.springframework.stereotype.Component
 
