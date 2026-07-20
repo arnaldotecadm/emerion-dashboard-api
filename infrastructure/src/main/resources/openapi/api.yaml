@@ -21,6 +21,10 @@ tags:
       data into PostgreSQL. Not consumed by the React app.
   - name: customers
     description: Read endpoints consumed by the React frontend.
+  - name: product-ingestion
+    description: >
+      Endpoints called by emerion-load-service to push migrated Firebird
+      product data into PostgreSQL. Not consumed by the React app.
 
 paths:
   /ingestion/customers:
@@ -159,6 +163,80 @@ paths:
                 $ref: '#/components/schemas/CustomerResponse'
         '404':
           description: Customer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /ingestion/products:
+    post:
+      tags:
+        - product-ingestion
+      operationId: ingestProducts
+      summary: Ingest a batch of products from emerion-load-service
+      description: >
+        Accepts a batch of product records already transformed by
+        emerion-load-service. Upserts by externalId (the legacy Firebird ID)
+        so the operation is idempotent and safe to re-run.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductIngestionBatch'
+      responses:
+        '200':
+          description: Batch processed (see per-item results for partial failures)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionResult'
+        '400':
+          description: Malformed request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /ingestion/products/single:
+    post:
+      tags:
+        - product-ingestion
+      operationId: ingestSingleProduct
+      summary: Ingest a single product record from emerion-load-service
+      description: >
+        Accepts one product record already transformed by
+        emerion-load-service. Equivalent to sending a batch of one item to
+        POST /ingestion/products, but avoids the batch envelope for
+        callers that send records one at a time. Same upsert-by-externalId
+        idempotency guarantee applies.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductIngestionItem'
+      responses:
+        '200':
+          description: Item processed (outcome reflects CREATED/UPDATED/FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionItemResult'
+        '400':
+          description: Malformed request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected server error
           content:
             application/json:
               schema:
@@ -308,3 +386,33 @@ components:
         timestamp:
           type: string
           format: date-time
+
+    ProductIngestionItem:
+      type: object
+      description: One product record as produced by emerion-load-service.
+      required:
+        - externalId
+        - nome
+      properties:
+        externalId:
+          type: string
+          description: Original Firebird primary key, used as the upsert/idempotency key.
+        nome:
+          type: string
+        preco:
+          type: number
+          nullable: true
+
+    ProductIngestionBatch:
+      type: object
+      required:
+        - batchId
+        - items
+      properties:
+        batchId:
+          type: string
+          description: Correlation id supplied by emerion-load-service for tracing/logging.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductIngestionItem'
