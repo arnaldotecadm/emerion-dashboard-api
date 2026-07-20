@@ -1,7 +1,12 @@
-package br.com.vertice.emerion_dashboard.application.customer
+package br.com.vertice.emerion_dashboard.application.customer.ingestion
 
-import br.com.vertice.emerion_dashboard.domain.customer.Customer
-import br.com.vertice.emerion_dashboard.domain.customer.CustomerRepository
+import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestBatchCommand
+import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestBatchResult
+import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestCustomerCommand
+import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestItemResult
+import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestOutcome
+import br.com.vertice.emerion_dashboard.domain.customer.model.Customer
+import br.com.vertice.emerion_dashboard.domain.customer.repository.CustomerRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

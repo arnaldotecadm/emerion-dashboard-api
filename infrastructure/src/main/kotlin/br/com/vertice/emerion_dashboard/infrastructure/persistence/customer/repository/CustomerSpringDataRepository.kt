@@ -1,5 +1,6 @@
-package br.com.vertice.emerion_dashboard.infrastructure.persistence.customer
+package br.com.vertice.emerion_dashboard.infrastructure.persistence.customer.repository
 
+import br.com.vertice.emerion_dashboard.infrastructure.persistence.customer.model.CustomerJpaEntity
 import org.springframework.data.domain.Page as SpringPage
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository

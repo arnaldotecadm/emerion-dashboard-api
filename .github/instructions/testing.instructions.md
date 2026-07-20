@@ -8,7 +8,9 @@ PostgreSQL, `@ServiceConnection`. Apply whenever writing a new test.
 
 ### 1. Unit tests (domain/application layer) — no Spring context
 - Location mirrors the class under test in the **`application` module's**
-  test source set: `application/src/test/kotlin/.../application/<x>/<X>ServiceTest.kt`.
+  test source set, including the functional subpackage:
+  `application/src/test/kotlin/.../application/<x>/<functional-concern>/<X>ServiceTest.kt`
+  (e.g. `application/customer/ingestion/IngestCustomersServiceTest.kt`).
   A pure `domain` model test would go in `domain/src/test/kotlin/...`
   instead — either way, no Spring context or `app`-module dependency is
   needed since `domain`/`application` don't have Spring Web/JPA on their

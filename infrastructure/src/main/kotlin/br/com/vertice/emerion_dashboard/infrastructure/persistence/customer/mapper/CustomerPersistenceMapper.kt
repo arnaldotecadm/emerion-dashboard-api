@@ -1,7 +1,7 @@
 package br.com.vertice.emerion_dashboard.infrastructure.persistence.customer.mapper
 
-import br.com.vertice.emerion_dashboard.domain.customer.Customer
-import br.com.vertice.emerion_dashboard.infrastructure.persistence.customer.CustomerJpaEntity
+import br.com.vertice.emerion_dashboard.domain.customer.model.Customer
+import br.com.vertice.emerion_dashboard.infrastructure.persistence.customer.model.CustomerJpaEntity
 
 /** Maps between the domain model and the JPA entity. Kept out of the entity/domain classes on purpose. */
 object CustomerPersistenceMapper {

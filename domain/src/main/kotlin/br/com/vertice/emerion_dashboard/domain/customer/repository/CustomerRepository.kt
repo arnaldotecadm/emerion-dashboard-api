@@ -1,5 +1,6 @@
-package br.com.vertice.emerion_dashboard.domain.customer
+package br.com.vertice.emerion_dashboard.domain.customer.repository
 
+import br.com.vertice.emerion_dashboard.domain.customer.model.Customer
 import br.com.vertice.emerion_dashboard.domain.shared.Page
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 

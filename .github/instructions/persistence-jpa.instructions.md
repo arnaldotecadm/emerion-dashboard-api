@@ -8,18 +8,23 @@ the `:domain` module).
 
 ## The Four Files, Every Time
 (all under `infrastructure/src/main/kotlin/.../infrastructure/persistence/<resource>/`,
-except the mapper which lives in a dedicated `mapper/` subpackage)
+except the entity, which lives in a dedicated `model/` subpackage (data);
+the Spring Data repository, which lives in a dedicated `repository/`
+subpackage; the adapter, which lives in a dedicated `adapter/` subpackage;
+and the mapper, which lives in a dedicated `mapper/` subpackage)
 ```
-<Resource>JpaEntity.kt                  # @Entity, mutable var properties, JPA annotations only
-<Resource>SpringDataRepository.kt       # interface : JpaRepository<XJpaEntity, Long>
-<Resource>RepositoryAdapter.kt          # @Component, implements domain.<x>.<Resource>Repository
+model/<Resource>JpaEntity.kt            # @Entity, mutable var properties, JPA annotations only
+repository/<Resource>SpringDataRepository.kt  # interface : JpaRepository<XJpaEntity, Long>
+adapter/<Resource>RepositoryAdapter.kt   # @Component, implements domain.<x>.<Resource>Repository
 mapper/<Resource>PersistenceMapper.kt   # object, toDomain()/toEntity(), no Spring annotations
 ```
 
 ## JPA Entity Conventions
-- One `@Entity` class per resource in `infrastructure/persistence/<resource>/`.
-  It is **never** referenced outside that package except by its adapter and
-  mapper.
+- One `@Entity` class per resource in `infrastructure/persistence/<resource>/model/`
+  — separated from the repository/adapter (behavior) since it's a pure data
+  holder, mirroring the `model/` convention used in the `domain` and
+  `application` modules. It is **never** referenced outside that package
+  except by its adapter and mapper.
 - Use `var` properties with default values (see `CustomerJpaEntity`) — this
   gives JPA's default constructor requirement "for free" without extra
   boilerplate, combined with the `kotlin("plugin.jpa")` Gradle plugin (adds
@@ -43,7 +48,7 @@ mapper/<Resource>PersistenceMapper.kt   # object, toDomain()/toEntity(), no Spri
 - Simple lookups (single indexed column): derived query methods
   (`findByExternalId`).
 - Filtered/paginated listing: a single `@Query` with `:param IS NULL OR
-  ...` per optional filter (see `CustomerSpringDataRepository.search`) —
+  ...` per optional filter (see `CustomerSpringDataRepository.search` in `persistence/customer/repository/`) —
   avoids Specification/Criteria API boilerplate for a handful of filters.
   If a resource grows past ~4 optional filters, switch to Spring Data JPA
   Specifications instead of one giant `@Query`.
@@ -57,7 +62,7 @@ mapper/<Resource>PersistenceMapper.kt   # object, toDomain()/toEntity(), no Spri
 - Upsert logic (`save`): look up the existing entity by id (if present) or
   by the natural/external key, pass it into the mapper as the `existing`
   parameter so the generated `id` is preserved across updates — see
-  `CustomerRepositoryAdapter.save` / `CustomerPersistenceMapper.toEntity`.
+  `CustomerRepositoryAdapter.save` (in `persistence/customer/adapter/`) / `CustomerPersistenceMapper.toEntity`.
 - Never leak `CustomerJpaEntity` or Spring Data `Page`/`Pageable` out of this
   class's public methods.
 

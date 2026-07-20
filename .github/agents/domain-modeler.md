@@ -9,10 +9,11 @@ exceptions — pure Kotlin, no framework dependencies.
 ```
 
 ## What This Agent Does
-- Designs `domain/src/main/kotlin/.../domain/<resource>/<Resource>.kt` data classes with the
+- Designs `domain/src/main/kotlin/.../domain/<resource>/model/<Resource>.kt` data classes with the
   create/merge factory-method pattern used by `Customer`
   (`newFromIngestion`/`mergeFromIngestion`).
-- Designs outbound port interfaces (`<Resource>Repository`) expressed
+- Designs outbound port interfaces (`<Resource>Repository`, in
+  `domain/<resource>/repository/`) expressed
   purely in domain terms (`domain.shared.Page`/`PageRequest`, never Spring
   Data types).
 - Decides what belongs in the domain model vs. the application layer's
@@ -33,7 +34,8 @@ exceptions — pure Kotlin, no framework dependencies.
    companion object for the two ingestion cases (new vs. merge/update).
 3. **Ports describe capabilities, not implementations** — `findAll` returns
    `domain.shared.Page<T>`, not anything Spring-specific.
-4. Domain exceptions (`<Resource>NotFoundException`) are plain
+4. Domain exceptions (`<Resource>NotFoundException`, in
+   `domain/<resource>/exception/`) are plain
    `RuntimeException` subclasses — the REST-layer `GlobalExceptionHandler`
    maps them to HTTP status codes, the domain doesn't know about HTTP.
 

@@ -1,6 +1,6 @@
 package br.com.vertice.emerion_dashboard.infrastructure.rest.common
 
-import br.com.vertice.emerion_dashboard.domain.customer.CustomerNotFoundException
+import br.com.vertice.emerion_dashboard.domain.customer.exception.CustomerNotFoundException
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.ErrorResponse
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.ErrorResponseError
 import org.slf4j.LoggerFactory

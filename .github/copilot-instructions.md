@@ -54,16 +54,23 @@ emerion-dashboard/
 ├── domain/                     # Gradle module. Pure Kotlin (kotlin("jvm") only). No Spring, no JPA, no OpenAPI.
 │   └── src/main/kotlin/br/com/vertice/emerion_dashboard/domain/
 │       ├── <resource>/
-│       │   ├── <Resource>.kt              # domain model (data class)
-│       │   ├── <Resource>Repository.kt    # OUTBOUND port (interface)
-│       │   └── <Resource>NotFoundException.kt
+│       │   ├── model/
+│       │   │   └── <Resource>.kt              # domain model (data class)
+│       │   ├── repository/
+│       │   │   └── <Resource>Repository.kt    # OUTBOUND port (interface)
+│       │   └── exception/
+│       │       └── <Resource>NotFoundException.kt
 │       └── shared/              # Page/PageRequest and other cross-cutting domain types
 │
 ├── application/                # Gradle module. Use cases. implementation(project(":domain")) only.
 │   └── src/main/kotlin/br/com/vertice/emerion_dashboard/application/
 │       └── <resource>/
-│           ├── <Verb><Resource>UseCase.kt   # INBOUND port (interface, `fun interface` when single-method)
-│           └── <Verb><Resource>Service.kt   # @Service implementing the use case, talks to domain ports
+│           ├── <functional-concern>/       # e.g. ingestion/, query/ — group by functionality, not by declaration kind
+│           │   ├── <Verb><Resource>UseCase.kt   # INBOUND port (interface); group methods for the same concern on one interface
+│           │   ├── <Verb><Resource>Service.kt   # @Service implementing the use case, talks to domain ports
+│           │   └── model/                       # data classes/enums (commands, results), one per file, even small ones
+│           │       ├── <Resource>Command.kt
+│           │       └── <Resource>Result.kt
 │
 ├── infrastructure/              # Gradle module. Adapters. The only module allowed to depend on Spring Web/Data JPA/generated OpenAPI code.
 │   └── src/main/
@@ -77,9 +84,12 @@ emerion-dashboard/
 │       │   │           └── <Resource>...RestMapper.kt   # generated DTO <-> domain model, object with pure functions
 │       │   ├── persistence/
 │       │   │   └── <resource>/
-│       │   │       ├── <Resource>JpaEntity.kt
-│       │   │       ├── <Resource>SpringDataRepository.kt   # Spring Data JpaRepository
-│       │   │       ├── <Resource>RepositoryAdapter.kt       # implements the domain's outbound port
+│       │   │       ├── model/
+│       │   │       │   └── <Resource>JpaEntity.kt        # @Entity, pure data holder
+│       │   │       ├── repository/
+│       │   │       │   └── <Resource>SpringDataRepository.kt   # Spring Data JpaRepository
+│       │   │       ├── adapter/
+│       │   │       │   └── <Resource>RepositoryAdapter.kt       # implements the domain's outbound port
 │       │   │       └── mapper/
 │       │   │           └── <Resource>PersistenceMapper.kt   # JPA entity <-> domain model, object with pure functions
 │       │   └── config/               # CorsConfig, OpenApiConfig, etc.
@@ -151,13 +161,13 @@ emerion-load-service
 CustomerIngestionController (infrastructure/rest/customer/controller)
    │  CustomerIngestionRestMapper.toCommand() (infrastructure/rest/customer/mapper)
    ▼
-IngestCustomersUseCase / IngestCustomersService (application/customer)
+IngestCustomersUseCase / IngestCustomersService (application/customer/ingestion)
    │  upsert-by-externalId, per-item try/catch (partial-failure batch)
    ▼
-CustomerRepository port (domain/customer)
+CustomerRepository port (domain/customer/repository)
    │  implemented by
    ▼
-CustomerRepositoryAdapter (infrastructure/persistence/customer)
+CustomerRepositoryAdapter (infrastructure/persistence/customer/adapter)
    │  Spring Data JPA
    ▼
 PostgreSQL `customer` table (Flyway V1__create_customer_table.sql)
@@ -166,7 +176,7 @@ React app
    │  GET /customers?page=&size=&status=&name=
    │  GET /customers/{id}
    ▼
-CustomerQueryController → GetCustomerUseCase/ListCustomersUseCase → CustomerRepository → Postgres
+CustomerQueryController → CustomerQueryUseCase (application/customer/query) → CustomerRepository → Postgres
 ```
 
 Ingestion is **idempotent**: re-sending the same batch upserts by
@@ -245,17 +255,19 @@ gotchas (e.g. reserved-word property renames like `size` → `propertySize`).
 ### Adding a new resource end-to-end (e.g. `Product`)
 1. `infrastructure/src/main/resources/openapi/api.yaml`: add ingestion path
    + query paths + schemas, run `./gradlew :infrastructure:openApiGenerate`.
-2. `domain/src/main/kotlin/.../domain/product/`: `Product.kt`,
-   `ProductRepository.kt` (port).
-3. `application/src/main/kotlin/.../application/product/`: ingestion use
-   case + service, query use case(s) + service.
+2. `domain/src/main/kotlin/.../domain/product/`: `model/Product.kt`,
+   `repository/ProductRepository.kt` (port), `exception/ProductNotFoundException.kt`.
+3. `application/src/main/kotlin/.../application/product/ingestion/`: ingestion
+   use case (commands/results each in their own file) + service;
+   `application/src/main/kotlin/.../application/product/query/`: query use
+   case + service.
 4. `infrastructure/src/main/kotlin/.../infrastructure/persistence/product/`:
    JPA entity, Spring Data repository, repository adapter, persistence
    mapper.
 5. `infrastructure/src/main/kotlin/.../infrastructure/rest/product/`:
    controllers implementing the generated interfaces, REST mapper.
 6. `infrastructure/src/main/resources/db/migration/V<n>__create_product_table.sql`.
-7. MockK unit tests in `application/src/test/kotlin/.../application/product/`
+7. MockK unit tests in `application/src/test/kotlin/.../application/product/ingestion/`
    for the use-case service(s).
 8. Reference `.github/skills/port-adapter-skill.md` and
    `.github/skills/mapper-skill.md` while doing this.

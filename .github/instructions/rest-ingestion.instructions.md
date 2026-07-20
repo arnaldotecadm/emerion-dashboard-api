@@ -80,16 +80,20 @@ upsert/idempotency logic between the two.
 ## Adding a New Ingestion Endpoint
 1. Add the OpenAPI path/schemas (see
    `.github/instructions/openapi-contract.instructions.md`).
-2. `application/src/main/kotlin/.../application/<x>/Ingest<X>UseCase.kt`
-   (`:application` module) — command/result types + `fun
-   interface Ingest<X>UseCase { fun ingest(command: Ingest<X>BatchCommand): Ingest<X>BatchResult }`.
-3. `application/src/main/kotlin/.../application/<x>/Ingest<X>Service.kt`
+2. `application/src/main/kotlin/.../application/<x>/ingestion/model/` (`:application`
+   module) — each command/result type in its own file
+   (`Ingest<X>Command.kt`, `Ingest<X>BatchCommand.kt`, `Ingest<X>Outcome.kt`,
+   `Ingest<X>ItemResult.kt`, `Ingest<X>BatchResult.kt`); plus
+   `application/src/main/kotlin/.../application/<x>/ingestion/Ingest<X>UseCase.kt`
+   — a single `interface` grouping both `ingest(batch)` and
+   `ingestSingle(item)` (same functional concern, one interface).
+3. `application/src/main/kotlin/.../application/<x>/ingestion/Ingest<X>Service.kt`
    (`:application` module) — `@Service`, per-item try/catch, upsert via the
    domain repository port, `@Transactional`.
 4. `infrastructure/src/main/kotlin/.../infrastructure/rest/<x>/controller/<X>IngestionController.kt`
    + `infrastructure/src/main/kotlin/.../infrastructure/rest/<x>/mapper/<X>IngestionRestMapper.kt`
    (`:infrastructure` module).
 5. Unit-test the service with MockK in
-   `application/src/test/kotlin/.../application/<x>/` (see
+   `application/src/test/kotlin/.../application/<x>/ingestion/` (see
    `IngestCustomersServiceTest` for the three required cases: create,
    update/idempotent re-run, partial failure).

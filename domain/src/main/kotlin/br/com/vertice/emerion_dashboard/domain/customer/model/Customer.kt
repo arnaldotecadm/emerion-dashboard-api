@@ -1,4 +1,4 @@
-package br.com.vertice.emerion_dashboard.domain.customer
+package br.com.vertice.emerion_dashboard.domain.customer.model
 
 import java.time.Instant
 

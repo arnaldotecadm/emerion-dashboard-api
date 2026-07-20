@@ -1,4 +1,4 @@
-package br.com.vertice.emerion_dashboard.infrastructure.persistence.customer
+package br.com.vertice.emerion_dashboard.infrastructure.persistence.customer.model
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -12,7 +12,7 @@ import java.time.Instant
 /**
  * JPA entity for the `customer` table. Lives entirely in the infrastructure
  * layer: the domain layer never sees this class, only
- * `domain.customer.Customer` via `CustomerPersistenceMapper`.
+ * `domain.customer.model.Customer` via `CustomerPersistenceMapper`.
  */
 @Entity
 @Table(

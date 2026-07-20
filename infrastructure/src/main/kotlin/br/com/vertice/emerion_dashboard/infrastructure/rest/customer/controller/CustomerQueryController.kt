@@ -1,8 +1,7 @@
 package br.com.vertice.emerion_dashboard.infrastructure.rest.customer.controller
 
-import br.com.vertice.emerion_dashboard.application.customer.GetCustomerUseCase
-import br.com.vertice.emerion_dashboard.application.customer.ListCustomersQuery
-import br.com.vertice.emerion_dashboard.application.customer.ListCustomersUseCase
+import br.com.vertice.emerion_dashboard.application.customer.query.CustomerQueryUseCase
+import br.com.vertice.emerion_dashboard.application.customer.query.model.ListCustomersQuery
 import br.com.vertice.emerion_dashboard.infrastructure.rest.customer.mapper.CustomerQueryRestMapper
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.api.CustomersApi
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerPage
@@ -17,12 +16,11 @@ import org.springframework.web.bind.annotation.RestController
  */
 @RestController
 class CustomerQueryController(
-    private val getCustomerUseCase: GetCustomerUseCase,
-    private val listCustomersUseCase: ListCustomersUseCase,
+    private val customerQueryUseCase: CustomerQueryUseCase,
 ) : CustomersApi {
 
     override fun getCustomerById(id: Long): ResponseEntity<CustomerResponse> {
-        val customer = getCustomerUseCase.getById(id)
+        val customer = customerQueryUseCase.getById(id)
         return ResponseEntity.ok(CustomerQueryRestMapper.toResponse(customer))
     }
 
@@ -38,7 +36,7 @@ class CustomerQueryController(
             bloqueado = bloqueado,
             nomeFantasiaContains = nomeFantasia,
         )
-        val result = listCustomersUseCase.list(query)
+        val result = customerQueryUseCase.list(query)
         return ResponseEntity.ok(CustomerQueryRestMapper.toPageResponse(result))
     }
 }

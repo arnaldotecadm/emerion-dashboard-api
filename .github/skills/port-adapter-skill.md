@@ -43,8 +43,8 @@ drive the mapper code below.
 
 ## Step 1 — Domain (`:domain` module)
 ```kotlin
-// domain/src/main/kotlin/br/com/vertice/emerion_dashboard/domain/widget/Widget.kt
-package br.com.vertice.emerion_dashboard.domain.widget
+// domain/src/main/kotlin/br/com/vertice/emerion_dashboard/domain/widget/model/Widget.kt
+package br.com.vertice.emerion_dashboard.domain.widget.model
 
 import java.time.Instant
 
@@ -67,11 +67,12 @@ data class Widget(
 }
 ```
 ```kotlin
-// domain/src/main/kotlin/br/com/vertice/emerion_dashboard/domain/widget/WidgetRepository.kt
-package br.com.vertice.emerion_dashboard.domain.widget
+// domain/src/main/kotlin/br/com/vertice/emerion_dashboard/domain/widget/repository/WidgetRepository.kt
+package br.com.vertice.emerion_dashboard.domain.widget.repository
 
 import br.com.vertice.emerion_dashboard.domain.shared.Page
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
+import br.com.vertice.emerion_dashboard.domain.widget.model.Widget
 
 interface WidgetRepository {
     fun findById(id: Long): Widget?
@@ -82,16 +83,28 @@ interface WidgetRepository {
 ```
 
 ## Step 2 — Application (use cases, `:application` module)
-Copy `application/src/main/kotlin/.../application/customer/IngestCustomersUseCase.kt`,
-`IngestCustomersService.kt` and `CustomerQueryService.kt` verbatim into
-`application/src/main/kotlin/.../application/widget/`, renaming `Customer` →
-`Widget` throughout. Keep the per-item try/catch in the ingestion service
-(partial failure handling) and the fixed `Clock` constructor parameter.
+Copy `application/src/main/kotlin/.../application/customer/ingestion/` (all
+files: `IngestCustomersUseCase.kt`, `IngestCustomersService.kt`, and the
+`model/` subpackage: `IngestCustomerCommand.kt`, `IngestBatchCommand.kt`,
+`IngestOutcome.kt`, `IngestItemResult.kt`, `IngestBatchResult.kt`) into
+`application/src/main/kotlin/.../application/widget/ingestion/`, and
+`application/src/main/kotlin/.../application/customer/query/` (all files:
+`CustomerQueryUseCase.kt`, `CustomerQueryService.kt`, and the `model/`
+subpackage: `ListCustomersQuery.kt`) into
+`application/src/main/kotlin/.../application/widget/query/`, renaming
+`Customer` → `Widget` throughout. Keep the per-item try/catch in the
+ingestion service (partial failure handling), the fixed `Clock` constructor
+parameter, and the one-declaration-per-file / merged-interface-per-concern
+conventions (`WidgetQueryUseCase` with both `getById`+`list`,
+`IngestWidgetsUseCase` with both `ingest`+`ingestSingle`).
 
 ## Step 3 — Persistence Adapter (`:infrastructure` module)
-Copy `infrastructure/src/main/kotlin/.../infrastructure/persistence/customer/CustomerJpaEntity.kt`,
-`CustomerSpringDataRepository.kt`, `CustomerRepositoryAdapter.kt` into
-`infrastructure/src/main/kotlin/.../infrastructure/persistence/widget/`, and
+Copy `infrastructure/src/main/kotlin/.../infrastructure/persistence/customer/model/CustomerJpaEntity.kt`
+into `infrastructure/src/main/kotlin/.../infrastructure/persistence/widget/model/`;
+copy `infrastructure/src/main/kotlin/.../infrastructure/persistence/customer/repository/CustomerSpringDataRepository.kt`
+into `infrastructure/src/main/kotlin/.../infrastructure/persistence/widget/repository/`;
+copy `infrastructure/src/main/kotlin/.../infrastructure/persistence/customer/adapter/CustomerRepositoryAdapter.kt`
+into `infrastructure/src/main/kotlin/.../infrastructure/persistence/widget/adapter/`, and
 `infrastructure/src/main/kotlin/.../infrastructure/persistence/customer/mapper/CustomerPersistenceMapper.kt`
 into `infrastructure/src/main/kotlin/.../infrastructure/persistence/widget/mapper/`,
 renaming. Add a matching Flyway migration
@@ -111,8 +124,8 @@ before wiring the mapper — see the "Known Generator Gotchas" section of
 `openapi-contract.instructions.md`.
 
 ## Step 5 — Tests
-Copy `application/src/test/kotlin/.../application/customer/IngestCustomersServiceTest.kt`
-into `application/src/test/kotlin/.../application/widget/`, renaming,
+Copy `application/src/test/kotlin/.../application/customer/ingestion/IngestCustomersServiceTest.kt`
+into `application/src/test/kotlin/.../application/widget/ingestion/`, renaming,
 keeping all three cases (create / idempotent update / partial failure). Add
 an integration test in `app/src/test/kotlin/...` extending
 `support.PostgresIntegrationTest` if the resource has any non-trivial query
