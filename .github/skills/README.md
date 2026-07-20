@@ -45,7 +45,8 @@ for the rules."
 
 ## Reference Implementation
 The `Customer` resource (across `domain/customer`, `application/customer`,
-`infrastructure/rest/customer`, `infrastructure/persistence/customer`) is
+`infrastructure/rest/customer/{controller,mapper}`,
+`infrastructure/persistence/customer`) is
 the working, tested example every skill in this folder points back to.
 When in doubt, read the actual Customer files before following a skill's
 template — the skill exists to save you from re-deriving the pattern, not

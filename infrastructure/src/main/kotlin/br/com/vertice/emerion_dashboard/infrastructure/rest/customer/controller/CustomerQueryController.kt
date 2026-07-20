@@ -1,8 +1,9 @@
-package br.com.vertice.emerion_dashboard.infrastructure.rest.customer
+package br.com.vertice.emerion_dashboard.infrastructure.rest.customer.controller
 
 import br.com.vertice.emerion_dashboard.application.customer.GetCustomerUseCase
 import br.com.vertice.emerion_dashboard.application.customer.ListCustomersQuery
 import br.com.vertice.emerion_dashboard.application.customer.ListCustomersUseCase
+import br.com.vertice.emerion_dashboard.infrastructure.rest.customer.mapper.CustomerQueryRestMapper
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.api.CustomersApi
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerPage
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerResponse

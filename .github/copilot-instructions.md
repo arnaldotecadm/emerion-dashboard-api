@@ -71,8 +71,10 @@ emerion-dashboard/
 │       │   ├── rest/
 │       │   │   ├── common/           # GlobalExceptionHandler, shared REST concerns
 │       │   │   └── <resource>/
-│       │   │       ├── <Resource>...Controller.kt   # implements a generated `...Api` interface, delegates to a use case
-│       │   │       └── <Resource>...RestMapper.kt   # generated DTO <-> domain model, object with pure functions
+│       │   │       ├── controller/
+│       │   │       │   └── <Resource>...Controller.kt   # implements a generated `...Api` interface, delegates to a use case
+│       │   │       └── mapper/
+│       │   │           └── <Resource>...RestMapper.kt   # generated DTO <-> domain model, object with pure functions
 │       │   ├── persistence/
 │       │   │   └── <resource>/
 │       │   │       ├── <Resource>JpaEntity.kt
@@ -145,8 +147,8 @@ top-level `src/main/kotlin/...` directory) changes.
 emerion-load-service
    │  POST /ingestion/customers  (CustomerIngestionBatch)
    ▼
-CustomerIngestionController (infrastructure/rest/customer)
-   │  CustomerIngestionRestMapper.toCommand()
+CustomerIngestionController (infrastructure/rest/customer/controller)
+   │  CustomerIngestionRestMapper.toCommand() (infrastructure/rest/customer/mapper)
    ▼
 IngestCustomersUseCase / IngestCustomersService (application/customer)
    │  upsert-by-externalId, per-item try/catch (partial-failure batch)
@@ -178,9 +180,11 @@ deliberate because `emerion-load-service` may batch hundreds of rows.
    on it) to regenerate interfaces/models under
    `infrastructure/build/generated/openapi/.../infrastructure/rest/generated/`.
 3. Implement the new generated `...Api` interface in a
-   `infrastructure/rest/<resource>/<Resource>...Controller.kt`, delegating
-   to a use case — never put logic in the controller.
-4. Add a REST mapper (`object` with pure functions) to convert generated
+   `infrastructure/rest/<resource>/controller/<Resource>...Controller.kt`,
+   delegating to a use case — never put logic in the controller.
+4. Add a REST mapper (`object` with pure functions) in
+   `infrastructure/rest/<resource>/mapper/<Resource>...RestMapper.kt` to
+   convert generated
    DTOs <-> domain models.
 5. The same `api.yaml` is also served at runtime as a static resource
    (`/openapi/api.yaml`) and rendered by Swagger UI

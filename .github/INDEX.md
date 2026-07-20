@@ -55,7 +55,7 @@ Quick links to everything in `.github/`.
 emerion-load-service (Firebird → transform)
         │  POST /ingestion/<resource>   (batch, idempotent by externalId)
         ▼
-infrastructure/.../rest/<resource>/...IngestionController   (generated OpenAPI interface, :infrastructure module)
+infrastructure/.../rest/<resource>/controller/...IngestionController   (generated OpenAPI interface, :infrastructure module)
         │  REST mapper
         ▼
 application/.../<resource>/Ingest...UseCase/Service          (per-item try/catch, upsert, :application module)
@@ -69,7 +69,7 @@ PostgreSQL (Flyway-managed schema, migrations in :infrastructure)
 React app (separate origin, CORS)
         │  GET /<resources>?page=&size=&...   GET /<resources>/{id}
         ▼
-infrastructure/.../rest/<resource>/...QueryController  →  Get/List...UseCase  →  domain port  →  Postgres
+infrastructure/.../rest/<resource>/controller/...QueryController  →  Get/List...UseCase  →  domain port  →  Postgres
 ```
 
 `:app` wires all of the above together (composition root + Spring Boot

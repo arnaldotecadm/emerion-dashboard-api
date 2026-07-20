@@ -1,6 +1,7 @@
-package br.com.vertice.emerion_dashboard.infrastructure.rest.customer
+package br.com.vertice.emerion_dashboard.infrastructure.rest.customer.controller
 
 import br.com.vertice.emerion_dashboard.application.customer.IngestCustomersUseCase
+import br.com.vertice.emerion_dashboard.infrastructure.rest.customer.mapper.CustomerIngestionRestMapper
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.api.CustomerIngestionApi
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerIngestionBatch
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerIngestionItem

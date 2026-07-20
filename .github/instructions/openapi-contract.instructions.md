@@ -37,8 +37,9 @@ depends on it) after editing the YAML.
    `infrastructure/build/generated/openapi/.../api/` and `.../model/` before writing the
    controller — the exact Kotlin types/nullability matter.
 4. Implement the generated `...Api` interface in a new or existing
-   controller (`infrastructure/rest/<resource>/`). Add a REST mapper
-   (`object`) to translate to/from the application layer.
+   controller (`infrastructure/rest/<resource>/controller/`). Add a REST
+   mapper (`object`) in `infrastructure/rest/<resource>/mapper/` to
+   translate to/from the application layer.
 
 ## Known Generator Gotchas (kotlin-spring, openapi-generator 7.9.0)
 - **Reserved-word property renaming**: a schema property literally named

@@ -39,10 +39,10 @@ infrastructure/src/main/kotlin/br/com/vertice/emerion_dashboard/infrastructure/p
 infrastructure/src/main/kotlin/br/com/vertice/emerion_dashboard/infrastructure/persistence/x/XPersistenceMapper.kt      # object, JPA entity <-> domain model
 infrastructure/src/main/resources/db/migration/V<n>__create_x_table.sql
 
-infrastructure/src/main/kotlin/br/com/vertice/emerion_dashboard/infrastructure/rest/x/XIngestionController.kt           # implements generated XIngestionApi
-infrastructure/src/main/kotlin/br/com/vertice/emerion_dashboard/infrastructure/rest/x/XQueryController.kt               # implements generated XApi (or XsApi)
-infrastructure/src/main/kotlin/br/com/vertice/emerion_dashboard/infrastructure/rest/x/XIngestionRestMapper.kt            # object, generated DTO <-> app command/result
-infrastructure/src/main/kotlin/br/com/vertice/emerion_dashboard/infrastructure/rest/x/XQueryRestMapper.kt                # object, generated DTO <-> domain model
+infrastructure/src/main/kotlin/br/com/vertice/emerion_dashboard/infrastructure/rest/x/controller/XIngestionController.kt           # implements generated XIngestionApi
+infrastructure/src/main/kotlin/br/com/vertice/emerion_dashboard/infrastructure/rest/x/controller/XQueryController.kt               # implements generated XApi (or XsApi)
+infrastructure/src/main/kotlin/br/com/vertice/emerion_dashboard/infrastructure/rest/x/mapper/XIngestionRestMapper.kt            # object, generated DTO <-> app command/result
+infrastructure/src/main/kotlin/br/com/vertice/emerion_dashboard/infrastructure/rest/x/mapper/XQueryRestMapper.kt                # object, generated DTO <-> domain model
 ```
 
 No files are needed in `app/` for a new resource unless it needs a
@@ -64,14 +64,16 @@ full-context/Testcontainers tests, which cover every resource generically.
   cases).
 
 ## Adapters — one job each
-- **Controller** (`infrastructure/rest/<x>/...Controller.kt`): implements a
-  generated OpenAPI interface. Its body is exactly: map request DTO →
-  application command/query (via the REST mapper), call the use case, map
-  result → response DTO (via the REST mapper). No `if`/business rules here.
+- **Controller** (`infrastructure/rest/<x>/controller/...Controller.kt`):
+  implements a generated OpenAPI interface. Its body is exactly: map
+  request DTO → application command/query (via the REST mapper, imported
+  from the sibling `mapper` package), call the use case, map result →
+  response DTO (via the REST mapper). No `if`/business rules here.
 - **Repository adapter** (`infrastructure/persistence/<x>/...RepositoryAdapter.kt`):
   implements the domain's outbound port on top of Spring Data JPA. Same
   rule — translate and delegate, no business rules.
-- **Mappers** are plain Kotlin `object`s with pure functions (`toDomain`,
+- **Mappers** (`infrastructure/rest/<x>/mapper/...RestMapper.kt`) are plain
+  Kotlin `object`s with pure functions (`toDomain`,
   `toEntity`, `toResponse`, `toCommand`). Never annotate them `@Component` —
   they don't need DI, and keeping them as `object`s makes them trivially
   unit-testable without a Spring context.

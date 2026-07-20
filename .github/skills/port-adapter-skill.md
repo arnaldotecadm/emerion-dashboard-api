@@ -98,11 +98,13 @@ renaming. Add a matching Flyway migration
 see `.github/instructions/flyway-migrations.instructions.md`).
 
 ## Step 4 — REST Adapter (`:infrastructure` module)
-Copy `infrastructure/src/main/kotlin/.../infrastructure/rest/customer/CustomerIngestionController.kt`
-+ `CustomerIngestionRestMapper.kt` and `CustomerQueryController.kt` +
-`CustomerQueryRestMapper.kt` into
-`infrastructure/src/main/kotlin/.../infrastructure/rest/widget/`, renaming
-and adjusting to the generated `Widget...Api`/model types from Step 0.
+Copy `infrastructure/src/main/kotlin/.../infrastructure/rest/customer/controller/CustomerIngestionController.kt`
++ `CustomerQueryController.kt` into
+`infrastructure/src/main/kotlin/.../infrastructure/rest/widget/controller/`,
+and `infrastructure/src/main/kotlin/.../infrastructure/rest/customer/mapper/CustomerIngestionRestMapper.kt`
++ `CustomerQueryRestMapper.kt` into
+`infrastructure/src/main/kotlin/.../infrastructure/rest/widget/mapper/`,
+renaming and adjusting to the generated `Widget...Api`/model types from Step 0.
 Double-check generated property names for renames (e.g. reserved words)
 before wiring the mapper — see the "Known Generator Gotchas" section of
 `openapi-contract.instructions.md`.

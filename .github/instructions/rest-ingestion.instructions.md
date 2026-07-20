@@ -69,9 +69,10 @@ upsert/idempotency logic between the two.
 
 ## Controller Responsibility
 - The controller
-  (`infrastructure/src/main/kotlin/.../infrastructure/rest/<x>/XIngestionController.kt`,
+  (`infrastructure/src/main/kotlin/.../infrastructure/rest/<x>/controller/XIngestionController.kt`,
   in the `:infrastructure` module) does exactly three things: map request
-  DTO → command (REST mapper), call `IngestXUseCase.ingest(command)`, map
+  DTO → command (REST mapper, in the sibling `rest/<x>/mapper/` package),
+  call `IngestXUseCase.ingest(command)`, map
   result → response DTO (REST mapper). No loops, no try/catch, no business
   rules in the controller — that all lives in the use-case service (in the
   `:application` module).
@@ -85,8 +86,9 @@ upsert/idempotency logic between the two.
 3. `application/src/main/kotlin/.../application/<x>/Ingest<X>Service.kt`
    (`:application` module) — `@Service`, per-item try/catch, upsert via the
    domain repository port, `@Transactional`.
-4. `infrastructure/src/main/kotlin/.../infrastructure/rest/<x>/<X>IngestionController.kt`
-   + `<X>IngestionRestMapper.kt` (`:infrastructure` module).
+4. `infrastructure/src/main/kotlin/.../infrastructure/rest/<x>/controller/<X>IngestionController.kt`
+   + `infrastructure/src/main/kotlin/.../infrastructure/rest/<x>/mapper/<X>IngestionRestMapper.kt`
+   (`:infrastructure` module).
 5. Unit-test the service with MockK in
    `application/src/test/kotlin/.../application/<x>/` (see
    `IngestCustomersServiceTest` for the three required cases: create,

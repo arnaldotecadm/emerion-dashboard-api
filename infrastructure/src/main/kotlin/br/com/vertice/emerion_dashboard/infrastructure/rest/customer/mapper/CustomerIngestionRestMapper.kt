@@ -1,4 +1,4 @@
-package br.com.vertice.emerion_dashboard.infrastructure.rest.customer
+package br.com.vertice.emerion_dashboard.infrastructure.rest.customer.mapper
 
 import br.com.vertice.emerion_dashboard.application.customer.IngestBatchCommand
 import br.com.vertice.emerion_dashboard.application.customer.IngestBatchResult
