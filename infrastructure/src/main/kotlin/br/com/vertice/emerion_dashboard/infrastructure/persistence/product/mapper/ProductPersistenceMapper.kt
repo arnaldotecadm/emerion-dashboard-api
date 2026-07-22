@@ -2,10 +2,23 @@ package br.com.vertice.emerion_dashboard.infrastructure.persistence.product.mapp
 
 import br.com.vertice.emerion_dashboard.domain.product.model.Product
 import br.com.vertice.emerion_dashboard.infrastructure.persistence.product.model.ProductJpaEntity
+import br.com.vertice.emerion_dashboard.infrastructure.persistence.product.projection.ProductProjection
 
-/** Maps between the domain model and the JPA entity. Kept out of the entity/domain classes on purpose. */
+/** Maps between the domain model and the JPA entity/read projection. Kept out of the entity/domain classes on purpose. */
 object ProductPersistenceMapper {
 
+    /** Read path: native-query projection (see `ProductQueryRepository`) -> domain model. */
+    fun toDomain(projection: ProductProjection): Product =
+        Product(
+            id = projection.id,
+            externalId = projection.externalId,
+            nome = projection.nome,
+            preco = projection.preco,
+            createdAt = projection.createdAt,
+            updatedAt = projection.updatedAt,
+        )
+
+    /** Write path: JPA entity -> domain model. */
     fun toDomain(entity: ProductJpaEntity): Product =
         Product(
             id = entity.id,

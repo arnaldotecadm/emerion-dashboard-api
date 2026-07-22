@@ -25,6 +25,27 @@ tags:
     description: >
       Endpoints called by emerion-load-service to push migrated Firebird
       product data into PostgreSQL. Not consumed by the React app.
+  - name: products
+    description: Read endpoints consumed by the React frontend.
+  - name: customer-address-ingestion
+    description: >
+      Endpoints called by emerion-load-service to push a customer's full
+      address set (billing/shipping/etc.) into PostgreSQL. Not consumed by
+      the React app.
+  - name: customer-addresses
+    description: Read endpoints consumed by the React frontend.
+  - name: customer-credit-ingestion
+    description: >
+      Endpoints called by emerion-load-service to push customer credit
+      ledger entries into PostgreSQL. Not consumed by the React app.
+  - name: customer-credits
+    description: Read endpoints consumed by the React frontend.
+  - name: customer-order-ingestion
+    description: >
+      Endpoints called by emerion-load-service to push a customer order and
+      its line items into PostgreSQL. Not consumed by the React app.
+  - name: customer-orders
+    description: Read endpoints consumed by the React frontend.
 
 paths:
   /ingestion/customers:
@@ -242,6 +263,496 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /products:
+    get:
+      tags:
+        - products
+      operationId: listProducts
+      summary: List products (paginated) for the React dashboard
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: nome
+          in: query
+          description: Partial, case-insensitive match on product nome
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated list of products
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductPage'
+
+  /products/{id}:
+    get:
+      tags:
+        - products
+      operationId: getProductById
+      summary: Get a single product by internal (PostgreSQL) id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Product found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /ingestion/customer-addresses:
+    post:
+      tags:
+        - customer-address-ingestion
+      operationId: ingestCustomerAddresses
+      summary: Ingest a batch of customer address sets from emerion-load-service
+      description: >
+        Accepts a batch of customer address records already transformed by
+        emerion-load-service. Upserts by externalId (the customer's legacy
+        Firebird codCli); each item's full `enderecos` list replaces any
+        previously stored address details for that customer, so the
+        operation is idempotent and safe to re-run.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerAddressIngestionBatch'
+      responses:
+        '200':
+          description: Batch processed (see per-item results for partial failures)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionResult'
+        '400':
+          description: Malformed request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /ingestion/customer-addresses/single:
+    post:
+      tags:
+        - customer-address-ingestion
+      operationId: ingestSingleCustomerAddress
+      summary: Ingest a single customer's address set from emerion-load-service
+      description: >
+        Accepts one customer's full address set already transformed by
+        emerion-load-service. Equivalent to sending a batch of one item to
+        POST /ingestion/customer-addresses. Same upsert-by-externalId
+        idempotency guarantee applies (this is the endpoint currently used
+        by emerion-load-service's CustomerAddressController#sendAddressToIngestion).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerAddressIngestionItem'
+      responses:
+        '200':
+          description: Item processed (outcome reflects CREATED/UPDATED/FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionItemResult'
+        '400':
+          description: Malformed request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /customer-addresses:
+    get:
+      tags:
+        - customer-addresses
+      operationId: listCustomerAddresses
+      summary: List customer address sets (paginated) for the React dashboard
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: cpfCnpj
+          in: query
+          description: Partial, case-insensitive match on customer cpfCnpj
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated list of customer address sets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerAddressPage'
+
+  /customer-addresses/{id}:
+    get:
+      tags:
+        - customer-addresses
+      operationId: getCustomerAddressById
+      summary: Get a single customer's address set by internal (PostgreSQL) id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Customer address set found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerAddressResponse'
+        '404':
+          description: Customer address set not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /ingestion/customer-credits/batch:
+    post:
+      tags:
+        - customer-credit-ingestion
+      operationId: ingestCustomerCreditsBatch
+      summary: Ingest a batch of customer credit ledger entries from emerion-load-service
+      description: >
+        Accepts a plain array of credit entries already transformed by
+        emerion-load-service. Deliberately a bare array (no batchId/items
+        envelope): this matches emerion-load-service's
+        CustomerCreditController#sendCreditsToIngestion, which posts
+        List<CustomerCreditIngestionDto> directly since credit entries carry
+        no independent externalId of their own (only customerExternalId +
+        sequencia). A batchId is generated server-side for the response.
+        Upserts by (customerExternalId, sequencia) when sequencia is
+        present; entries with a null sequencia cannot be safely deduplicated
+        and are always inserted as new rows.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CustomerCreditIngestionItem'
+      responses:
+        '200':
+          description: Batch processed (see per-item results for partial failures)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionResult'
+        '400':
+          description: Malformed request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /ingestion/customer-credits/single:
+    post:
+      tags:
+        - customer-credit-ingestion
+      operationId: ingestSingleCustomerCredit
+      summary: Ingest a single customer credit ledger entry from emerion-load-service
+      description: >
+        Accepts one credit entry already transformed by emerion-load-service.
+        Equivalent to sending a batch of one item to
+        POST /ingestion/customer-credits/batch. Same upsert-by-
+        (customerExternalId, sequencia) idempotency guarantee applies.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerCreditIngestionItem'
+      responses:
+        '200':
+          description: Item processed (outcome reflects CREATED/UPDATED/FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionItemResult'
+        '400':
+          description: Malformed request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /customer-credits:
+    get:
+      tags:
+        - customer-credits
+      operationId: listCustomerCredits
+      summary: List customer credit ledger entries (paginated) for the React dashboard
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: customerExternalId
+          in: query
+          description: Exact match on the owning customer's externalId (codCli)
+          required: false
+          schema:
+            type: string
+        - name: tipo
+          in: query
+          description: Exact match on entry tipo (ENTRADA or SAIDA)
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated list of customer credit ledger entries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerCreditPage'
+
+  /customer-credits/{id}:
+    get:
+      tags:
+        - customer-credits
+      operationId: getCustomerCreditById
+      summary: Get a single customer credit ledger entry by internal (PostgreSQL) id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Customer credit entry found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerCreditResponse'
+        '404':
+          description: Customer credit entry not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /ingestion/customer-orders:
+    post:
+      tags:
+        - customer-order-ingestion
+      operationId: ingestCustomerOrders
+      summary: Ingest a batch of customer orders from emerion-load-service
+      description: >
+        Accepts a batch of order records (with line items) already
+        transformed by emerion-load-service. Upserts by externalId (the
+        legacy Firebird numres); each item's full `itens` list replaces any
+        previously stored line items for that order, so the operation is
+        idempotent and safe to re-run.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerOrderIngestionBatch'
+      responses:
+        '200':
+          description: Batch processed (see per-item results for partial failures)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionResult'
+        '400':
+          description: Malformed request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /ingestion/customer-orders/single:
+    post:
+      tags:
+        - customer-order-ingestion
+      operationId: ingestSingleCustomerOrder
+      summary: Ingest a single customer order from emerion-load-service
+      description: >
+        Accepts one order record (with line items) already transformed by
+        emerion-load-service. Equivalent to sending a batch of one item to
+        POST /ingestion/customer-orders. Same upsert-by-externalId
+        idempotency guarantee applies (this is the endpoint currently used
+        by emerion-load-service's CustomerOrderController#sendOrderToIngestion).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerOrderIngestionItem'
+      responses:
+        '200':
+          description: Item processed (outcome reflects CREATED/UPDATED/FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionItemResult'
+        '400':
+          description: Malformed request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /customer-orders:
+    get:
+      tags:
+        - customer-orders
+      operationId: listCustomerOrders
+      summary: List customer orders (paginated) for the React dashboard
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: codCli
+          in: query
+          description: Exact match on the owning customer's externalId (codCli)
+          required: false
+          schema:
+            type: string
+        - name: sitres
+          in: query
+          description: Exact match on order status (sitres)
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated list of customer orders
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerOrderPage'
+
+  /customer-orders/{id}:
+    get:
+      tags:
+        - customer-orders
+      operationId: getCustomerOrderById
+      summary: Get a single customer order by internal (PostgreSQL) id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Customer order found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerOrderResponse'
+        '404':
+          description: Customer order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     CustomerIngestionItem:
@@ -416,3 +927,434 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProductIngestionItem'
+
+    CustomerAddressDetailIngestionItem:
+      type: object
+      description: One address entry (billing/shipping/etc.) for a customer.
+      required:
+        - tipo
+      properties:
+        tipo:
+          type: string
+          description: Address kind, e.g. FATURAMENTO, COBRANCA, COMPRAS, ENTREGA.
+        cep:
+          type: string
+          nullable: true
+        endereco:
+          type: string
+          nullable: true
+        numero:
+          type: string
+          nullable: true
+        referencia:
+          type: string
+          nullable: true
+        bairro:
+          type: string
+          nullable: true
+        cidade:
+          type: string
+          nullable: true
+        uf:
+          type: string
+          nullable: true
+        telefone:
+          type: string
+          nullable: true
+        telefoneContato:
+          type: string
+          nullable: true
+        complemento:
+          type: string
+          nullable: true
+        fax:
+          type: string
+          nullable: true
+
+    CustomerAddressIngestionItem:
+      type: object
+      description: >
+        One customer's full address set, as produced by
+        emerion-load-service's CustomerAddressController.
+      required:
+        - externalId
+        - enderecos
+      properties:
+        externalId:
+          type: string
+          description: >
+            Customer's legacy Firebird primary key (codCli), used as the
+            upsert/idempotency key.
+        cnpjEmpresa:
+          type: string
+          nullable: true
+        cpfCnpj:
+          type: string
+          nullable: true
+        enderecos:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerAddressDetailIngestionItem'
+
+    CustomerAddressIngestionBatch:
+      type: object
+      required:
+        - batchId
+        - items
+      properties:
+        batchId:
+          type: string
+          description: Correlation id supplied by emerion-load-service for tracing/logging.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerAddressIngestionItem'
+
+    CustomerCreditIngestionItem:
+      type: object
+      description: One credit ledger entry for a customer.
+      required:
+        - customerExternalId
+        - data
+        - valorUtilizado
+        - valorTotal
+        - saldo
+        - tipo
+      properties:
+        customerExternalId:
+          type: string
+          description: >
+            Customer's legacy Firebird primary key (codCli). Combined with
+            sequencia, used as the upsert/idempotency key.
+        sequencia:
+          type: string
+          nullable: true
+          description: >
+            Legacy sequence number of this credit movement for the customer.
+            When null, this entry cannot be safely deduplicated and is
+            always inserted as a new row.
+        data:
+          type: string
+          format: date-time
+        dataPedido:
+          type: string
+          format: date-time
+          nullable: true
+        valorUtilizado:
+          type: number
+        valorTotal:
+          type: number
+        saldo:
+          type: number
+        situacao:
+          type: string
+          nullable: true
+        tipo:
+          type: string
+          description: ENTRADA or SAIDA.
+
+    CustomerOrderItemIngestionItem:
+      type: object
+      description: One line item of a customer order.
+      required:
+        - produto
+        - quantidade
+        - valorUnitario
+        - valorTotal
+      properties:
+        produto:
+          type: string
+          description: Composite legacy product code (codGru.codSub.codPro).
+        descricao:
+          type: string
+          nullable: true
+        quantidade:
+          type: number
+        valorUnitario:
+          type: number
+        valorTotal:
+          type: number
+
+    CustomerOrderIngestionItem:
+      type: object
+      description: >
+        One customer order and its line items, as produced by
+        emerion-load-service's CustomerOrderController.
+      required:
+        - externalId
+        - codCli
+        - dteres
+        - totger
+        - totres
+        - totipi
+        - totsub
+        - totdescinc
+        - itens
+      properties:
+        externalId:
+          type: string
+          description: >
+            Order's legacy Firebird primary key (numres), used as the
+            upsert/idempotency key.
+        codCli:
+          type: string
+          description: Customer's legacy Firebird primary key (codCli).
+        cnpjEmpresa:
+          type: string
+          nullable: true
+        nronfe:
+          type: string
+          nullable: true
+        dteres:
+          type: string
+          format: date-time
+        sitres:
+          type: string
+          nullable: true
+        totger:
+          type: number
+        totres:
+          type: number
+        totipi:
+          type: number
+        totsub:
+          type: number
+        totdescinc:
+          type: number
+        itens:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerOrderItemIngestionItem'
+
+    CustomerOrderIngestionBatch:
+      type: object
+      required:
+        - batchId
+        - items
+      properties:
+        batchId:
+          type: string
+          description: Correlation id supplied by emerion-load-service for tracing/logging.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerOrderIngestionItem'
+
+    ProductResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        externalId:
+          type: string
+        nome:
+          type: string
+        preco:
+          type: number
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ProductPage:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductResponse'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+
+    CustomerAddressDetailResponse:
+      type: object
+      properties:
+        tipo:
+          type: string
+        cep:
+          type: string
+          nullable: true
+        endereco:
+          type: string
+          nullable: true
+        numero:
+          type: string
+          nullable: true
+        referencia:
+          type: string
+          nullable: true
+        bairro:
+          type: string
+          nullable: true
+        cidade:
+          type: string
+          nullable: true
+        uf:
+          type: string
+          nullable: true
+        telefone:
+          type: string
+          nullable: true
+        telefoneContato:
+          type: string
+          nullable: true
+        complemento:
+          type: string
+          nullable: true
+        fax:
+          type: string
+          nullable: true
+
+    CustomerAddressResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        externalId:
+          type: string
+        cnpjEmpresa:
+          type: string
+          nullable: true
+        cpfCnpj:
+          type: string
+          nullable: true
+        enderecos:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerAddressDetailResponse'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CustomerAddressPage:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerAddressResponse'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+
+    CustomerCreditResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        customerExternalId:
+          type: string
+        sequencia:
+          type: string
+          nullable: true
+        data:
+          type: string
+          format: date-time
+        dataPedido:
+          type: string
+          format: date-time
+          nullable: true
+        valorUtilizado:
+          type: number
+        valorTotal:
+          type: number
+        saldo:
+          type: number
+        situacao:
+          type: string
+          nullable: true
+        tipo:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CustomerCreditPage:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerCreditResponse'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+
+    CustomerOrderItemResponse:
+      type: object
+      properties:
+        produto:
+          type: string
+        descricao:
+          type: string
+          nullable: true
+        quantidade:
+          type: number
+        valorUnitario:
+          type: number
+        valorTotal:
+          type: number
+
+    CustomerOrderResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        externalId:
+          type: string
+        codCli:
+          type: string
+        cnpjEmpresa:
+          type: string
+          nullable: true
+        nronfe:
+          type: string
+          nullable: true
+        dteres:
+          type: string
+          format: date-time
+        sitres:
+          type: string
+          nullable: true
+        totger:
+          type: number
+        totres:
+          type: number
+        totipi:
+          type: number
+        totsub:
+          type: number
+        totdescinc:
+          type: number
+        itens:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerOrderItemResponse'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CustomerOrderPage:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerOrderResponse'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+

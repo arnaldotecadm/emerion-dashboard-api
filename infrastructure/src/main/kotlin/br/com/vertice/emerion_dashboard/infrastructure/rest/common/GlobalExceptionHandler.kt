@@ -1,6 +1,10 @@
 package br.com.vertice.emerion_dashboard.infrastructure.rest.common
 
 import br.com.vertice.emerion_dashboard.domain.customer.exception.CustomerNotFoundException
+import br.com.vertice.emerion_dashboard.domain.customeraddress.exception.CustomerAddressNotFoundException
+import br.com.vertice.emerion_dashboard.domain.customercredit.exception.CustomerCreditNotFoundException
+import br.com.vertice.emerion_dashboard.domain.customerorder.exception.CustomerOrderNotFoundException
+import br.com.vertice.emerion_dashboard.domain.product.exception.ProductNotFoundException
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.ErrorResponse
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.ErrorResponseError
 import org.slf4j.LoggerFactory
@@ -18,8 +22,14 @@ class GlobalExceptionHandler {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    @ExceptionHandler(CustomerNotFoundException::class)
-    fun handleNotFound(ex: CustomerNotFoundException): ResponseEntity<ErrorResponse> =
+    @ExceptionHandler(
+        CustomerNotFoundException::class,
+        ProductNotFoundException::class,
+        CustomerAddressNotFoundException::class,
+        CustomerCreditNotFoundException::class,
+        CustomerOrderNotFoundException::class,
+    )
+    fun handleNotFound(ex: RuntimeException): ResponseEntity<ErrorResponse> =
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody("RESOURCE_NOT_FOUND", ex.message))
 
     /**

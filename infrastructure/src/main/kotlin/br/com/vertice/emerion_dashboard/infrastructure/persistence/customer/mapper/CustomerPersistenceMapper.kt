@@ -2,10 +2,27 @@ package br.com.vertice.emerion_dashboard.infrastructure.persistence.customer.map
 
 import br.com.vertice.emerion_dashboard.domain.customer.model.Customer
 import br.com.vertice.emerion_dashboard.infrastructure.persistence.customer.model.CustomerJpaEntity
+import br.com.vertice.emerion_dashboard.infrastructure.persistence.customer.projection.CustomerProjection
 
-/** Maps between the domain model and the JPA entity. Kept out of the entity/domain classes on purpose. */
+/** Maps between the domain model and the JPA entity/read projection. Kept out of the entity/domain classes on purpose. */
 object CustomerPersistenceMapper {
 
+    /** Read path: native-query projection (see `CustomerQueryRepository`) -> domain model. */
+    fun toDomain(projection: CustomerProjection): Customer =
+        Customer(
+            id = projection.id,
+            externalId = projection.externalId,
+            nomeFantasia = projection.nomeFantasia,
+            razaoSocial = projection.razaoSocial,
+            cpfCnpj = projection.cpfCnpj,
+            inscricaoEstadual = projection.inscricaoEstadual,
+            regimeTributario = projection.regimeTributario,
+            bloqueado = projection.bloqueado,
+            createdAt = projection.createdAt,
+            updatedAt = projection.updatedAt,
+        )
+
+    /** Write path: JPA entity -> domain model. */
     fun toDomain(entity: CustomerJpaEntity): Customer =
         Customer(
             id = entity.id,
