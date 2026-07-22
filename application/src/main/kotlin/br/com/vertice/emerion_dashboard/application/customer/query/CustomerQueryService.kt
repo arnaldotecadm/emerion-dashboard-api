@@ -19,6 +19,10 @@ class CustomerQueryService(
         customerRepository.findById(id) ?: throw CustomerNotFoundException(id)
 
     @Transactional(readOnly = true)
+    override fun getByExternalId(externalId: String): Customer =
+        customerRepository.findByExternalId(externalId) ?: throw CustomerNotFoundException(externalId)
+
+    @Transactional(readOnly = true)
     override fun list(query: ListCustomersQuery): Page<Customer> =
         customerRepository.findAll(
             pageRequest = PageRequest(page = query.page, size = query.size),

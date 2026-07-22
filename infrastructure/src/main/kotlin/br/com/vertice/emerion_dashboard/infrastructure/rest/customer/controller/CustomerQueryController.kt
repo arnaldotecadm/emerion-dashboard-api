@@ -24,6 +24,11 @@ class CustomerQueryController(
         return ResponseEntity.ok(CustomerQueryRestMapper.toResponse(customer))
     }
 
+    override fun getCustomerByExternalId(externalId: String): ResponseEntity<CustomerResponse> {
+        val customer = customerQueryUseCase.getByExternalId(externalId)
+        return ResponseEntity.ok(CustomerQueryRestMapper.toResponse(customer))
+    }
+
     override fun listCustomers(
         page: Int,
         size: Int,
