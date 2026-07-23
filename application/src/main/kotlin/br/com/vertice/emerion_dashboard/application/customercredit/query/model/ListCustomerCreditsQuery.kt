@@ -10,4 +10,5 @@ data class ListCustomerCreditsQuery(
     val size: Int,
     val customerExternalId: String?,
     val tipo: String?,
+    val cnpjEmpresa: String?,
 )

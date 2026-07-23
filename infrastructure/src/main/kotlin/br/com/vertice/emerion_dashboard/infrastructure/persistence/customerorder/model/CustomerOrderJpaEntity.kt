@@ -36,8 +36,8 @@ class CustomerOrderJpaEntity(
     @Column(name = "cod_cli", nullable = false)
     var codCli: String = "",
 
-    @Column(name = "cnpj_empresa")
-    var cnpjEmpresa: String? = null,
+    @Column(name = "cnpj_empresa", nullable = false)
+    var cnpjEmpresa: String = "",
 
     @Column(name = "nronfe")
     var nronfe: String? = null,

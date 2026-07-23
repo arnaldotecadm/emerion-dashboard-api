@@ -6,4 +6,5 @@ data class ListCustomersQuery(
     val size: Int,
     val bloqueado: Boolean?,
     val nomeFantasiaContains: String?,
+    val cnpjEmpresa: String?,
 )

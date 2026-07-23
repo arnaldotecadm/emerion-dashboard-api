@@ -5,6 +5,7 @@ import java.time.Instant
 /** Input command for a single customer inside an ingestion batch. */
 data class IngestCustomerCommand(
     val externalId: String,
+    val cnpjEmpresa: String,
     val nomeFantasia: String,
     val razaoSocial: String,
     val cpfCnpj: String,

@@ -27,6 +27,7 @@ class ProductRepositoryAdapterIntegrationTest(
         val saved = productRepository.save(
             Product.newFromIngestion(
                 externalId = "prod-ext-1",
+                cnpjEmpresa = "12345678000199",
                 nome = "Produto 1",
                 preco = BigDecimal("19.9000"),
                 now = now,
@@ -44,6 +45,7 @@ class ProductRepositoryAdapterIntegrationTest(
         productRepository.save(
             Product.newFromIngestion(
                 externalId = "prod-ext-other",
+                cnpjEmpresa = "12345678000199",
                 nome = "Outro Produto",
                 preco = BigDecimal("5.0000"),
                 now = now,
@@ -52,6 +54,7 @@ class ProductRepositoryAdapterIntegrationTest(
         productRepository.save(
             Product.newFromIngestion(
                 externalId = "prod-ext-match",
+                cnpjEmpresa = "12345678000199",
                 nome = "Produto Especial",
                 preco = BigDecimal("10.0000"),
                 now = now,
@@ -61,6 +64,7 @@ class ProductRepositoryAdapterIntegrationTest(
         val page = productRepository.findAll(
             pageRequest = PageRequest(page = 0, size = 10),
             nomeContains = "Especial",
+            cnpjEmpresa = null,
         )
 
         assertEquals(listOf("prod-ext-match"), page.content.map { it.externalId })

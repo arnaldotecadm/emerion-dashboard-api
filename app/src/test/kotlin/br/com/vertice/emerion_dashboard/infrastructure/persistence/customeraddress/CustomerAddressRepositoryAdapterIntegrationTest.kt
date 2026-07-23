@@ -65,7 +65,7 @@ class CustomerAddressRepositoryAdapterIntegrationTest(
         customerAddressRepository.save(
             CustomerAddress.newFromIngestion(
                 externalId = "addr-ext-other",
-                cnpjEmpresa = null,
+                cnpjEmpresa = "12345678000199",
                 cpfCnpj = "11111111111",
                 enderecos = listOf(detail("FATURAMENTO")),
                 now = now,
@@ -74,7 +74,7 @@ class CustomerAddressRepositoryAdapterIntegrationTest(
         customerAddressRepository.save(
             CustomerAddress.newFromIngestion(
                 externalId = "addr-ext-match",
-                cnpjEmpresa = null,
+                cnpjEmpresa = "99999999000199",
                 cpfCnpj = "99999999999",
                 enderecos = listOf(detail("COBRANCA")),
                 now = now,
@@ -84,6 +84,7 @@ class CustomerAddressRepositoryAdapterIntegrationTest(
         val page = customerAddressRepository.findAll(
             pageRequest = PageRequest(page = 0, size = 10),
             cpfCnpjContains = "9999999",
+            cnpjEmpresa = "99999999000199",
         )
 
         assertEquals(listOf("addr-ext-match"), page.content.map { it.externalId })

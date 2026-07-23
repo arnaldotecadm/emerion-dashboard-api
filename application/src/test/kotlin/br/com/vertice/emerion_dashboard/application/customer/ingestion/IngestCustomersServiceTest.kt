@@ -33,6 +33,7 @@ class IngestCustomersServiceTest {
                 items = listOf(
                     IngestCustomerCommand(
                         externalId = "FB-1",
+                        cnpjEmpresa = "12345678000199",
                         nomeFantasia = "Acme",
                         razaoSocial = "Acme Corp Ltda",
                         cpfCnpj = "12345678000190",
@@ -58,6 +59,7 @@ class IngestCustomersServiceTest {
         val existing = Customer(
             id = 42L,
             externalId = "FB-2",
+            cnpjEmpresa = "12345678000199",
             nomeFantasia = "Old Name",
             razaoSocial = "Old Razao Social Ltda",
             cpfCnpj = "12345678000190",
@@ -76,6 +78,7 @@ class IngestCustomersServiceTest {
                 items = listOf(
                     IngestCustomerCommand(
                         externalId = "FB-2",
+                        cnpjEmpresa = "12345678000199",
                         nomeFantasia = "New Name",
                         razaoSocial = "New Razao Social Ltda",
                         cpfCnpj = "12345678000190",
@@ -102,8 +105,8 @@ class IngestCustomersServiceTest {
             IngestBatchCommand(
                 batchId = "batch-3",
                 items = listOf(
-                    IngestCustomerCommand("FB-OK", "Ok Co", "Ok Co Ltda", "12345678000190", null, null, false, null),
-                    IngestCustomerCommand("FB-BAD", "Bad Co", "Bad Co Ltda", "12345678000190", null, null, false, null),
+                    IngestCustomerCommand("FB-OK", "12345678000199", "Ok Co", "Ok Co Ltda", "12345678000190", null, null, false, null),
+                    IngestCustomerCommand("FB-BAD", "12345678000199", "Bad Co", "Bad Co Ltda", "12345678000190", null, null, false, null),
                 ),
             ),
         )
@@ -122,6 +125,7 @@ class IngestCustomersServiceTest {
         val result = service.ingestSingle(
             IngestCustomerCommand(
                 externalId = "FB-4",
+                cnpjEmpresa = "12345678000199",
                 nomeFantasia = "Acme",
                 razaoSocial = "Acme Corp Ltda",
                 cpfCnpj = "12345678000190",
@@ -142,7 +146,7 @@ class IngestCustomersServiceTest {
         every { customerRepository.findByExternalId("FB-5") } throws RuntimeException("db down")
 
         val result = service.ingestSingle(
-            IngestCustomerCommand("FB-5", "Bad Co", "Bad Co Ltda", "12345678000190", null, null, false, null),
+            IngestCustomerCommand("FB-5", "12345678000199", "Bad Co", "Bad Co Ltda", "12345678000190", null, null, false, null),
         )
 
         assertEquals(IngestOutcome.FAILED, result.outcome)

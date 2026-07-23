@@ -29,8 +29,8 @@ class ProductQueryController(
         return ResponseEntity.ok(ProductQueryRestMapper.toResponse(product))
     }
 
-    override fun listProducts(page: Int, size: Int, nome: String?): ResponseEntity<ProductPage> {
-        val query = ListProductsQuery(page = page, size = size, nomeContains = nome)
+    override fun listProducts(page: Int, size: Int, nome: String?, cnpjEmpresa: String?): ResponseEntity<ProductPage> {
+        val query = ListProductsQuery(page = page, size = size, nomeContains = nome, cnpjEmpresa = cnpjEmpresa)
         val result = productQueryUseCase.list(query)
         return ResponseEntity.ok(ProductQueryRestMapper.toPageResponse(result))
     }

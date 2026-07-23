@@ -36,9 +36,14 @@ class CustomerAddressRepositoryAdapter(
     override fun findAll(
         pageRequest: PageRequest,
         cpfCnpjContains: String?,
+        cnpjEmpresa: String?,
     ): Page<CustomerAddress> {
         val springPageable = SpringPageRequest.of(pageRequest.page, pageRequest.size)
-        val headerPage = queryRepository.searchHeaders(cpfCnpjContains?.takeIf { it.isNotBlank() }, springPageable)
+        val headerPage = queryRepository.searchHeaders(
+            cpfCnpjContains?.takeIf { it.isNotBlank() },
+            cnpjEmpresa?.takeIf { it.isNotBlank() },
+            springPageable,
+        )
         val headerIds = headerPage.content.map { it.id }
         val detailsByHeaderId = if (headerIds.isEmpty()) {
             emptyMap()

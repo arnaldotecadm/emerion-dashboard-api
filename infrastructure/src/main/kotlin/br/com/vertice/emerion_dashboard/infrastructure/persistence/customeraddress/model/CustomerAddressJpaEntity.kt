@@ -32,8 +32,8 @@ class CustomerAddressJpaEntity(
     @Column(name = "external_id", nullable = false)
     var externalId: String = "",
 
-    @Column(name = "cnpj_empresa")
-    var cnpjEmpresa: String? = null,
+    @Column(name = "cnpj_empresa", nullable = false)
+    var cnpjEmpresa: String = "",
 
     @Column(name = "cpf_cnpj")
     var cpfCnpj: String? = null,

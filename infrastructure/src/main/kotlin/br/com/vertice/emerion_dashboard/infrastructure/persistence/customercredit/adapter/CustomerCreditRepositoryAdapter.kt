@@ -34,11 +34,13 @@ class CustomerCreditRepositoryAdapter(
         pageRequest: PageRequest,
         customerExternalId: String?,
         tipo: String?,
+        cnpjEmpresa: String?,
     ): Page<CustomerCredit> {
         val springPageable = SpringPageRequest.of(pageRequest.page, pageRequest.size)
         val result = queryRepository.search(
             customerExternalId?.takeIf { it.isNotBlank() },
             tipo?.takeIf { it.isNotBlank() },
+            cnpjEmpresa?.takeIf { it.isNotBlank() },
             springPageable,
         )
         return Page(

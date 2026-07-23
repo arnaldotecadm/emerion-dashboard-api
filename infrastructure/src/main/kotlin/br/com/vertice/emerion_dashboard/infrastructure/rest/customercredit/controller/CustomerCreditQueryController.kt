@@ -29,12 +29,14 @@ class CustomerCreditQueryController(
         size: Int,
         customerExternalId: String?,
         tipo: String?,
+        cnpjEmpresa: String?,
     ): ResponseEntity<CustomerCreditPage> {
         val query = ListCustomerCreditsQuery(
             page = page,
             size = size,
             customerExternalId = customerExternalId,
             tipo = tipo,
+            cnpjEmpresa = cnpjEmpresa,
         )
         val result = customerCreditQueryUseCase.list(query)
         return ResponseEntity.ok(CustomerCreditQueryRestMapper.toPageResponse(result))

@@ -161,6 +161,12 @@ paths:
           required: false
           schema:
             type: string
+        - name: cnpjEmpresa
+          in: query
+          description: Exact match on the owning retailer's cnpjEmpresa
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: Paginated list of customers
@@ -319,6 +325,12 @@ paths:
         - name: nome
           in: query
           description: Partial, case-insensitive match on product nome
+          required: false
+          schema:
+            type: string
+        - name: cnpjEmpresa
+          in: query
+          description: Exact match on the owning retailer's cnpjEmpresa
           required: false
           schema:
             type: string
@@ -485,6 +497,12 @@ paths:
           required: false
           schema:
             type: string
+        - name: cnpjEmpresa
+          in: query
+          description: Exact match on the owning retailer's cnpjEmpresa
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: Paginated list of customer address sets
@@ -634,6 +652,12 @@ paths:
           required: false
           schema:
             type: string
+        - name: cnpjEmpresa
+          in: query
+          description: Exact match on the owning retailer's cnpjEmpresa
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: Paginated list of customer credit ledger entries
@@ -774,6 +798,12 @@ paths:
         - name: sitres
           in: query
           description: Exact match on order status (sitres)
+          required: false
+          schema:
+            type: string
+        - name: cnpjEmpresa
+          in: query
+          description: Exact match on the owning retailer's cnpjEmpresa
           required: false
           schema:
             type: string
@@ -919,6 +949,12 @@ paths:
           required: false
           schema:
             type: string
+        - name: cnpjEmpresa
+          in: query
+          description: Exact match on the owning retailer's cnpjEmpresa
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: Paginated list of vendedores
@@ -961,6 +997,7 @@ components:
       description: One customer record as produced by emerion-load-service.
       required:
         - externalId
+        - cnpjEmpresa
         - nomeFantasia
         - razaoSocial
         - cpfCnpj
@@ -969,6 +1006,9 @@ components:
         externalId:
           type: string
           description: Original Firebird primary key, used as the upsert/idempotency key.
+        cnpjEmpresa:
+          type: string
+          description: Retailer/tenant CNPJ that owns this record, used to segregate data per retailer.
         nomeFantasia:
           type: string
         razaoSocial:
@@ -1038,6 +1078,8 @@ components:
           format: int64
         externalId:
           type: string
+        cnpjEmpresa:
+          type: string
         nomeFantasia:
           type: string
         razaoSocial:
@@ -1104,11 +1146,15 @@ components:
       description: One product record as produced by emerion-load-service.
       required:
         - externalId
+        - cnpjEmpresa
         - nome
       properties:
         externalId:
           type: string
           description: Original Firebird primary key, used as the upsert/idempotency key.
+        cnpjEmpresa:
+          type: string
+          description: Retailer/tenant CNPJ that owns this record, used to segregate data per retailer.
         nome:
           type: string
         preco:
@@ -1179,6 +1225,7 @@ components:
         emerion-load-service's CustomerAddressController.
       required:
         - externalId
+        - cnpjEmpresa
         - enderecos
       properties:
         externalId:
@@ -1188,7 +1235,7 @@ components:
             upsert/idempotency key.
         cnpjEmpresa:
           type: string
-          nullable: true
+          description: Retailer/tenant CNPJ that owns this record, used to segregate data per retailer.
         cpfCnpj:
           type: string
           nullable: true
@@ -1216,6 +1263,7 @@ components:
       description: One credit ledger entry for a customer.
       required:
         - customerExternalId
+        - cnpjEmpresa
         - data
         - valorUtilizado
         - valorTotal
@@ -1227,6 +1275,9 @@ components:
           description: >
             Customer's legacy Firebird primary key (codCli). Combined with
             sequencia, used as the upsert/idempotency key.
+        cnpjEmpresa:
+          type: string
+          description: Retailer/tenant CNPJ that owns this record, used to segregate data per retailer.
         sequencia:
           type: string
           nullable: true
@@ -1420,6 +1471,7 @@ components:
       required:
         - externalId
         - codCli
+        - cnpjEmpresa
         - dteres
         - totger
         - totres
@@ -1438,7 +1490,7 @@ components:
           description: Customer's legacy Firebird primary key (codCli).
         cnpjEmpresa:
           type: string
-          nullable: true
+          description: Retailer/tenant CNPJ that owns this record, used to segregate data per retailer.
         nronfe:
           type: string
           nullable: true
@@ -1484,6 +1536,8 @@ components:
           type: integer
           format: int64
         externalId:
+          type: string
+        cnpjEmpresa:
           type: string
         nome:
           type: string
@@ -1556,7 +1610,6 @@ components:
           type: string
         cnpjEmpresa:
           type: string
-          nullable: true
         cpfCnpj:
           type: string
           nullable: true
@@ -1588,6 +1641,8 @@ components:
           type: integer
           format: int64
         customerExternalId:
+          type: string
+        cnpjEmpresa:
           type: string
         sequencia:
           type: string
@@ -1785,7 +1840,6 @@ components:
           type: string
         cnpjEmpresa:
           type: string
-          nullable: true
         nronfe:
           type: string
           nullable: true
@@ -1831,11 +1885,15 @@ components:
       description: One vendedor (sales representative) record as produced by emerion-load-service.
       required:
         - externalId
+        - cnpjEmpresa
         - nome
       properties:
         externalId:
           type: string
           description: Original Firebird primary key (codVen), used as the upsert/idempotency key.
+        cnpjEmpresa:
+          type: string
+          description: Retailer/tenant CNPJ that owns this record, used to segregate data per retailer.
         nome:
           type: string
         apelido:
@@ -1891,6 +1949,8 @@ components:
           type: integer
           format: int64
         externalId:
+          type: string
+        cnpjEmpresa:
           type: string
         nome:
           type: string

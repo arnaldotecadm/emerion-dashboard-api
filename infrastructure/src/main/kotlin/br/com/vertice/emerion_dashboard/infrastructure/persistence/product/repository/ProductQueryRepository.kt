@@ -23,6 +23,7 @@ interface ProductQueryRepository : Repository<ProductJpaEntity, Long> {
             SELECT
                 id,
                 external_id AS externalId,
+                cnpj_empresa AS cnpjEmpresa,
                 nome,
                 preco,
                 created_at AS createdAt,
@@ -39,21 +40,25 @@ interface ProductQueryRepository : Repository<ProductJpaEntity, Long> {
             SELECT
                 id,
                 external_id AS externalId,
+                cnpj_empresa AS cnpjEmpresa,
                 nome,
                 preco,
                 created_at AS createdAt,
                 updated_at AS updatedAt
             FROM product
             WHERE (:nomeContains IS NULL OR LOWER(nome) LIKE LOWER(CONCAT('%', CAST(:nomeContains AS text), '%')))
+              AND (:cnpjEmpresa IS NULL OR cnpj_empresa = :cnpjEmpresa)
         """,
         countQuery = """
             SELECT count(*)
             FROM product
             WHERE (:nomeContains IS NULL OR LOWER(nome) LIKE LOWER(CONCAT('%', CAST(:nomeContains AS text), '%')))
+              AND (:cnpjEmpresa IS NULL OR cnpj_empresa = :cnpjEmpresa)
         """,
     )
     fun search(
         @Param("nomeContains") nomeContains: String?,
+        @Param("cnpjEmpresa") cnpjEmpresa: String?,
         pageable: Pageable,
     ): Page<ProductProjection>
 }

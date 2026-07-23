@@ -24,6 +24,7 @@ class IngestCustomerCreditsServiceTest {
 
     private fun command(customerExternalId: String, sequencia: String?) = IngestCustomerCreditCommand(
         customerExternalId = customerExternalId,
+        cnpjEmpresa = "12345678000199",
         sequencia = sequencia,
         data = Instant.parse("2025-06-01T00:00:00Z"),
         dataPedido = null,
@@ -57,6 +58,7 @@ class IngestCustomerCreditsServiceTest {
         val existing = CustomerCredit(
             id = 42L,
             customerExternalId = "200",
+            cnpjEmpresa = "12345678000199",
             sequencia = "5",
             data = Instant.parse("2025-01-01T00:00:00Z"),
             dataPedido = null,

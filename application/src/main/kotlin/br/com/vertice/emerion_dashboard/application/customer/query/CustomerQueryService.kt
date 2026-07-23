@@ -28,5 +28,6 @@ class CustomerQueryService(
             pageRequest = PageRequest(page = query.page, size = query.size),
             bloqueado = query.bloqueado,
             nomeFantasiaContains = query.nomeFantasiaContains,
+            cnpjEmpresa = query.cnpjEmpresa,
         )
 }

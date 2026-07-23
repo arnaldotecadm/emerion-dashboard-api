@@ -34,6 +34,7 @@ class IngestProductsServiceTest {
                 items = listOf(
                     IngestProductCommand(
                         externalId = "FB-1",
+                        cnpjEmpresa = "12345678000199",
                         nome = "Widget",
                         preco = BigDecimal("19.90"),
                     ),
@@ -54,6 +55,7 @@ class IngestProductsServiceTest {
         val existing = Product(
             id = 42L,
             externalId = "FB-2",
+            cnpjEmpresa = "12345678000199",
             nome = "Old Name",
             preco = BigDecimal("10.00"),
             createdAt = Instant.parse("2025-01-01T00:00:00Z"),
@@ -68,6 +70,7 @@ class IngestProductsServiceTest {
                 items = listOf(
                     IngestProductCommand(
                         externalId = "FB-2",
+                        cnpjEmpresa = "12345678000199",
                         nome = "New Name",
                         preco = BigDecimal("25.50"),
                     ),
@@ -89,8 +92,8 @@ class IngestProductsServiceTest {
             IngestBatchCommand(
                 batchId = "batch-3",
                 items = listOf(
-                    IngestProductCommand("FB-OK", "Ok Product", BigDecimal("5.00")),
-                    IngestProductCommand("FB-BAD", "Bad Product", null),
+                    IngestProductCommand("FB-OK", "12345678000199", "Ok Product", BigDecimal("5.00")),
+                    IngestProductCommand("FB-BAD", "12345678000199", "Bad Product", null),
                 ),
             ),
         )
@@ -109,6 +112,7 @@ class IngestProductsServiceTest {
         val result = service.ingestSingle(
             IngestProductCommand(
                 externalId = "FB-4",
+                cnpjEmpresa = "12345678000199",
                 nome = "Widget",
                 preco = null,
             ),
@@ -124,7 +128,7 @@ class IngestProductsServiceTest {
         every { productRepository.findByExternalId("FB-5") } throws RuntimeException("db down")
 
         val result = service.ingestSingle(
-            IngestProductCommand("FB-5", "Bad Product", null),
+            IngestProductCommand("FB-5", "12345678000199", "Bad Product", null),
         )
 
         assertEquals(IngestOutcome.FAILED, result.outcome)

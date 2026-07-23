@@ -12,7 +12,7 @@ data class CustomerOrder(
     val id: Long?,
     val externalId: String,
     val codCli: String,
-    val cnpjEmpresa: String?,
+    val cnpjEmpresa: String,
     val nronfe: String?,
     val dteres: Instant,
     val sitres: String?,
@@ -30,7 +30,7 @@ data class CustomerOrder(
         fun newFromIngestion(
             externalId: String,
             codCli: String,
-            cnpjEmpresa: String?,
+            cnpjEmpresa: String,
             nronfe: String?,
             dteres: Instant,
             sitres: String?,
@@ -68,7 +68,7 @@ data class CustomerOrder(
      */
     fun mergeFromIngestion(
         codCli: String,
-        cnpjEmpresa: String?,
+        cnpjEmpresa: String,
         nronfe: String?,
         dteres: Instant,
         sitres: String?,

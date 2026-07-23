@@ -11,6 +11,7 @@ import java.time.Instant
 interface CustomerProjection {
     val id: Long
     val externalId: String
+    val cnpjEmpresa: String
     val nomeFantasia: String
     val razaoSocial: String
     val cpfCnpj: String

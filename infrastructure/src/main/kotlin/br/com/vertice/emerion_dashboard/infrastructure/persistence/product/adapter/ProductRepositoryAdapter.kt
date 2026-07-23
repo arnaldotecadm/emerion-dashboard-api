@@ -33,9 +33,10 @@ class ProductRepositoryAdapter(
     override fun findAll(
         pageRequest: PageRequest,
         nomeContains: String?,
+        cnpjEmpresa: String?,
     ): Page<Product> {
         val springPageable = SpringPageRequest.of(pageRequest.page, pageRequest.size)
-        val result = queryRepository.search(nomeContains?.takeIf { it.isNotBlank() }, springPageable)
+        val result = queryRepository.search(nomeContains?.takeIf { it.isNotBlank() }, cnpjEmpresa?.takeIf { it.isNotBlank() }, springPageable)
         return Page(
             content = result.content.map(ProductPersistenceMapper::toDomain),
             page = pageRequest.page,

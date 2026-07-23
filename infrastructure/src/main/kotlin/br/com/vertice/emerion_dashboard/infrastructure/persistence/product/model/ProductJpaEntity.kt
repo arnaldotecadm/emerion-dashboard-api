@@ -29,6 +29,9 @@ class ProductJpaEntity(
     @Column(name = "external_id", nullable = false)
     var externalId: String = "",
 
+    @Column(name = "cnpj_empresa", nullable = false)
+    var cnpjEmpresa: String = "",
+
     @Column(name = "nome", nullable = false)
     var nome: String = "",
 

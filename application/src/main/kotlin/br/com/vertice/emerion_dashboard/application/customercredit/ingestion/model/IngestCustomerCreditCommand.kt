@@ -10,6 +10,7 @@ import java.time.Instant
  */
 data class IngestCustomerCreditCommand(
     val customerExternalId: String,
+    val cnpjEmpresa: String,
     val sequencia: String?,
     val data: Instant,
     val dataPedido: Instant?,

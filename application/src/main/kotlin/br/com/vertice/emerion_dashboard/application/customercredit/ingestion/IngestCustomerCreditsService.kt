@@ -61,6 +61,7 @@ class IngestCustomerCreditsService(
                 customerCreditRepository.findByCustomerExternalIdAndSequencia(item.customerExternalId, it)
             }
             val toSave = existing?.mergeFromIngestion(
+                cnpjEmpresa = item.cnpjEmpresa,
                 data = item.data,
                 dataPedido = item.dataPedido,
                 valorUtilizado = item.valorUtilizado,
@@ -71,6 +72,7 @@ class IngestCustomerCreditsService(
                 now = now,
             ) ?: CustomerCredit.newFromIngestion(
                 customerExternalId = item.customerExternalId,
+                cnpjEmpresa = item.cnpjEmpresa,
                 sequencia = item.sequencia,
                 data = item.data,
                 dataPedido = item.dataPedido,

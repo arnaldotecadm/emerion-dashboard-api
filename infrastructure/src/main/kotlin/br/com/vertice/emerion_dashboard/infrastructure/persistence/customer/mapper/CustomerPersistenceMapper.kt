@@ -12,6 +12,7 @@ object CustomerPersistenceMapper {
         Customer(
             id = projection.id,
             externalId = projection.externalId,
+            cnpjEmpresa = projection.cnpjEmpresa,
             nomeFantasia = projection.nomeFantasia,
             razaoSocial = projection.razaoSocial,
             cpfCnpj = projection.cpfCnpj,
@@ -27,6 +28,7 @@ object CustomerPersistenceMapper {
         Customer(
             id = entity.id,
             externalId = entity.externalId,
+            cnpjEmpresa = entity.cnpjEmpresa,
             nomeFantasia = entity.nomeFantasia,
             razaoSocial = entity.razaoSocial,
             cpfCnpj = entity.cpfCnpj,
@@ -42,6 +44,7 @@ object CustomerPersistenceMapper {
         CustomerJpaEntity(
             id = existing?.id ?: domain.id,
             externalId = domain.externalId,
+            cnpjEmpresa = domain.cnpjEmpresa,
             nomeFantasia = domain.nomeFantasia,
             razaoSocial = domain.razaoSocial,
             cpfCnpj = domain.cpfCnpj,

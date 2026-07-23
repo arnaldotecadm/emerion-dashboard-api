@@ -26,6 +26,7 @@ class CustomerRepositoryAdapterIntegrationTest(
         val saved = customerRepository.save(
             Customer.newFromIngestion(
                 externalId = "ext-1",
+                cnpjEmpresa = "12345678000199",
                 nomeFantasia = "Fantasia 1",
                 razaoSocial = "Razao 1",
                 cpfCnpj = "12345678900",
@@ -48,6 +49,7 @@ class CustomerRepositoryAdapterIntegrationTest(
         customerRepository.save(
             Customer.newFromIngestion(
                 externalId = "ext-blocked",
+                cnpjEmpresa = "12345678000199",
                 nomeFantasia = "Blocked Customer",
                 razaoSocial = "Razao Blocked",
                 cpfCnpj = "11111111111",
@@ -61,6 +63,7 @@ class CustomerRepositoryAdapterIntegrationTest(
         customerRepository.save(
             Customer.newFromIngestion(
                 externalId = "ext-active",
+                cnpjEmpresa = "12345678000199",
                 nomeFantasia = "Active Customer",
                 razaoSocial = "Razao Active",
                 cpfCnpj = "22222222222",
@@ -76,9 +79,9 @@ class CustomerRepositoryAdapterIntegrationTest(
             pageRequest = PageRequest(page = 0, size = 10),
             bloqueado = false,
             nomeFantasiaContains = "Active",
+            cnpjEmpresa = "12345678000199",
         )
 
         assertEquals(listOf("ext-active"), page.content.map { it.externalId })
     }
 }
-

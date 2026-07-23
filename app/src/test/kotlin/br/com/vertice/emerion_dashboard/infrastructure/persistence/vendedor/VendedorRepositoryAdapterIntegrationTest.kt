@@ -28,6 +28,7 @@ class VendedorRepositoryAdapterIntegrationTest(
         val saved = vendedorRepository.save(
             Vendedor.newFromIngestion(
                 externalId = "vend-ext-1",
+                cnpjEmpresa = "12345678000199",
                 nome = "Fulano de Tal",
                 apelido = "Fulano",
                 cpfCnpj = "12345678900",
@@ -54,6 +55,7 @@ class VendedorRepositoryAdapterIntegrationTest(
         vendedorRepository.save(
             Vendedor.newFromIngestion(
                 externalId = "vend-ext-other",
+                cnpjEmpresa = "12345678000199",
                 nome = "Outro Vendedor",
                 apelido = null,
                 cpfCnpj = null,
@@ -71,6 +73,7 @@ class VendedorRepositoryAdapterIntegrationTest(
         vendedorRepository.save(
             Vendedor.newFromIngestion(
                 externalId = "vend-ext-match",
+                cnpjEmpresa = "12345678000199",
                 nome = "Vendedor Especial",
                 apelido = null,
                 cpfCnpj = null,
@@ -90,6 +93,7 @@ class VendedorRepositoryAdapterIntegrationTest(
             pageRequest = PageRequest(page = 0, size = 10),
             nomeContains = "Especial",
             situacao = "ATIVO",
+            cnpjEmpresa = null,
         )
 
         assertEquals(listOf("vend-ext-match"), page.content.map { it.externalId })

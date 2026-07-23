@@ -10,6 +10,7 @@ import java.time.Instant
 interface ProductProjection {
     val id: Long
     val externalId: String
+    val cnpjEmpresa: String
     val nome: String
     val preco: BigDecimal?
     val createdAt: Instant

@@ -14,6 +14,7 @@ object CustomerCreditQueryRestMapper {
         CustomerCreditResponse(
             id = customerCredit.id,
             customerExternalId = customerCredit.customerExternalId,
+            cnpjEmpresa = customerCredit.cnpjEmpresa,
             sequencia = customerCredit.sequencia,
             data = customerCredit.data.atOffset(ZoneOffset.UTC),
             dataPedido = customerCredit.dataPedido?.atOffset(ZoneOffset.UTC),

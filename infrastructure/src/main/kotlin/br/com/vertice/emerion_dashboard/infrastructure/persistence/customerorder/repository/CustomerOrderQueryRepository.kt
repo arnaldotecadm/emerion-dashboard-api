@@ -67,17 +67,20 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
             FROM customer_order
             WHERE (:codCli IS NULL OR cod_cli = :codCli)
               AND (:sitres IS NULL OR sitres = :sitres)
+              AND (:cnpjEmpresa IS NULL OR cnpj_empresa = :cnpjEmpresa)
         """,
         countQuery = """
             SELECT count(*)
             FROM customer_order
             WHERE (:codCli IS NULL OR cod_cli = :codCli)
               AND (:sitres IS NULL OR sitres = :sitres)
+              AND (:cnpjEmpresa IS NULL OR cnpj_empresa = :cnpjEmpresa)
         """,
     )
     fun searchHeaders(
         @Param("codCli") codCli: String?,
         @Param("sitres") sitres: String?,
+        @Param("cnpjEmpresa") cnpjEmpresa: String?,
         pageable: Pageable,
     ): Page<CustomerOrderHeaderProjection>
 

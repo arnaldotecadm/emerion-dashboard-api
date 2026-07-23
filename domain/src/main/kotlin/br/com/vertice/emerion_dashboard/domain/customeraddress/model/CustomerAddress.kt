@@ -10,7 +10,7 @@ import java.time.Instant
 data class CustomerAddress(
     val id: Long?,
     val externalId: String,
-    val cnpjEmpresa: String?,
+    val cnpjEmpresa: String,
     val cpfCnpj: String?,
     val enderecos: List<CustomerAddressDetail>,
     val createdAt: Instant,
@@ -20,7 +20,7 @@ data class CustomerAddress(
         /** Factory for a brand-new address set coming from ingestion (no id yet). */
         fun newFromIngestion(
             externalId: String,
-            cnpjEmpresa: String?,
+            cnpjEmpresa: String,
             cpfCnpj: String?,
             enderecos: List<CustomerAddressDetail>,
             now: Instant,
@@ -42,7 +42,7 @@ data class CustomerAddress(
      * address set in a single payload.
      */
     fun mergeFromIngestion(
-        cnpjEmpresa: String?,
+        cnpjEmpresa: String,
         cpfCnpj: String?,
         enderecos: List<CustomerAddressDetail>,
         now: Instant,

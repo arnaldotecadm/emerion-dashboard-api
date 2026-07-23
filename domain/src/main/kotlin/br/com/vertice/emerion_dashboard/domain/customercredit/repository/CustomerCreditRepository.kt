@@ -19,6 +19,7 @@ interface CustomerCreditRepository {
         pageRequest: PageRequest,
         customerExternalId: String?,
         tipo: String?,
+        cnpjEmpresa: String?,
     ): Page<CustomerCredit>
 
     /** Insert or update (by customerExternalId + sequencia) and return the persisted entry. */

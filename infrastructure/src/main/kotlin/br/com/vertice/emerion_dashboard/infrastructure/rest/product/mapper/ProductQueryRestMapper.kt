@@ -14,6 +14,7 @@ object ProductQueryRestMapper {
         ProductResponse(
             id = product.id,
             externalId = product.externalId,
+            cnpjEmpresa = product.cnpjEmpresa,
             nome = product.nome,
             preco = product.preco,
             createdAt = product.createdAt.atOffset(ZoneOffset.UTC),

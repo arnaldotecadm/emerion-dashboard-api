@@ -26,6 +26,7 @@ object CustomerCreditIngestionRestMapper {
     fun toItemCommand(dto: CustomerCreditIngestionItem): IngestCustomerCreditCommand =
         IngestCustomerCreditCommand(
             customerExternalId = dto.customerExternalId,
+            cnpjEmpresa = dto.cnpjEmpresa,
             sequencia = dto.sequencia,
             data = dto.data.toInstant(),
             dataPedido = dto.dataPedido?.toInstant(),

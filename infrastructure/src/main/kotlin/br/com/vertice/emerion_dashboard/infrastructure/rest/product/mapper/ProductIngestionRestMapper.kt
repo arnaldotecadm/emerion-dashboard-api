@@ -21,6 +21,7 @@ object ProductIngestionRestMapper {
     fun toItemCommand(dto: ProductIngestionItem): IngestProductCommand =
         IngestProductCommand(
             externalId = dto.externalId,
+            cnpjEmpresa = dto.cnpjEmpresa,
             nome = dto.nome,
             preco = dto.preco,
         )

@@ -87,7 +87,7 @@ class IngestCustomerAddressesServiceTest {
         val existing = CustomerAddress(
             id = 42L,
             externalId = "200",
-            cnpjEmpresa = null,
+            cnpjEmpresa = "12345678000199",
             cpfCnpj = "12345678900",
             enderecos = listOf(detailDomain("FATURAMENTO")),
             createdAt = Instant.parse("2025-01-01T00:00:00Z"),
@@ -126,8 +126,8 @@ class IngestCustomerAddressesServiceTest {
             IngestBatchCommand(
                 batchId = "batch-3",
                 items = listOf(
-                    IngestCustomerAddressCommand("OK", null, null, listOf(detailCommand("FATURAMENTO"))),
-                    IngestCustomerAddressCommand("BAD", null, null, listOf(detailCommand("FATURAMENTO"))),
+                    IngestCustomerAddressCommand("OK", "12345678000199", null, listOf(detailCommand("FATURAMENTO"))),
+                    IngestCustomerAddressCommand("BAD", "12345678000199", null, listOf(detailCommand("FATURAMENTO"))),
                 ),
             ),
         )
@@ -144,7 +144,7 @@ class IngestCustomerAddressesServiceTest {
         every { customerAddressRepository.save(capture(savedSlot)) } answers { savedSlot.captured.copy(id = 1L) }
 
         val result = service.ingestSingle(
-            IngestCustomerAddressCommand("300", null, null, listOf(detailCommand("FATURAMENTO"))),
+            IngestCustomerAddressCommand("300", "12345678000199", null, listOf(detailCommand("FATURAMENTO"))),
         )
 
         assertEquals(IngestOutcome.CREATED, result.outcome)
@@ -157,7 +157,7 @@ class IngestCustomerAddressesServiceTest {
         every { customerAddressRepository.findByExternalId("400") } throws RuntimeException("db down")
 
         val result = service.ingestSingle(
-            IngestCustomerAddressCommand("400", null, null, listOf(detailCommand("FATURAMENTO"))),
+            IngestCustomerAddressCommand("400", "12345678000199", null, listOf(detailCommand("FATURAMENTO"))),
         )
 
         assertEquals(IngestOutcome.FAILED, result.outcome)

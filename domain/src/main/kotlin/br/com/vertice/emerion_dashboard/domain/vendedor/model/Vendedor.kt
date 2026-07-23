@@ -14,6 +14,7 @@ import java.time.LocalDate
 data class Vendedor(
     val id: Long?,
     val externalId: String,
+    val cnpjEmpresa: String,
     val nome: String,
     val apelido: String?,
     val cpfCnpj: String?,
@@ -32,6 +33,7 @@ data class Vendedor(
         /** Factory for a brand-new vendedor coming from ingestion (no id yet). */
         fun newFromIngestion(
             externalId: String,
+            cnpjEmpresa: String,
             nome: String,
             apelido: String?,
             cpfCnpj: String?,
@@ -47,6 +49,7 @@ data class Vendedor(
         ) = Vendedor(
             id = null,
             externalId = externalId,
+            cnpjEmpresa = cnpjEmpresa,
             nome = nome,
             apelido = apelido,
             cpfCnpj = cpfCnpj,
@@ -65,6 +68,7 @@ data class Vendedor(
 
     /** Applies an ingestion update on top of an existing vendedor, bumping updatedAt. */
     fun mergeFromIngestion(
+        cnpjEmpresa: String,
         nome: String,
         apelido: String?,
         cpfCnpj: String?,
@@ -78,6 +82,7 @@ data class Vendedor(
         dataCadastro: LocalDate?,
         now: Instant,
     ) = copy(
+        cnpjEmpresa = cnpjEmpresa,
         nome = nome,
         apelido = apelido,
         cpfCnpj = cpfCnpj,

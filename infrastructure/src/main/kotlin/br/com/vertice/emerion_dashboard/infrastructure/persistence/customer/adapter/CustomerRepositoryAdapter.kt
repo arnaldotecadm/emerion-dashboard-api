@@ -35,9 +35,15 @@ class CustomerRepositoryAdapter(
         pageRequest: PageRequest,
         bloqueado: Boolean?,
         nomeFantasiaContains: String?,
+        cnpjEmpresa: String?,
     ): Page<Customer> {
         val springPageable = SpringPageRequest.of(pageRequest.page, pageRequest.size)
-        val result = queryRepository.search(bloqueado, nomeFantasiaContains?.takeIf { it.isNotBlank() }, springPageable)
+        val result = queryRepository.search(
+            bloqueado,
+            nomeFantasiaContains?.takeIf { it.isNotBlank() },
+            cnpjEmpresa?.takeIf { it.isNotBlank() },
+            springPageable,
+        )
         return Page(
             content = result.content.map(CustomerPersistenceMapper::toDomain),
             page = pageRequest.page,

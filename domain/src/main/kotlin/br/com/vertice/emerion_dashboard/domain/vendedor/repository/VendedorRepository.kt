@@ -19,6 +19,7 @@ interface VendedorRepository {
         pageRequest: PageRequest,
         nomeContains: String?,
         situacao: String?,
+        cnpjEmpresa: String?,
     ): Page<Vendedor>
 
     /** Insert or update (by externalId) and return the persisted vendedor. */

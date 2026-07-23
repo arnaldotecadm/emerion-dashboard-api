@@ -24,5 +24,6 @@ class CustomerCreditQueryService(
             pageRequest = PageRequest(page = query.page, size = query.size),
             customerExternalId = query.customerExternalId,
             tipo = query.tipo,
+            cnpjEmpresa = query.cnpjEmpresa,
         )
 }

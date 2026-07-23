@@ -14,6 +14,7 @@ object VendedorQueryRestMapper {
         VendedorResponse(
             id = vendedor.id,
             externalId = vendedor.externalId,
+            cnpjEmpresa = vendedor.cnpjEmpresa,
             nome = vendedor.nome,
             apelido = vendedor.apelido,
             cpfCnpj = vendedor.cpfCnpj,

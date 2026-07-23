@@ -12,6 +12,7 @@ object VendedorPersistenceMapper {
         Vendedor(
             id = projection.id,
             externalId = projection.externalId,
+            cnpjEmpresa = projection.cnpjEmpresa,
             nome = projection.nome,
             apelido = projection.apelido,
             cpfCnpj = projection.cpfCnpj,
@@ -32,6 +33,7 @@ object VendedorPersistenceMapper {
         Vendedor(
             id = entity.id,
             externalId = entity.externalId,
+            cnpjEmpresa = entity.cnpjEmpresa,
             nome = entity.nome,
             apelido = entity.apelido,
             cpfCnpj = entity.cpfCnpj,
@@ -52,6 +54,7 @@ object VendedorPersistenceMapper {
         VendedorJpaEntity(
             id = existing?.id ?: domain.id,
             externalId = domain.externalId,
+            cnpjEmpresa = domain.cnpjEmpresa,
             nome = domain.nome,
             apelido = domain.apelido,
             cpfCnpj = domain.cpfCnpj,

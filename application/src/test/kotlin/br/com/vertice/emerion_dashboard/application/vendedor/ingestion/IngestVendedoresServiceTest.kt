@@ -25,6 +25,7 @@ class IngestVendedoresServiceTest {
 
     private fun command(externalId: String, nome: String) = IngestVendedorCommand(
         externalId = externalId,
+        cnpjEmpresa = "12345678000199",
         nome = nome,
         apelido = "Apelido",
         cpfCnpj = "12345678900",
@@ -64,6 +65,7 @@ class IngestVendedoresServiceTest {
         val existing = Vendedor(
             id = 42L,
             externalId = "FB-2",
+            cnpjEmpresa = "12345678000199",
             nome = "Old Name",
             apelido = null,
             cpfCnpj = null,

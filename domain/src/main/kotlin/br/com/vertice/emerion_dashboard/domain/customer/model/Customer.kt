@@ -12,6 +12,7 @@ import java.time.Instant
 data class Customer(
     val id: Long?,
     val externalId: String,
+    val cnpjEmpresa: String,
     val nomeFantasia: String,
     val razaoSocial: String,
     val cpfCnpj: String,
@@ -25,6 +26,7 @@ data class Customer(
         /** Factory for a brand-new customer coming from ingestion (no id yet). */
         fun newFromIngestion(
             externalId: String,
+            cnpjEmpresa: String,
             nomeFantasia: String,
             razaoSocial: String,
             cpfCnpj: String,
@@ -36,6 +38,7 @@ data class Customer(
         ) = Customer(
             id = null,
             externalId = externalId,
+            cnpjEmpresa = cnpjEmpresa,
             nomeFantasia = nomeFantasia,
             razaoSocial = razaoSocial,
             cpfCnpj = cpfCnpj,
@@ -49,6 +52,7 @@ data class Customer(
 
     /** Applies an ingestion update on top of an existing customer, bumping updatedAt. */
     fun mergeFromIngestion(
+        cnpjEmpresa: String,
         nomeFantasia: String,
         razaoSocial: String,
         cpfCnpj: String,
@@ -57,6 +61,7 @@ data class Customer(
         bloqueado: Boolean,
         now: Instant,
     ) = copy(
+        cnpjEmpresa = cnpjEmpresa,
         nomeFantasia = nomeFantasia,
         razaoSocial = razaoSocial,
         cpfCnpj = cpfCnpj,

@@ -23,5 +23,6 @@ class CustomerAddressQueryService(
         customerAddressRepository.findAll(
             pageRequest = PageRequest(page = query.page, size = query.size),
             cpfCnpjContains = query.cpfCnpjContains,
+            cnpjEmpresa = query.cnpjEmpresa,
         )
 }

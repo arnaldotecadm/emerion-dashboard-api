@@ -9,4 +9,5 @@ data class ListCustomerOrdersQuery(
     val size: Int,
     val codCli: String?,
     val sitres: String?,
+    val cnpjEmpresa: String?,
 )

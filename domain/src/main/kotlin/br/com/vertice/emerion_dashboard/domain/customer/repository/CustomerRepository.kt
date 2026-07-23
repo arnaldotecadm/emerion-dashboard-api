@@ -19,6 +19,7 @@ interface CustomerRepository {
         pageRequest: PageRequest,
         bloqueado: Boolean?,
         nomeFantasiaContains: String?,
+        cnpjEmpresa: String?,
     ): Page<Customer>
 
     /** Insert or update (by externalId) and return the persisted customer. */

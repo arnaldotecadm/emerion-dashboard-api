@@ -24,5 +24,6 @@ class VendedorQueryService(
             pageRequest = PageRequest(page = query.page, size = query.size),
             nomeContains = query.nomeContains,
             situacao = query.situacao,
+            cnpjEmpresa = query.cnpjEmpresa,
         )
 }

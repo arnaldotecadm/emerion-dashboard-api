@@ -9,4 +9,5 @@ data class ListVendedoresQuery(
     val size: Int,
     val nomeContains: String?,
     val situacao: String?,
+    val cnpjEmpresa: String?,
 )

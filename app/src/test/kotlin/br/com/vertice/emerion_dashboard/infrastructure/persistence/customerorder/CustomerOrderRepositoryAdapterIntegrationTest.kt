@@ -65,7 +65,7 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
             CustomerOrder.newFromIngestion(
                 externalId = "order-ext-other",
                 codCli = "cust-other",
-                cnpjEmpresa = null,
+                cnpjEmpresa = "12345678000199",
                 nronfe = null,
                 dteres = now,
                 sitres = "FECHADO",
@@ -82,7 +82,7 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
             CustomerOrder.newFromIngestion(
                 externalId = "order-ext-match",
                 codCli = "cust-match",
-                cnpjEmpresa = null,
+                cnpjEmpresa = "99999999000199",
                 nronfe = null,
                 dteres = now,
                 sitres = "ABERTO",
@@ -100,6 +100,7 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
             pageRequest = PageRequest(page = 0, size = 10),
             codCli = "cust-match",
             sitres = "ABERTO",
+            cnpjEmpresa = "99999999000199",
         )
 
         assertEquals(listOf("order-ext-match"), page.content.map { it.externalId })
@@ -113,7 +114,7 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
             CustomerOrder.newFromIngestion(
                 externalId = "order-ext-reingest",
                 codCli = "cust-reingest",
-                cnpjEmpresa = null,
+                cnpjEmpresa = "12345678000199",
                 nronfe = null,
                 dteres = now,
                 sitres = "ABERTO",

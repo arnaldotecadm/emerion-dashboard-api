@@ -12,6 +12,7 @@ object CustomerCreditPersistenceMapper {
         CustomerCredit(
             id = projection.id,
             customerExternalId = projection.customerExternalId,
+            cnpjEmpresa = projection.cnpjEmpresa,
             sequencia = projection.sequencia,
             data = projection.data,
             dataPedido = projection.dataPedido,
@@ -29,6 +30,7 @@ object CustomerCreditPersistenceMapper {
         CustomerCredit(
             id = entity.id,
             customerExternalId = entity.customerExternalId,
+            cnpjEmpresa = entity.cnpjEmpresa,
             sequencia = entity.sequencia,
             data = entity.data,
             dataPedido = entity.dataPedido,
@@ -46,6 +48,7 @@ object CustomerCreditPersistenceMapper {
         CustomerCreditJpaEntity(
             id = existing?.id ?: domain.id,
             customerExternalId = domain.customerExternalId,
+            cnpjEmpresa = domain.cnpjEmpresa,
             sequencia = domain.sequencia,
             data = domain.data,
             dataPedido = domain.dataPedido,

@@ -11,6 +11,7 @@ import java.time.LocalDate
 interface VendedorProjection {
     val id: Long
     val externalId: String
+    val cnpjEmpresa: String
     val nome: String
     val apelido: String?
     val cpfCnpj: String?

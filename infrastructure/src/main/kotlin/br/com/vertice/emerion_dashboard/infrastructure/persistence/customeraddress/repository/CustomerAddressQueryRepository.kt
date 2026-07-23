@@ -51,15 +51,18 @@ interface CustomerAddressQueryRepository : Repository<CustomerAddressJpaEntity, 
                 updated_at AS updatedAt
             FROM customer_address
             WHERE (:cpfCnpjContains IS NULL OR LOWER(cpf_cnpj) LIKE LOWER(CONCAT('%', CAST(:cpfCnpjContains AS text), '%')))
+              AND (:cnpjEmpresa IS NULL OR cnpj_empresa = :cnpjEmpresa)
         """,
         countQuery = """
             SELECT count(*)
             FROM customer_address
             WHERE (:cpfCnpjContains IS NULL OR LOWER(cpf_cnpj) LIKE LOWER(CONCAT('%', CAST(:cpfCnpjContains AS text), '%')))
+              AND (:cnpjEmpresa IS NULL OR cnpj_empresa = :cnpjEmpresa)
         """,
     )
     fun searchHeaders(
         @Param("cpfCnpjContains") cpfCnpjContains: String?,
+        @Param("cnpjEmpresa") cnpjEmpresa: String?,
         pageable: Pageable,
     ): Page<CustomerAddressHeaderProjection>
 

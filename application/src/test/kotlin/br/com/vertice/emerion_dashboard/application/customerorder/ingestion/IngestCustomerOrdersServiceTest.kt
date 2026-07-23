@@ -76,7 +76,7 @@ class IngestCustomerOrdersServiceTest {
             id = 42L,
             externalId = "NUM-2",
             codCli = "100",
-            cnpjEmpresa = null,
+            cnpjEmpresa = "12345678000199",
             nronfe = null,
             dteres = Instant.parse("2025-01-01T00:00:00Z"),
             sitres = "ABERTO",

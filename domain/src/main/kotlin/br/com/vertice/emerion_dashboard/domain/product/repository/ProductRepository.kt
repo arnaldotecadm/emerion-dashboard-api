@@ -18,6 +18,7 @@ interface ProductRepository {
     fun findAll(
         pageRequest: PageRequest,
         nomeContains: String?,
+        cnpjEmpresa: String?,
     ): Page<Product>
 
     /** Insert or update (by externalId) and return the persisted product. */

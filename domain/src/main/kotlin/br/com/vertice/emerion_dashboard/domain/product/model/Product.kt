@@ -13,6 +13,7 @@ import java.time.Instant
 data class Product(
     val id: Long?,
     val externalId: String,
+    val cnpjEmpresa: String,
     val nome: String,
     val preco: BigDecimal?,
     val createdAt: Instant,
@@ -22,12 +23,14 @@ data class Product(
         /** Factory for a brand-new product coming from ingestion (no id yet). */
         fun newFromIngestion(
             externalId: String,
+            cnpjEmpresa: String,
             nome: String,
             preco: BigDecimal?,
             now: Instant,
         ) = Product(
             id = null,
             externalId = externalId,
+            cnpjEmpresa = cnpjEmpresa,
             nome = nome,
             preco = preco,
             createdAt = now,
@@ -37,10 +40,12 @@ data class Product(
 
     /** Applies an ingestion update on top of an existing product, bumping updatedAt. */
     fun mergeFromIngestion(
+        cnpjEmpresa: String,
         nome: String,
         preco: BigDecimal?,
         now: Instant,
     ) = copy(
+        cnpjEmpresa = cnpjEmpresa,
         nome = nome,
         preco = preco,
         updatedAt = now,

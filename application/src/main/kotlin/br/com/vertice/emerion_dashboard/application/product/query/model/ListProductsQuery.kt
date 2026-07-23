@@ -8,4 +8,5 @@ data class ListProductsQuery(
     val page: Int,
     val size: Int,
     val nomeContains: String?,
+    val cnpjEmpresa: String?,
 )

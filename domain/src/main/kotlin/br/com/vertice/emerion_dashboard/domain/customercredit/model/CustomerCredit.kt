@@ -16,6 +16,7 @@ import java.time.Instant
 data class CustomerCredit(
     val id: Long?,
     val customerExternalId: String,
+    val cnpjEmpresa: String,
     val sequencia: String?,
     val data: Instant,
     val dataPedido: Instant?,
@@ -31,6 +32,7 @@ data class CustomerCredit(
         /** Factory for a brand-new credit entry coming from ingestion (no id yet). */
         fun newFromIngestion(
             customerExternalId: String,
+            cnpjEmpresa: String,
             sequencia: String?,
             data: Instant,
             dataPedido: Instant?,
@@ -43,6 +45,7 @@ data class CustomerCredit(
         ) = CustomerCredit(
             id = null,
             customerExternalId = customerExternalId,
+            cnpjEmpresa = cnpjEmpresa,
             sequencia = sequencia,
             data = data,
             dataPedido = dataPedido,
@@ -58,6 +61,7 @@ data class CustomerCredit(
 
     /** Applies an ingestion update on top of an existing credit entry, bumping updatedAt. */
     fun mergeFromIngestion(
+        cnpjEmpresa: String,
         data: Instant,
         dataPedido: Instant?,
         valorUtilizado: BigDecimal,
@@ -67,6 +71,7 @@ data class CustomerCredit(
         tipo: String,
         now: Instant,
     ) = copy(
+        cnpjEmpresa = cnpjEmpresa,
         data = data,
         dataPedido = dataPedido,
         valorUtilizado = valorUtilizado,

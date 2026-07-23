@@ -18,6 +18,7 @@ interface CustomerOrderRepository {
         pageRequest: PageRequest,
         codCli: String?,
         sitres: String?,
+        cnpjEmpresa: String?,
     ): Page<CustomerOrder>
 
     /** Insert or update (by externalId), replacing the itens list wholesale, and return the persisted order. */

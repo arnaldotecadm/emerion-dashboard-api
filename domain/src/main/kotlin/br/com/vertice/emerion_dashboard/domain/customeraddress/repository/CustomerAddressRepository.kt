@@ -17,6 +17,7 @@ interface CustomerAddressRepository {
     fun findAll(
         pageRequest: PageRequest,
         cpfCnpjContains: String?,
+        cnpjEmpresa: String?,
     ): Page<CustomerAddress>
 
     /** Insert or update (by externalId), replacing the enderecos list wholesale, and return the persisted address set. */

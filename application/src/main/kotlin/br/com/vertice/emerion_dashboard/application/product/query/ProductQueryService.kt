@@ -27,5 +27,6 @@ class ProductQueryService(
         productRepository.findAll(
             pageRequest = PageRequest(page = query.page, size = query.size),
             nomeContains = query.nomeContains,
+            cnpjEmpresa = query.cnpjEmpresa,
         )
 }

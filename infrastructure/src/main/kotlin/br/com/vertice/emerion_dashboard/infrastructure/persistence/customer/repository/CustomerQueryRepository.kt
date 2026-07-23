@@ -25,6 +25,7 @@ interface CustomerQueryRepository : Repository<CustomerJpaEntity, Long> {
             SELECT
                 id,
                 external_id AS externalId,
+                cnpj_empresa AS cnpjEmpresa,
                 nome_fantasia AS nomeFantasia,
                 razao_social AS razaoSocial,
                 cpf_cnpj AS cpfCnpj,
@@ -45,6 +46,7 @@ interface CustomerQueryRepository : Repository<CustomerJpaEntity, Long> {
             SELECT
                 id,
                 external_id AS externalId,
+                cnpj_empresa AS cnpjEmpresa,
                 nome_fantasia AS nomeFantasia,
                 razao_social AS razaoSocial,
                 cpf_cnpj AS cpfCnpj,
@@ -56,17 +58,20 @@ interface CustomerQueryRepository : Repository<CustomerJpaEntity, Long> {
             FROM customer
             WHERE (:bloqueado IS NULL OR bloqueado = :bloqueado)
               AND (:nomeFantasiaContains IS NULL OR LOWER(nome_fantasia) LIKE LOWER(CONCAT('%', CAST(:nomeFantasiaContains AS text), '%')))
+              AND (:cnpjEmpresa IS NULL OR cnpj_empresa = :cnpjEmpresa)
         """,
         countQuery = """
             SELECT count(*)
             FROM customer
             WHERE (:bloqueado IS NULL OR bloqueado = :bloqueado)
               AND (:nomeFantasiaContains IS NULL OR LOWER(nome_fantasia) LIKE LOWER(CONCAT('%', CAST(:nomeFantasiaContains AS text), '%')))
+              AND (:cnpjEmpresa IS NULL OR cnpj_empresa = :cnpjEmpresa)
         """,
     )
     fun search(
         @Param("bloqueado") bloqueado: Boolean?,
         @Param("nomeFantasiaContains") nomeFantasiaContains: String?,
+        @Param("cnpjEmpresa") cnpjEmpresa: String?,
         pageable: Pageable,
     ): Page<CustomerProjection>
 }

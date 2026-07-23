@@ -8,4 +8,5 @@ data class ListCustomerAddressesQuery(
     val page: Int,
     val size: Int,
     val cpfCnpjContains: String?,
+    val cnpjEmpresa: String?,
 )

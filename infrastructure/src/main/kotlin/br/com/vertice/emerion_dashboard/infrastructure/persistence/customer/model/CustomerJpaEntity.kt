@@ -28,6 +28,9 @@ class CustomerJpaEntity(
     @Column(name = "external_id", nullable = false)
     var externalId: String = "",
 
+    @Column(name = "cnpj_empresa", nullable = false)
+    var cnpjEmpresa: String = "",
+
     @Column(name = "nome_fantasia", nullable = false)
     var nomeFantasia: String = "",
 

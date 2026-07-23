@@ -28,6 +28,7 @@ class CustomerCreditRepositoryAdapterIntegrationTest(
         val saved = customerCreditRepository.save(
             CustomerCredit.newFromIngestion(
                 customerExternalId = "cust-ext-1",
+                cnpjEmpresa = "12345678000199",
                 sequencia = "1",
                 data = now,
                 dataPedido = now,
@@ -51,6 +52,7 @@ class CustomerCreditRepositoryAdapterIntegrationTest(
         customerCreditRepository.save(
             CustomerCredit.newFromIngestion(
                 customerExternalId = "cust-ext-other",
+                cnpjEmpresa = "12345678000198",
                 sequencia = "1",
                 data = now,
                 dataPedido = null,
@@ -65,6 +67,7 @@ class CustomerCreditRepositoryAdapterIntegrationTest(
         customerCreditRepository.save(
             CustomerCredit.newFromIngestion(
                 customerExternalId = "cust-ext-match",
+                cnpjEmpresa = "12345678000199",
                 sequencia = "1",
                 data = now,
                 dataPedido = null,
@@ -81,6 +84,7 @@ class CustomerCreditRepositoryAdapterIntegrationTest(
             pageRequest = PageRequest(page = 0, size = 10),
             customerExternalId = "cust-ext-match",
             tipo = "ENTRADA",
+            cnpjEmpresa = "12345678000199",
         )
 
         assertEquals(listOf("cust-ext-match"), page.content.map { it.customerExternalId })

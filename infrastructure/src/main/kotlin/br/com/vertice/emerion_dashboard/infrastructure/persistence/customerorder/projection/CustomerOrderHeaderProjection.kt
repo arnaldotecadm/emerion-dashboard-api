@@ -15,7 +15,7 @@ interface CustomerOrderHeaderProjection {
     val id: Long
     val externalId: String
     val codCli: String
-    val cnpjEmpresa: String?
+    val cnpjEmpresa: String
     val nronfe: String?
     val dteres: Instant
     val sitres: String?

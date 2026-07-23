@@ -21,6 +21,7 @@ interface CustomerCreditQueryRepository : Repository<CustomerCreditJpaEntity, Lo
             SELECT
                 id,
                 customer_external_id AS customerExternalId,
+                cnpj_empresa AS cnpjEmpresa,
                 sequencia,
                 data,
                 data_pedido AS dataPedido,
@@ -43,6 +44,7 @@ interface CustomerCreditQueryRepository : Repository<CustomerCreditJpaEntity, Lo
             SELECT
                 id,
                 customer_external_id AS customerExternalId,
+                cnpj_empresa AS cnpjEmpresa,
                 sequencia,
                 data,
                 data_pedido AS dataPedido,
@@ -56,17 +58,20 @@ interface CustomerCreditQueryRepository : Repository<CustomerCreditJpaEntity, Lo
             FROM customer_credit
             WHERE (:customerExternalId IS NULL OR customer_external_id = :customerExternalId)
               AND (:tipo IS NULL OR tipo = :tipo)
+              AND (:cnpjEmpresa IS NULL OR cnpj_empresa = :cnpjEmpresa)
         """,
         countQuery = """
             SELECT count(*)
             FROM customer_credit
             WHERE (:customerExternalId IS NULL OR customer_external_id = :customerExternalId)
               AND (:tipo IS NULL OR tipo = :tipo)
+              AND (:cnpjEmpresa IS NULL OR cnpj_empresa = :cnpjEmpresa)
         """,
     )
     fun search(
         @Param("customerExternalId") customerExternalId: String?,
         @Param("tipo") tipo: String?,
+        @Param("cnpjEmpresa") cnpjEmpresa: String?,
         pageable: Pageable,
     ): Page<CustomerCreditProjection>
 }

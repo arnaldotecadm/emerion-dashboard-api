@@ -51,11 +51,13 @@ class IngestProductsService(
         return try {
             val existing = productRepository.findByExternalId(item.externalId)
             val toSave = existing?.mergeFromIngestion(
+                cnpjEmpresa = item.cnpjEmpresa,
                 nome = item.nome,
                 preco = item.preco,
                 now = now,
             ) ?: Product.newFromIngestion(
                 externalId = item.externalId,
+                cnpjEmpresa = item.cnpjEmpresa,
                 nome = item.nome,
                 preco = item.preco,
                 now = now,

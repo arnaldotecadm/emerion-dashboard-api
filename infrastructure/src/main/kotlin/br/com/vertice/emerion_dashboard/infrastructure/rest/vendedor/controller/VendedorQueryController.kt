@@ -24,8 +24,8 @@ class VendedorQueryController(
         return ResponseEntity.ok(VendedorQueryRestMapper.toResponse(vendedor))
     }
 
-    override fun listVendedores(page: Int, size: Int, nome: String?, situacao: String?): ResponseEntity<VendedorPage> {
-        val query = ListVendedoresQuery(page = page, size = size, nomeContains = nome, situacao = situacao)
+    override fun listVendedores(page: Int, size: Int, nome: String?, situacao: String?, cnpjEmpresa: String?): ResponseEntity<VendedorPage> {
+        val query = ListVendedoresQuery(page = page, size = size, nomeContains = nome, situacao = situacao, cnpjEmpresa = cnpjEmpresa)
         val result = vendedorQueryUseCase.list(query)
         return ResponseEntity.ok(VendedorQueryRestMapper.toPageResponse(result))
     }

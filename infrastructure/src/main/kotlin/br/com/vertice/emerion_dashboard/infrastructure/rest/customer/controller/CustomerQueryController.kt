@@ -34,12 +34,14 @@ class CustomerQueryController(
         size: Int,
         bloqueado: Boolean?,
         nomeFantasia: String?,
+        cnpjEmpresa: String?,
     ): ResponseEntity<CustomerPage> {
         val query = ListCustomersQuery(
             page = page,
             size = size,
             bloqueado = bloqueado,
             nomeFantasiaContains = nomeFantasia,
+            cnpjEmpresa = cnpjEmpresa,
         )
         val result = customerQueryUseCase.list(query)
         return ResponseEntity.ok(CustomerQueryRestMapper.toPageResponse(result))

@@ -34,11 +34,13 @@ class VendedorRepositoryAdapter(
         pageRequest: PageRequest,
         nomeContains: String?,
         situacao: String?,
+        cnpjEmpresa: String?,
     ): Page<Vendedor> {
         val springPageable = SpringPageRequest.of(pageRequest.page, pageRequest.size)
         val result = queryRepository.search(
             nomeContains?.takeIf { it.isNotBlank() },
             situacao?.takeIf { it.isNotBlank() },
+            cnpjEmpresa?.takeIf { it.isNotBlank() },
             springPageable,
         )
         return Page(

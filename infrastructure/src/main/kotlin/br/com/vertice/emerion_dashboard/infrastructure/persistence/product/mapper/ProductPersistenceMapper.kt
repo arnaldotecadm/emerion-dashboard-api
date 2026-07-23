@@ -12,6 +12,7 @@ object ProductPersistenceMapper {
         Product(
             id = projection.id,
             externalId = projection.externalId,
+            cnpjEmpresa = projection.cnpjEmpresa,
             nome = projection.nome,
             preco = projection.preco,
             createdAt = projection.createdAt,
@@ -23,6 +24,7 @@ object ProductPersistenceMapper {
         Product(
             id = entity.id,
             externalId = entity.externalId,
+            cnpjEmpresa = entity.cnpjEmpresa,
             nome = entity.nome,
             preco = entity.preco,
             createdAt = entity.createdAt,
@@ -34,6 +36,7 @@ object ProductPersistenceMapper {
         ProductJpaEntity(
             id = existing?.id ?: domain.id,
             externalId = domain.externalId,
+            cnpjEmpresa = domain.cnpjEmpresa,
             nome = domain.nome,
             preco = domain.preco,
             createdAt = domain.createdAt,

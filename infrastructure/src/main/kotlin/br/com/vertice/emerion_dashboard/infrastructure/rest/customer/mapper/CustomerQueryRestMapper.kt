@@ -14,6 +14,7 @@ object CustomerQueryRestMapper {
         CustomerResponse(
             id = customer.id,
             externalId = customer.externalId,
+            cnpjEmpresa = customer.cnpjEmpresa,
             nomeFantasia = customer.nomeFantasia,
             razaoSocial = customer.razaoSocial,
             cpfCnpj = customer.cpfCnpj,

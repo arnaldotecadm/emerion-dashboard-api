@@ -24,8 +24,13 @@ class CustomerAddressQueryController(
         return ResponseEntity.ok(CustomerAddressQueryRestMapper.toResponse(customerAddress))
     }
 
-    override fun listCustomerAddresses(page: Int, size: Int, cpfCnpj: String?): ResponseEntity<CustomerAddressPage> {
-        val query = ListCustomerAddressesQuery(page = page, size = size, cpfCnpjContains = cpfCnpj)
+    override fun listCustomerAddresses(
+        page: Int,
+        size: Int,
+        cpfCnpj: String?,
+        cnpjEmpresa: String?,
+    ): ResponseEntity<CustomerAddressPage> {
+        val query = ListCustomerAddressesQuery(page = page, size = size, cpfCnpjContains = cpfCnpj, cnpjEmpresa = cnpjEmpresa)
         val result = customerAddressQueryUseCase.list(query)
         return ResponseEntity.ok(CustomerAddressQueryRestMapper.toPageResponse(result))
     }
