@@ -2,6 +2,7 @@ package br.com.vertice.emerion_dashboard.infrastructure.persistence.customerorde
 
 import java.math.BigDecimal
 import java.time.Instant
+import java.time.LocalDate
 
 /**
  * Read-side projection for the `customer_order` header row, populated
@@ -16,8 +17,9 @@ interface CustomerOrderHeaderProjection {
     val externalId: String
     val codCli: String
     val cnpjEmpresa: String
+    val cpfCnpj: String?
     val nronfe: String?
-    val dteres: Instant
+    val dteres: LocalDate
     val sitres: String?
     val totger: BigDecimal
     val totres: BigDecimal

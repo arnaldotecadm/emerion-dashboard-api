@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.math.BigDecimal
 import java.time.Instant
+import java.time.LocalDate
 import kotlin.test.assertEquals
 
 /**
@@ -40,8 +41,9 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
                 externalId = "order-ext-1",
                 codCli = "cust-1",
                 cnpjEmpresa = "00000000000191",
+                cpfCnpj = null,
                 nronfe = "NF-1",
-                dteres = now,
+                dteres = LocalDate.parse("2024-01-01"),
                 sitres = "ABERTO",
                 totger = BigDecimal("100.0000"),
                 totres = BigDecimal("90.0000"),
@@ -66,8 +68,9 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
                 externalId = "order-ext-other",
                 codCli = "cust-other",
                 cnpjEmpresa = "12345678000199",
+                cpfCnpj = null,
                 nronfe = null,
-                dteres = now,
+                dteres = LocalDate.parse("2024-01-01"),
                 sitres = "FECHADO",
                 totger = BigDecimal("10.0000"),
                 totres = BigDecimal("10.0000"),
@@ -83,8 +86,9 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
                 externalId = "order-ext-match",
                 codCli = "cust-match",
                 cnpjEmpresa = "99999999000199",
+                cpfCnpj = null,
                 nronfe = null,
-                dteres = now,
+                dteres = LocalDate.parse("2024-01-01"),
                 sitres = "ABERTO",
                 totger = BigDecimal("10.0000"),
                 totres = BigDecimal("10.0000"),
@@ -115,8 +119,9 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
                 externalId = "order-ext-reingest",
                 codCli = "cust-reingest",
                 cnpjEmpresa = "12345678000199",
+                cpfCnpj = null,
                 nronfe = null,
-                dteres = now,
+                dteres = LocalDate.parse("2024-01-01"),
                 sitres = "ABERTO",
                 totger = BigDecimal("10.0000"),
                 totres = BigDecimal("10.0000"),
@@ -133,6 +138,7 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
             existing.mergeFromIngestion(
                 codCli = existing.codCli,
                 cnpjEmpresa = existing.cnpjEmpresa,
+                cpfCnpj = null,
                 nronfe = existing.nronfe,
                 dteres = existing.dteres,
                 sitres = "FATURADO",

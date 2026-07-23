@@ -2,6 +2,7 @@ package br.com.vertice.emerion_dashboard.domain.customerorder.model
 
 import java.math.BigDecimal
 import java.time.Instant
+import java.time.LocalDate
 
 /**
  * Domain model for a customer order (header + line items). Plain Kotlin, no
@@ -13,8 +14,9 @@ data class CustomerOrder(
     val externalId: String,
     val codCli: String,
     val cnpjEmpresa: String,
+    val cpfCnpj: String?,
     val nronfe: String?,
-    val dteres: Instant,
+    val dteres: LocalDate,
     val sitres: String?,
     val totger: BigDecimal,
     val totres: BigDecimal,
@@ -31,8 +33,9 @@ data class CustomerOrder(
             externalId: String,
             codCli: String,
             cnpjEmpresa: String,
+            cpfCnpj: String?,
             nronfe: String?,
-            dteres: Instant,
+            dteres: LocalDate,
             sitres: String?,
             totger: BigDecimal,
             totres: BigDecimal,
@@ -46,6 +49,7 @@ data class CustomerOrder(
             externalId = externalId,
             codCli = codCli,
             cnpjEmpresa = cnpjEmpresa,
+            cpfCnpj = cpfCnpj,
             nronfe = nronfe,
             dteres = dteres,
             sitres = sitres,
@@ -69,8 +73,9 @@ data class CustomerOrder(
     fun mergeFromIngestion(
         codCli: String,
         cnpjEmpresa: String,
+        cpfCnpj: String?,
         nronfe: String?,
-        dteres: Instant,
+        dteres: LocalDate,
         sitres: String?,
         totger: BigDecimal,
         totres: BigDecimal,
@@ -82,6 +87,7 @@ data class CustomerOrder(
     ) = copy(
         codCli = codCli,
         cnpjEmpresa = cnpjEmpresa,
+        cpfCnpj = cpfCnpj,
         nronfe = nronfe,
         dteres = dteres,
         sitres = sitres,

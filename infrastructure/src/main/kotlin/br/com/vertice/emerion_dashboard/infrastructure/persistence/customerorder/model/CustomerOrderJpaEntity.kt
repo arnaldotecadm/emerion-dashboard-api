@@ -12,6 +12,7 @@ import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
 import java.math.BigDecimal
 import java.time.Instant
+import java.time.LocalDate
 
 /**
  * JPA entity for the `customer_order` table (header). Lives entirely in the
@@ -39,11 +40,14 @@ class CustomerOrderJpaEntity(
     @Column(name = "cnpj_empresa", nullable = false)
     var cnpjEmpresa: String = "",
 
+    @Column(name = "cpf_cnpj")
+    var cpfCnpj: String? = null,
+
     @Column(name = "nronfe")
     var nronfe: String? = null,
 
     @Column(name = "dteres", nullable = false)
-    var dteres: Instant = Instant.now(),
+    var dteres: LocalDate = LocalDate.now(),
 
     @Column(name = "sitres")
     var sitres: String? = null,

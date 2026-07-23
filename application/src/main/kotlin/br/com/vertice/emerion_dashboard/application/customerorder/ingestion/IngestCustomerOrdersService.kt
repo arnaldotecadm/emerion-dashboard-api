@@ -58,6 +58,7 @@ class IngestCustomerOrdersService(
             val toSave = existing?.mergeFromIngestion(
                 codCli = item.codCli,
                 cnpjEmpresa = item.cnpjEmpresa,
+                cpfCnpj = item.cpfCnpj,
                 nronfe = item.nronfe,
                 dteres = item.dteres,
                 sitres = item.sitres,
@@ -72,6 +73,7 @@ class IngestCustomerOrdersService(
                 externalId = item.externalId,
                 codCli = item.codCli,
                 cnpjEmpresa = item.cnpjEmpresa,
+                cpfCnpj = item.cpfCnpj,
                 nronfe = item.nronfe,
                 dteres = item.dteres,
                 sitres = item.sitres,

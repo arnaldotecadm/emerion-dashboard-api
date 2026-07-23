@@ -20,6 +20,7 @@ object CustomerOrderPersistenceMapper {
             externalId = header.externalId,
             codCli = header.codCli,
             cnpjEmpresa = header.cnpjEmpresa,
+            cpfCnpj = header.cpfCnpj,
             nronfe = header.nronfe,
             dteres = header.dteres,
             sitres = header.sitres,
@@ -93,6 +94,7 @@ object CustomerOrderPersistenceMapper {
             externalId = entity.externalId,
             codCli = entity.codCli,
             cnpjEmpresa = entity.cnpjEmpresa,
+            cpfCnpj = entity.cpfCnpj,
             nronfe = entity.nronfe,
             dteres = entity.dteres,
             sitres = entity.sitres,
@@ -177,6 +179,7 @@ object CustomerOrderPersistenceMapper {
         entity.externalId = domain.externalId
         entity.codCli = domain.codCli
         entity.cnpjEmpresa = domain.cnpjEmpresa
+        entity.cpfCnpj = domain.cpfCnpj
         entity.nronfe = domain.nronfe
         entity.dteres = domain.dteres
         entity.sitres = domain.sitres

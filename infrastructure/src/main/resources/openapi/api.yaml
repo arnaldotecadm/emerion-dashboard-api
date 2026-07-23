@@ -1470,7 +1470,7 @@ components:
         emerion-load-service's CustomerOrderController.
       required:
         - externalId
-        - codCli
+        - customerExternalId
         - cnpjEmpresa
         - dteres
         - totger
@@ -1485,18 +1485,25 @@ components:
           description: >
             Order's legacy Firebird primary key (numres), used as the
             upsert/idempotency key.
-        codCli:
+        customerExternalId:
           type: string
-          description: Customer's legacy Firebird primary key (codCli).
+          description: >
+            Customer's legacy Firebird primary key (codCli), matching
+            emerion-load-service's CustomerOrderIngestionDto.customerExternalId
+            wire property name.
         cnpjEmpresa:
           type: string
           description: Retailer/tenant CNPJ that owns this record, used to segregate data per retailer.
+        cpfCnpj:
+          type: string
+          nullable: true
+          description: The order's customer's own CPF/CNPJ (distinct from cnpjEmpresa, the retailer's CNPJ).
         nronfe:
           type: string
           nullable: true
         dteres:
           type: string
-          format: date-time
+          format: date
         sitres:
           type: string
           nullable: true
@@ -1840,12 +1847,15 @@ components:
           type: string
         cnpjEmpresa:
           type: string
+        cpfCnpj:
+          type: string
+          nullable: true
         nronfe:
           type: string
           nullable: true
         dteres:
           type: string
-          format: date-time
+          format: date
         sitres:
           type: string
           nullable: true

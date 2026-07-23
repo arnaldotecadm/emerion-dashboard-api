@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.Clock
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneOffset
 import kotlin.test.assertEquals
 
@@ -37,8 +38,9 @@ class IngestCustomerOrdersServiceTest {
         externalId = externalId,
         codCli = "100",
         cnpjEmpresa = "12345678000190",
+        cpfCnpj = null,
         nronfe = "NF-1",
-        dteres = Instant.parse("2025-06-01T00:00:00Z"),
+        dteres = LocalDate.parse("2025-06-01"),
         sitres = "FATURADO",
         totger = BigDecimal("20.00"),
         totres = BigDecimal("20.00"),
@@ -77,8 +79,9 @@ class IngestCustomerOrdersServiceTest {
             externalId = "NUM-2",
             codCli = "100",
             cnpjEmpresa = "12345678000199",
+            cpfCnpj = null,
             nronfe = null,
-            dteres = Instant.parse("2025-01-01T00:00:00Z"),
+            dteres = LocalDate.parse("2025-01-01"),
             sitres = "ABERTO",
             totger = BigDecimal("10.00"),
             totres = BigDecimal("10.00"),

@@ -23,10 +23,11 @@ object CustomerOrderIngestionRestMapper {
     fun toItemCommand(dto: CustomerOrderIngestionItem): IngestCustomerOrderCommand =
         IngestCustomerOrderCommand(
             externalId = dto.externalId,
-            codCli = dto.codCli,
+            codCli = dto.customerExternalId,
             cnpjEmpresa = dto.cnpjEmpresa,
+            cpfCnpj = dto.cpfCnpj,
             nronfe = dto.nronfe,
-            dteres = dto.dteres.toInstant(),
+            dteres = dto.dteres,
             sitres = dto.sitres,
             totger = dto.totger,
             totres = dto.totres,
