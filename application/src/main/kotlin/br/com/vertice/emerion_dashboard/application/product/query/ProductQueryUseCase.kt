@@ -13,5 +13,6 @@ import br.com.vertice.emerion_dashboard.domain.shared.Page
  */
 interface ProductQueryUseCase {
     fun getById(id: Long): Product
+    fun getByExternalId(externalId: String): Product
     fun list(query: ListProductsQuery): Page<Product>
 }

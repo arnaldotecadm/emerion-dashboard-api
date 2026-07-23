@@ -19,6 +19,10 @@ class ProductQueryService(
         productRepository.findById(id) ?: throw ProductNotFoundException(id)
 
     @Transactional(readOnly = true)
+    override fun getByExternalId(externalId: String): Product =
+        productRepository.findByExternalId(externalId) ?: throw ProductNotFoundException(externalId)
+
+    @Transactional(readOnly = true)
     override fun list(query: ListProductsQuery): Page<Product> =
         productRepository.findAll(
             pageRequest = PageRequest(page = query.page, size = query.size),

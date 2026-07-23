@@ -1,3 +1,6 @@
 package br.com.vertice.emerion_dashboard.domain.product.exception
 
-class ProductNotFoundException(id: Long) : RuntimeException("Product with id $id not found")
+class ProductNotFoundException : RuntimeException {
+    constructor(id: Long) : super("Product with id $id not found")
+    constructor(externalId: String) : super("Product with externalId $externalId not found")
+}

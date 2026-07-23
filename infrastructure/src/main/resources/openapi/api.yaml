@@ -357,6 +357,32 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /products/by-external-id/{externalId}:
+    get:
+      tags:
+        - products
+      operationId: getProductByExternalId
+      summary: Get a single product by externalId (the legacy Firebird ID)
+      parameters:
+        - name: externalId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /ingestion/customer-addresses:
     post:
       tags:
