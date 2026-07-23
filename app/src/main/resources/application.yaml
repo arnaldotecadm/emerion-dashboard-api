@@ -39,6 +39,14 @@ server:
 app:
   cors:
     allowed-origins: http://localhost:5173
+  security:
+    cognito:
+      # AWS Cognito user pool that issues the React app's JWTs (validated on
+      # every request to the query/read endpoints; ingestion stays open for
+      # emerion-load-service's server-to-server calls).
+      issuer-uri: https://cognito-idp.eu-north-1.amazonaws.com/eu-north-1_NtDQLSmuT
+      client-id: 395rpr7l5274ei0ivbjm6l2ptd
+      required-group: COMPANY
 
 # --- OpenAPI / Swagger UI (served from the hand-written contract-first spec at src/main/resources/openapi/api.yaml) ---
 springdoc:
