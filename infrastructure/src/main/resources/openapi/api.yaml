@@ -1256,12 +1256,17 @@ components:
 
     CustomerOrderItemIngestionItem:
       type: object
-      description: One line item of a customer order.
+      description: >
+        One line item of a customer order. Fields beyond the original five
+        mirror the additional PEDRE2 fields exposed by
+        emerion-load-service's CustomerOrderItemProjection (tax/fiscal
+        breakdown, discounts, and legacy tracking flags).
       required:
         - produto
         - quantidade
         - valorUnitario
         - valorTotal
+        - seqRe2
       properties:
         produto:
           type: string
@@ -1275,6 +1280,137 @@ components:
           type: number
         valorTotal:
           type: number
+        seqRe2:
+          type: integer
+        codClp:
+          type: string
+          nullable: true
+        codSt1:
+          type: string
+          nullable: true
+        codUnd:
+          type: string
+          nullable: true
+        vluRe2:
+          type: number
+          nullable: true
+        dscRe2:
+          type: number
+          nullable: true
+        dsrRe2:
+          type: number
+          nullable: true
+        icmsAliquota:
+          type: number
+          nullable: true
+        icmsBase:
+          type: number
+          nullable: true
+        icmsValor:
+          type: number
+          nullable: true
+        icmsReducaoBase:
+          type: number
+          nullable: true
+        icmsSubstituicaoBase:
+          type: number
+          nullable: true
+        icmsSubstituicaoValor:
+          type: number
+          nullable: true
+        icmsSubstituicaoAliquota:
+          type: number
+          nullable: true
+        icmsSubstituicaoMargem:
+          type: number
+          nullable: true
+        icmsSubstituicaoReducaoBase:
+          type: number
+          nullable: true
+        ipiAliquota:
+          type: number
+          nullable: true
+        ipiBase:
+          type: number
+          nullable: true
+        ipiValor:
+          type: number
+          nullable: true
+        ipiClassificacao:
+          type: string
+          nullable: true
+        ipiCst:
+          type: string
+          nullable: true
+        pisBase:
+          type: number
+          nullable: true
+        pisAliquota:
+          type: number
+          nullable: true
+        pisValor:
+          type: number
+          nullable: true
+        pisCst:
+          type: string
+          nullable: true
+        cofinsBase:
+          type: number
+          nullable: true
+        cofinsAliquota:
+          type: number
+          nullable: true
+        cofinsValor:
+          type: number
+          nullable: true
+        cofinsCst:
+          type: string
+          nullable: true
+        descontoValor:
+          type: number
+          nullable: true
+        freteValor:
+          type: number
+          nullable: true
+        seguroValor:
+          type: number
+          nullable: true
+        outrasDespesasValor:
+          type: number
+          nullable: true
+        totalItemTributado:
+          type: number
+          nullable: true
+        totRen:
+          type: number
+          nullable: true
+        totGe2:
+          type: number
+          nullable: true
+        observacao:
+          type: string
+          nullable: true
+        pedidoCompraCliente:
+          type: string
+          nullable: true
+        itemPedidoCompraCliente:
+          type: integer
+          nullable: true
+        nroRe2:
+          type: integer
+          nullable: true
+        flgVal:
+          type: string
+          nullable: true
+        flgPac:
+          type: string
+          nullable: true
+        flgLib:
+          type: string
+          nullable: true
+        codCfo:
+          type: string
+          nullable: true
 
     CustomerOrderIngestionItem:
       type: object
@@ -1505,6 +1641,137 @@ components:
           type: number
         valorTotal:
           type: number
+        seqRe2:
+          type: integer
+        codClp:
+          type: string
+          nullable: true
+        codSt1:
+          type: string
+          nullable: true
+        codUnd:
+          type: string
+          nullable: true
+        vluRe2:
+          type: number
+          nullable: true
+        dscRe2:
+          type: number
+          nullable: true
+        dsrRe2:
+          type: number
+          nullable: true
+        icmsAliquota:
+          type: number
+          nullable: true
+        icmsBase:
+          type: number
+          nullable: true
+        icmsValor:
+          type: number
+          nullable: true
+        icmsReducaoBase:
+          type: number
+          nullable: true
+        icmsSubstituicaoBase:
+          type: number
+          nullable: true
+        icmsSubstituicaoValor:
+          type: number
+          nullable: true
+        icmsSubstituicaoAliquota:
+          type: number
+          nullable: true
+        icmsSubstituicaoMargem:
+          type: number
+          nullable: true
+        icmsSubstituicaoReducaoBase:
+          type: number
+          nullable: true
+        ipiAliquota:
+          type: number
+          nullable: true
+        ipiBase:
+          type: number
+          nullable: true
+        ipiValor:
+          type: number
+          nullable: true
+        ipiClassificacao:
+          type: string
+          nullable: true
+        ipiCst:
+          type: string
+          nullable: true
+        pisBase:
+          type: number
+          nullable: true
+        pisAliquota:
+          type: number
+          nullable: true
+        pisValor:
+          type: number
+          nullable: true
+        pisCst:
+          type: string
+          nullable: true
+        cofinsBase:
+          type: number
+          nullable: true
+        cofinsAliquota:
+          type: number
+          nullable: true
+        cofinsValor:
+          type: number
+          nullable: true
+        cofinsCst:
+          type: string
+          nullable: true
+        descontoValor:
+          type: number
+          nullable: true
+        freteValor:
+          type: number
+          nullable: true
+        seguroValor:
+          type: number
+          nullable: true
+        outrasDespesasValor:
+          type: number
+          nullable: true
+        totalItemTributado:
+          type: number
+          nullable: true
+        totRen:
+          type: number
+          nullable: true
+        totGe2:
+          type: number
+          nullable: true
+        observacao:
+          type: string
+          nullable: true
+        pedidoCompraCliente:
+          type: string
+          nullable: true
+        itemPedidoCompraCliente:
+          type: integer
+          nullable: true
+        nroRe2:
+          type: integer
+          nullable: true
+        flgVal:
+          type: string
+          nullable: true
+        flgPac:
+          type: string
+          nullable: true
+        flgLib:
+          type: string
+          nullable: true
+        codCfo:
+          type: string
+          nullable: true
 
     CustomerOrderResponse:
       type: object

@@ -23,12 +23,13 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
     @Autowired private val customerOrderRepository: CustomerOrderRepository,
 ) : PostgresIntegrationTest() {
 
-    private fun item(produto: String) = CustomerOrderItem(
+    private fun item(produto: String, seqRe2: Int) = CustomerOrderItem(
         produto = produto,
         descricao = "Descricao $produto",
         quantidade = BigDecimal("2.0000"),
         valorUnitario = BigDecimal("10.0000"),
         valorTotal = BigDecimal("20.0000"),
+        seqRe2 = seqRe2,
     )
 
     @Test
@@ -47,7 +48,7 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
                 totipi = BigDecimal("5.0000"),
                 totsub = BigDecimal("95.0000"),
                 totdescinc = BigDecimal("0.0000"),
-                itens = listOf(item("1.1.1"), item("1.1.2")),
+                itens = listOf(item("1.1.1", 1), item("1.1.2", 2)),
                 now = now,
             ),
         )
@@ -73,7 +74,7 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
                 totipi = BigDecimal("0.0000"),
                 totsub = BigDecimal("10.0000"),
                 totdescinc = BigDecimal("0.0000"),
-                itens = listOf(item("2.1.1")),
+                itens = listOf(item("2.1.1", 1)),
                 now = now,
             ),
         )
@@ -90,7 +91,7 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
                 totipi = BigDecimal("0.0000"),
                 totsub = BigDecimal("10.0000"),
                 totdescinc = BigDecimal("0.0000"),
-                itens = listOf(item("3.1.1")),
+                itens = listOf(item("3.1.1", 1)),
                 now = now,
             ),
         )
@@ -102,5 +103,60 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
         )
 
         assertEquals(listOf("order-ext-match"), page.content.map { it.externalId })
+    }
+
+    @Test
+    fun `re-ingesting the same order upserts its items by seqRe2 instead of failing`() {
+        val now = Instant.parse("2024-01-01T00:00:00Z")
+        val later = Instant.parse("2024-02-01T00:00:00Z")
+        val firstSave = customerOrderRepository.save(
+            CustomerOrder.newFromIngestion(
+                externalId = "order-ext-reingest",
+                codCli = "cust-reingest",
+                cnpjEmpresa = null,
+                nronfe = null,
+                dteres = now,
+                sitres = "ABERTO",
+                totger = BigDecimal("10.0000"),
+                totres = BigDecimal("10.0000"),
+                totipi = BigDecimal("0.0000"),
+                totsub = BigDecimal("10.0000"),
+                totdescinc = BigDecimal("0.0000"),
+                itens = listOf(item("4.1.1", 1), item("4.1.2", 2)),
+                now = now,
+            ),
+        )
+
+        val existing = customerOrderRepository.findByExternalId("order-ext-reingest")!!
+        val resaved = customerOrderRepository.save(
+            existing.mergeFromIngestion(
+                codCli = existing.codCli,
+                cnpjEmpresa = existing.cnpjEmpresa,
+                nronfe = existing.nronfe,
+                dteres = existing.dteres,
+                sitres = "FATURADO",
+                totger = existing.totger,
+                totres = existing.totres,
+                totipi = existing.totipi,
+                totsub = existing.totsub,
+                totdescinc = existing.totdescinc,
+                // Same seqRe2 keys as before (upserted), same produto repeated
+                // across two lines (only distinguishable by seqRe2), plus one
+                // brand-new line.
+                itens = listOf(
+                    item("4.1.1", 1).copy(descricao = "Updated"),
+                    item("4.1.1", 2),
+                    item("4.1.3", 3),
+                ),
+                now = later,
+            ),
+        )
+
+        val found = customerOrderRepository.findById(resaved.id!!)!!
+        assertEquals(firstSave.id, resaved.id)
+        assertEquals("FATURADO", found.sitres)
+        assertEquals(3, found.itens.size)
+        assertEquals(setOf(1, 2, 3), found.itens.map { it.seqRe2 }.toSet())
+        assertEquals("Updated", found.itens.single { it.seqRe2 == 1 }.descricao)
     }
 }

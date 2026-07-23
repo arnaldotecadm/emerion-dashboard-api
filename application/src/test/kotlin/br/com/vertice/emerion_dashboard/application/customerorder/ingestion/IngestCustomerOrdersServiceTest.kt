@@ -30,6 +30,7 @@ class IngestCustomerOrdersServiceTest {
         quantidade = BigDecimal("2"),
         valorUnitario = BigDecimal("10.00"),
         valorTotal = BigDecimal("20.00"),
+        seqRe2 = 1,
     )
 
     private fun orderCommand(externalId: String, itens: List<IngestCustomerOrderItemCommand>) = IngestCustomerOrderCommand(
@@ -84,7 +85,16 @@ class IngestCustomerOrdersServiceTest {
             totipi = BigDecimal.ZERO,
             totsub = BigDecimal.ZERO,
             totdescinc = BigDecimal.ZERO,
-            itens = listOf(CustomerOrderItem("1.1.1", "Old", BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN)),
+            itens = listOf(
+                CustomerOrderItem(
+                    produto = "1.1.1",
+                    descricao = "Old",
+                    quantidade = BigDecimal.ONE,
+                    valorUnitario = BigDecimal.TEN,
+                    valorTotal = BigDecimal.TEN,
+                    seqRe2 = 1,
+                ),
+            ),
             createdAt = Instant.parse("2025-01-01T00:00:00Z"),
             updatedAt = Instant.parse("2025-01-01T00:00:00Z"),
         )
