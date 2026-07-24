@@ -4,6 +4,7 @@ import br.com.vertice.emerion_dashboard.domain.customer.exception.CustomerNotFou
 import br.com.vertice.emerion_dashboard.domain.customeraddress.exception.CustomerAddressNotFoundException
 import br.com.vertice.emerion_dashboard.domain.customercredit.exception.CustomerCreditNotFoundException
 import br.com.vertice.emerion_dashboard.domain.customerorder.exception.CustomerOrderNotFoundException
+import br.com.vertice.emerion_dashboard.domain.notification.exception.NotificationNotFoundException
 import br.com.vertice.emerion_dashboard.domain.product.exception.ProductNotFoundException
 import br.com.vertice.emerion_dashboard.domain.vendedor.exception.VendedorNotFoundException
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.ErrorResponse
@@ -30,6 +31,7 @@ class GlobalExceptionHandler {
         CustomerCreditNotFoundException::class,
         CustomerOrderNotFoundException::class,
         VendedorNotFoundException::class,
+        NotificationNotFoundException::class,
     )
     fun handleNotFound(ex: RuntimeException): ResponseEntity<ErrorResponse> =
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody("RESOURCE_NOT_FOUND", ex.message))

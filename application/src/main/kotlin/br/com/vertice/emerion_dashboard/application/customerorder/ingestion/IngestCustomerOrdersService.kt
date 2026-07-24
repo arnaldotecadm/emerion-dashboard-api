@@ -6,9 +6,14 @@ import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.mode
 import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestCustomerOrderItemCommand
 import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestItemResult
 import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestOutcome
+import br.com.vertice.emerion_dashboard.application.notification.creation.CreateNotificationUseCase
+import br.com.vertice.emerion_dashboard.application.notification.creation.model.CreateNotificationCommand
+import br.com.vertice.emerion_dashboard.domain.cognitouser.repository.CognitoUserRepository
 import br.com.vertice.emerion_dashboard.domain.customerorder.model.CustomerOrder
 import br.com.vertice.emerion_dashboard.domain.customerorder.model.CustomerOrderItem
 import br.com.vertice.emerion_dashboard.domain.customerorder.repository.CustomerOrderRepository
+import br.com.vertice.emerion_dashboard.domain.notification.model.NotificationCategory
+import br.com.vertice.emerion_dashboard.domain.notification.model.NotificationPriority
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -25,6 +30,8 @@ import java.time.Instant
 @Service
 class IngestCustomerOrdersService(
     private val customerOrderRepository: CustomerOrderRepository,
+    private val cognitoUserRepository: CognitoUserRepository,
+    private val createNotificationUseCase: CreateNotificationUseCase,
     private val clock: Clock = Clock.systemUTC(),
 ) : IngestCustomerOrdersUseCase {
 
@@ -85,7 +92,10 @@ class IngestCustomerOrdersService(
                 itens = itens,
                 now = now,
             )
-            customerOrderRepository.save(toSave)
+            val savedOrder = customerOrderRepository.save(toSave)
+            if (existing == null) {
+                notifyActiveUsersAboutNewOrder(savedOrder)
+            }
             IngestItemResult(
                 externalId = item.externalId,
                 outcome = if (existing == null) IngestOutcome.CREATED else IngestOutcome.UPDATED,
@@ -98,6 +108,39 @@ class IngestCustomerOrdersService(
                 outcome = IngestOutcome.FAILED,
                 errorMessage = ex.message,
             )
+        }
+    }
+
+    private fun notifyActiveUsersAboutNewOrder(order: CustomerOrder) {
+        val activeUsers = try {
+            cognitoUserRepository.findAll().filter { it.enabled }
+        } catch (ex: Exception) {
+            logger.error("Failed to load active users for order notification externalId='{}'", order.externalId, ex)
+            return
+        }
+
+        val referenceId = order.id?.toString() ?: order.externalId
+        activeUsers.forEach { user ->
+            try {
+                createNotificationUseCase.create(
+                    CreateNotificationCommand(
+                        userId = user.sub,
+                        name = "Novo pedido recebido",
+                        description = "Pedido ${order.externalId} foi ingerido e está disponível para consulta.",
+                        category = NotificationCategory.INGESTION,
+                        priority = NotificationPriority.MEDIUM,
+                        referenceType = "CustomerOrder",
+                        referenceId = referenceId,
+                    ),
+                )
+            } catch (ex: Exception) {
+                logger.error(
+                    "Failed to create notification for user='{}' and order externalId='{}'",
+                    user.sub,
+                    order.externalId,
+                    ex,
+                )
+            }
         }
     }
 

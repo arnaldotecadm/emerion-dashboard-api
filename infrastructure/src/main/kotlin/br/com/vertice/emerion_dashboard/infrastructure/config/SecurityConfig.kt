@@ -18,13 +18,17 @@ import org.springframework.security.web.SecurityFilterChain
  * emerion-load-service) and the OpenAPI/Swagger static resources stay open -
  * see CognitoJwtConfig for how the token itself is validated. Authenticated
  * callers must additionally belong to the Cognito group configured in
- * `app.security.cognito.required-group`.
+ * `app.security.cognito.required-group`, except everything under the admin
+ * path prefix, which requires the separate, stricter
+ * `app.security.cognito.admin-group` instead (so regular COMPANY users
+ * can't hit admin-only operations like the Cognito user sync trigger).
  */
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
     private val jwtAuthenticationConverter: JwtAuthenticationConverter,
     @Value("\${app.security.cognito.required-group}") private val requiredGroup: String,
+    @Value("\${app.security.cognito.admin-group}") private val adminGroup: String,
 ) {
 
     @Bean
@@ -41,6 +45,7 @@ class SecurityConfig(
                 authorize("/swagger-ui/**", permitAll)
                 authorize("/swagger-ui.html", permitAll)
                 authorize("/v3/api-docs/**", permitAll)
+                authorize("/admin/**", hasAuthority("ROLE_$adminGroup"))
                 authorize(anyRequest, hasAuthority("ROLE_$requiredGroup"))
             }
             oauth2ResourceServer {

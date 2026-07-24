@@ -35,6 +35,7 @@ dependencies {
     implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation(libs.swagger.annotations)
+    implementation(libs.aws.sdk.cognitoidentityprovider)
     runtimeOnly("org.postgresql:postgresql")
 
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")

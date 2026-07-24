@@ -53,6 +53,16 @@ tags:
       the React app.
   - name: vendedores
     description: Read endpoints consumed by the React frontend.
+  - name: notifications
+    description: >
+      Per-user application notifications (e.g. approvals needed, status
+      updates, ingestion outcomes). Created internally by this API's own
+      business logic — not ingested from emerion-load-service. Consumed by
+      the React frontend, scoped to the authenticated Cognito user.
+  - name: admin
+    description: >
+      Operational endpoints for administrators (Cognito ADMIN group only).
+      Not consumed by regular React app users.
 
 paths:
   /ingestion/customers:
@@ -989,6 +999,144 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /notifications:
+    get:
+      tags:
+        - notifications
+      operationId: listNotifications
+      summary: List the authenticated user's notifications (paginated)
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: status
+          in: query
+          description: Filter by notification status
+          required: false
+          schema:
+            $ref: '#/components/schemas/NotificationStatus'
+        - name: category
+          in: query
+          description: Filter by notification category
+          required: false
+          schema:
+            $ref: '#/components/schemas/NotificationCategory'
+      responses:
+        '200':
+          description: Paginated list of the caller's notifications
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPage'
+
+  /notifications/{id}:
+    get:
+      tags:
+        - notifications
+      operationId: getNotificationById
+      summary: Get a single notification by id, scoped to the authenticated user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Notification found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationResponse'
+        '404':
+          description: Notification not found (or does not belong to the caller)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /notifications/{id}/read:
+    patch:
+      tags:
+        - notifications
+      operationId: markNotificationAsRead
+      summary: Mark a notification as read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Notification updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationResponse'
+        '404':
+          description: Notification not found (or does not belong to the caller)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /notifications/{id}/dismiss:
+    patch:
+      tags:
+        - notifications
+      operationId: dismissNotification
+      summary: Dismiss a notification
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Notification updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationResponse'
+        '404':
+          description: Notification not found (or does not belong to the caller)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /admin/cognito-users/sync:
+    post:
+      tags:
+        - admin
+      operationId: syncCognitoUsers
+      summary: >
+        Manually re-trigger the Cognito user directory sync (also run once
+        automatically at application startup). Requires the ADMIN Cognito
+        group.
+      responses:
+        '200':
+          description: Sync completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CognitoUserSyncResponse'
 
 components:
   schemas:
@@ -2011,4 +2159,90 @@ components:
             $ref: '#/components/schemas/VendedorResponse'
         pagination:
           $ref: '#/components/schemas/PaginationInfo'
+
+    NotificationStatus:
+      type: string
+      description: Lifecycle status of a notification.
+      enum: [UNREAD, READ, DISMISSED]
+
+    NotificationCategory:
+      type: string
+      description: Fixed set of notification categories.
+      enum: [INGESTION, STATUS_UPDATE, APPROVAL_NEEDED, SYSTEM]
+
+    NotificationPriority:
+      type: string
+      enum: [LOW, MEDIUM, HIGH]
+
+    NotificationResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        userId:
+          type: string
+          description: Cognito subject (sub) claim of the owning user.
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/NotificationStatus'
+        category:
+          $ref: '#/components/schemas/NotificationCategory'
+        priority:
+          $ref: '#/components/schemas/NotificationPriority'
+        referenceType:
+          type: string
+          nullable: true
+          description: Type of the resource this notification relates to (e.g. "CustomerOrder").
+        referenceId:
+          type: string
+          nullable: true
+          description: Id of the resource this notification relates to.
+        actionUrl:
+          type: string
+          nullable: true
+          description: Deep link the React app can navigate to when the notification is clicked.
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        readAt:
+          type: string
+          format: date-time
+          nullable: true
+        dismissedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    NotificationPage:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationResponse'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+
+    CognitoUserSyncResponse:
+      type: object
+      properties:
+        totalFetched:
+          type: integer
+          description: Number of users returned by Cognito's ListUsers for this pool.
+        totalSynced:
+          type: integer
+          description: Number of users successfully upserted into the local cache.
+        totalFailed:
+          type: integer
+          description: Number of users that failed to persist (logged individually, does not abort the rest of the sync).
+        syncedAt:
+          type: string
+          format: date-time
 

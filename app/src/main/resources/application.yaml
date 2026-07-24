@@ -39,6 +39,16 @@ server:
 app:
   cors:
     allowed-origins: http://localhost:5173
+  aws:
+    # Explicit static credentials for now (per ops preference while running
+    # outside AWS); once deployed to AWS/ECS/EC2 with a task/instance role,
+    # switch CognitoAdminConfig's credentialsProvider to
+    # DefaultCredentialsProvider.create() and these two properties can be
+    # dropped entirely. Never commit real values here - set via the
+    # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY env vars.
+    region: eu-north-1
+    access-key-id: ${AWS_ACCESS_KEY_ID:}
+    secret-access-key: ${AWS_SECRET_ACCESS_KEY:}
   security:
     cognito:
       # AWS Cognito user pool that issues the React app's JWTs (validated on
@@ -47,6 +57,14 @@ app:
       issuer-uri: https://cognito-idp.eu-north-1.amazonaws.com/eu-north-1_NtDQLSmuT
       client-id: 395rpr7l5274ei0ivbjm6l2ptd
       required-group: COMPANY
+      # Group required to trigger a manual Cognito user sync (see
+      # CognitoUserSyncController) - distinct from required-group so regular
+      # COMPANY users can't re-trigger the directory sync.
+      admin-group: ADMIN
+      # Same Cognito user pool as issuer-uri, needed separately because the
+      # Admin API (ListUsers/AdminListGroupsForUser) takes a pool id, not an
+      # issuer URL.
+      user-pool-id: eu-north-1_NtDQLSmuT
 
 # --- OpenAPI / Swagger UI (served from the hand-written contract-first spec at src/main/resources/openapi/api.yaml) ---
 springdoc:

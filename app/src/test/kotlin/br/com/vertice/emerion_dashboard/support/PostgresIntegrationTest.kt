@@ -29,7 +29,15 @@ abstract class PostgresIntegrationTest {
         @JvmStatic
         @DynamicPropertySource
         fun overrideProperties(registry: DynamicPropertyRegistry) {
-            // Reserved for properties `@ServiceConnection` doesn't cover (e.g. non-datasource config).
+            // Integration tests spin up a full Spring context without real AWS
+            // credentials/network access, so the startup Cognito user sync
+            // (CognitoUserStartupSyncRunner) must not run here.
+            registry.add("app.cognito-sync.enabled") { "false" }
+            // CognitoAdminConfig still creates the AWS client bean at context
+            // bootstrap time; provide non-blank dummy credentials so bean
+            // construction succeeds without depending on real secrets.
+            registry.add("app.aws.access-key-id") { "test-access-key" }
+            registry.add("app.aws.secret-access-key") { "test-secret-key" }
         }
     }
 }
