@@ -57,6 +57,19 @@ PostgreSQL, `@ServiceConnection`. Apply whenever writing a new test.
   an environment/tooling issue, not a code defect — check `docker info`
   works from the same shell Gradle runs in.
 
+### Testcontainers + Cognito-specific runtime notes
+- `PostgresIntegrationTest` disables startup Cognito sync
+  (`app.cognito-sync.enabled=false`) and sets non-blank dummy AWS credentials
+  so Spring can create `CognitoIdentityProviderClient` without real secrets
+  during tests.
+- On Rancher Desktop, Testcontainers may fail to start Ryuk by default. Use:
+  ```bash
+  DOCKER_HOST="unix://$HOME/.rd/docker.sock" \
+  TESTCONTAINERS_DOCKER_CLIENT_STRATEGY=org.testcontainers.dockerclient.EnvironmentAndSystemPropertyClientProviderStrategy \
+  TESTCONTAINERS_RYUK_DISABLED=true \
+  ./gradlew :app:test --tests "*SomeIntegrationTest*"
+  ```
+
 ## Naming & Structure
 - Test class name: `<ClassUnderTest>Test.kt`.
 - Test method names: backtick sentence style,

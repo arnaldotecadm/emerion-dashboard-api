@@ -31,6 +31,14 @@ output.
 **When to use**: Adding a new shared OpenAPI schema, changing generator
 config, debugging codegen surprises (nested enums, renamed properties).
 
+### 4. `cognito-notification-skill.md`
+**Purpose**: Compact playbook for Cognito JWT/security rules, startup/manual
+directory sync, and notification fanout behavior (including order-ingestion
+triggering).
+
+**When to use**: "change auth rules", "sync Cognito users", "send
+notifications to users on business events", "why did admin sync fail".
+
 ## How These Relate to `.github/instructions/*.instructions.md`
 Instructions files describe the *rules and conventions* (what must always
 be true). Skills files describe the *recipe* (step-by-step, copy-pasteable)
@@ -41,6 +49,17 @@ for applying those rules to a new piece of work. Use both together:
 port-adapter-skill.md and mapper-skill.md. Reference
 hexagonal-architecture.instructions.md and openapi-contract.instructions.md
 for the rules."
+```
+
+For token-efficient prompting, name only the needed skill + affected files,
+for example:
+
+```
+Use cognito-notification-skill.md. Update only:
+- infrastructure/config/SecurityConfig.kt
+- infrastructure/config/CognitoUserStartupSyncRunner.kt
+- application/customerorder/ingestion/IngestCustomerOrdersService.kt
+Run targeted tests only.
 ```
 
 ## Reference Implementation

@@ -41,11 +41,12 @@ hexagonal architecture and contract-first OpenAPI conventions.
 - Another upstream data source (beyond emerion-load-service) → discuss
   before assuming it fits the ingestion pattern; may need its own port.
 
-**3. Auth (currently deferred by design)**
-- When it's time: API-key/shared-secret for `emerion-load-service`
-  ingestion endpoints (server-to-server) is usually simplest; JWT for
-  React-facing endpoints if user-level auth is needed. This is a decision
-  to make explicitly with the user, not to assume.
+**3. Auth (currently implemented with Cognito JWT)**
+- Query endpoints require Cognito JWT + role/group checks.
+- `/admin/**` is intentionally stricter (`ROLE_ADMIN`), separate from
+  general query role (`ROLE_COMPANY`).
+- Ingestion endpoints remain open for `emerion-load-service` server-to-server
+  calls unless explicitly changed.
 
 **4. Performance**
 - Pagination is already in place for list endpoints — don't add unbounded
@@ -63,5 +64,6 @@ hexagonal architecture and contract-first OpenAPI conventions.
 ## When to Ask for Clarification
 - Ambiguous requirements or edge cases.
 - Multiple valid architectural approaches exist.
-- Anything touching security/auth (currently out of scope by design).
+- Anything changing security/auth behavior (group mappings, public/private
+  endpoint boundaries, admin endpoint access).
 - Anything that isn't purely additive to the Flyway schema.

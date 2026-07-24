@@ -35,11 +35,24 @@ Responsibilities:
   code** — edit the YAML and regenerate.
 - **Testing**: JUnit 5, MockK (unit tests), Testcontainers + PostgreSQL
   (integration tests), Spring Boot's `@ServiceConnection`.
-- **Auth**: None yet (deliberately deferred — focus is ingestion + querying
-  first). Do not add Spring Security unless explicitly asked.
+- **Auth**: AWS Cognito JWT is active for query/admin surfaces; ingestion
+  endpoints remain open for server-to-server calls from
+  `emerion-load-service`.
 - **CORS**: React app is a separate origin; configured via
-  `app.cors.allowed-origins` in `application.properties` and
+  `app.cors.allowed-origins` in `application.yaml` and
   `infrastructure/src/main/kotlin/.../infrastructure/config/CorsConfig.kt`.
+
+## Implemented Security + Notification Baseline
+- Query endpoints require valid Cognito JWT + `ROLE_COMPANY` (mapped from
+  `cognito:groups`).
+- `/admin/**` requires `ROLE_ADMIN` (configured via
+  `app.security.cognito.admin-group`).
+- On startup, the app syncs Cognito users/groups into local tables
+  (`cognito_user`, `cognito_user_group`) and can re-sync via
+  `POST /admin/cognito-users/sync`.
+- Notifications are per-user. When a **new** customer order is ingested,
+  one `INGESTION` notification is created for each **active** local Cognito
+  user (`enabled=true`).
 
 ## Architecture: Hexagonal (Ports & Adapters), 4 Gradle modules
 

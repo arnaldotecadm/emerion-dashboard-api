@@ -34,6 +34,7 @@ Quick links to everything in `.github/`.
 | persistence-adapter-specialist | [`agents/persistence-adapter-specialist.md`](agents/persistence-adapter-specialist.md) | JPA/Flyway |
 | ingestion-integrator | [`agents/ingestion-integrator.md`](agents/ingestion-integrator.md) | Ingestion endpoints |
 | testing-expert | [`agents/testing-expert.md`](agents/testing-expert.md) | Test strategy |
+| cognito-notification-operator | [`agents/cognito-notification-operator.md`](agents/cognito-notification-operator.md) | Cognito sync + notification fanout operations |
 | dev-assistant | [`agents/dev-assistant.md`](agents/dev-assistant.md) | General architecture guidance |
 
 ### Skills
@@ -42,6 +43,7 @@ Quick links to everything in `.github/`.
 | Port & Adapter | [`skills/port-adapter-skill.md`](skills/port-adapter-skill.md) | End-to-end new-resource recipe |
 | Mapper | [`skills/mapper-skill.md`](skills/mapper-skill.md) | REST/persistence mapper templates |
 | OpenAPI Codegen | [`skills/openapi-codegen-skill.md`](skills/openapi-codegen-skill.md) | Generator config/troubleshooting |
+| Cognito + Notifications | [`skills/cognito-notification-skill.md`](skills/cognito-notification-skill.md) | Token-efficient recipes for auth/sync/notification work |
 | Skills Guide | [`skills/README.md`](skills/README.md) | How skills relate to instructions |
 
 ### Database Metadata
@@ -86,6 +88,7 @@ autoconfig); it has no business logic of its own.
 /agent persistence-adapter-specialist
 /agent ingestion-integrator
 /agent testing-expert
+/agent cognito-notification-operator
 /agent dev-assistant
 
 # Gradle (4 modules: domain, application, infrastructure, app)
@@ -115,8 +118,9 @@ autoconfig); it has no business logic of its own.
 "Known Generator Gotchas" section, or `/agent api-contract-architect`.
 
 ### "Set up auth"
-→ Currently deliberately out of scope. Use `/agent dev-assistant` to discuss
-API-key vs JWT trade-offs before implementing anything — do not assume.
+→ Cognito JWT validation is already implemented. For changes in this area,
+use `/agent cognito-notification-operator` first, then
+`instructions/testing.instructions.md` for validation/runtime notes.
 
 ## FAQ
 
@@ -142,3 +146,7 @@ A: No — deployed separately, CORS is configured via
 **Q: Testcontainers can't find Docker — is my code broken?**
 A: Almost certainly not — check `docker info` works in the same shell
 Gradle runs in. See `instructions/testing.instructions.md`.
+
+**Q: Where is Cognito user sync documented?**
+A: `skills/cognito-notification-skill.md` and
+`agents/cognito-notification-operator.md`.

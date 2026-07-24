@@ -40,6 +40,7 @@ spec is hand-written, Kotlin interfaces/models are generated from it.
 | `agents/persistence-adapter-specialist.md` | JPA entities, repositories, Flyway |
 | `agents/ingestion-integrator.md` | Ingestion endpoints from emerion-load-service |
 | `agents/testing-expert.md` | Test strategy and implementation |
+| `agents/cognito-notification-operator.md` | Cognito auth/sync + notification fanout operations |
 | `agents/dev-assistant.md` | General architecture guidance |
 
 ### Skills
@@ -48,6 +49,7 @@ spec is hand-written, Kotlin interfaces/models are generated from it.
 | `skills/port-adapter-skill.md` | End-to-end recipe for adding a new resource |
 | `skills/mapper-skill.md` | REST/persistence mapper templates |
 | `skills/openapi-codegen-skill.md` | Generator config and troubleshooting |
+| `skills/cognito-notification-skill.md` | Token-efficient recipes for Cognito + notifications |
 
 ### Database Metadata
 | File | Purpose |
@@ -80,6 +82,7 @@ resources should copy it file-by-file, module-by-module (see
 /agent persistence-adapter-specialist
 /agent ingestion-integrator
 /agent testing-expert
+/agent cognito-notification-operator
 /agent dev-assistant
 ```
 
@@ -90,6 +93,25 @@ Add ingestion + query endpoints for an Invoice resource: externalId, amount
 mapper-skill.md, and hexagonal-architecture.instructions.md /
 openapi-contract.instructions.md for the rules. Use Customer as the
 reference implementation.
+```
+
+## Token-Optimized Prompting
+For lower token usage and faster runs, keep prompts scoped:
+1. Name one skill/agent.
+2. List exact files to touch.
+3. State one behavior delta.
+4. Ask for targeted validation commands only.
+
+Example:
+```
+Use cognito-notification-skill.md.
+Scope:
+- application/.../IngestCustomerOrdersService.kt
+- application/.../IngestCustomerOrdersServiceTest.kt
+Change:
+- Notify active users only when order outcome is CREATED.
+Validate:
+- ./gradlew :application:test --tests "*IngestCustomerOrdersServiceTest*"
 ```
 
 ## Runnable Scaffold (already in the repo, not just docs)

@@ -77,6 +77,15 @@ upsert/idempotency logic between the two.
   rules in the controller — that all lives in the use-case service (in the
   `:application` module).
 
+## Business Side-Effects from Ingestion (Current Baseline)
+- Side-effects, when needed, belong in the **application ingestion service**
+  after successful persistence, never in the controller/mapper.
+- Current implemented rule: when a **new** `CustomerOrder` is ingested
+  (`CREATED` outcome), create an `INGESTION` notification for each **active**
+  local Cognito user (`cognito_user.enabled=true`).
+- Notification fanout is best-effort per user (log each failed user, continue
+  the ingestion flow).
+
 ## Adding a New Ingestion Endpoint
 1. Add the OpenAPI path/schemas (see
    `.github/instructions/openapi-contract.instructions.md`).
