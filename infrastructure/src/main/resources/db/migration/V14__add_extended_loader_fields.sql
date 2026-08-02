@@ -1,0 +1,60 @@
+ALTER TABLE customer
+    ADD COLUMN data_nascimento DATE,
+    ADD COLUMN data_cadastro DATE,
+    ADD COLUMN data_ultima_atualizacao DATE,
+    ADD COLUMN email1 VARCHAR(255),
+    ADD COLUMN email2 VARCHAR(255),
+    ADD COLUMN website VARCHAR(255),
+    ADD COLUMN limite_credito NUMERIC(19, 4),
+    ADD COLUMN observacoes TEXT,
+    ADD COLUMN cnae VARCHAR(32),
+    ADD COLUMN vendedor_external_id BIGINT,
+    ADD COLUMN nome_vendedor VARCHAR(255),
+    ADD COLUMN codigo_tipo_cliente VARCHAR(64),
+    ADD COLUMN codigo_grupo_cliente VARCHAR(64),
+    ADD COLUMN codigo_categoria_cliente VARCHAR(64);
+
+ALTER TABLE product
+    ADD COLUMN descricao_reduzida VARCHAR(255),
+    ADD COLUMN referencia_interna VARCHAR(255),
+    ADD COLUMN ncm VARCHAR(32),
+    ADD COLUMN cest VARCHAR(32),
+    ADD COLUMN origem_produto VARCHAR(64),
+    ADD COLUMN categoria VARCHAR(128),
+    ADD COLUMN tipo VARCHAR(128),
+    ADD COLUMN marca VARCHAR(128),
+    ADD COLUMN unidade VARCHAR(16),
+    ADD COLUMN peso_liquido NUMERIC(19, 4),
+    ADD COLUMN peso_bruto NUMERIC(19, 4),
+    ADD COLUMN descontinuado BOOLEAN,
+    ADD COLUMN codigo_barras VARCHAR(64),
+    ADD COLUMN codigo_barras_proprio VARCHAR(64),
+    ADD COLUMN preco2 NUMERIC(19, 4),
+    ADD COLUMN preco3 NUMERIC(19, 4),
+    ADD COLUMN preco4 NUMERIC(19, 4),
+    ADD COLUMN preco5 NUMERIC(19, 4);
+
+ALTER TABLE customer_order
+    ADD COLUMN totfrt NUMERIC(19, 4),
+    ADD COLUMN totseg NUMERIC(19, 4),
+    ADD COLUMN totoutdesp NUMERIC(19, 4),
+    ADD COLUMN vendedor_external_id BIGINT,
+    ADD COLUMN atendente_cod VARCHAR(64),
+    ADD COLUMN data_entrega_prevista DATE,
+    ADD COLUMN desconto_comercial NUMERIC(19, 4),
+    ADD COLUMN desconto_regional NUMERIC(19, 4),
+    ADD COLUMN codigo_transportadora VARCHAR(64),
+    ADD COLUMN linha_reserva VARCHAR(64),
+    ADD COLUMN pedido_anterior VARCHAR(64),
+    ADD COLUMN regime_tributario VARCHAR(64),
+    ADD COLUMN nome_regime_tributario VARCHAR(128);
+
+ALTER TABLE customer_order_item
+    ADD COLUMN codcor VARCHAR(32),
+    ADD COLUMN codtam VARCHAR(32),
+    ADD COLUMN descricao_nfe VARCHAR(255),
+    ADD COLUMN peso_liquido NUMERIC(19, 4),
+    ADD COLUMN peso_bruto NUMERIC(19, 4),
+    ADD COLUMN referencia VARCHAR(128),
+    ADD COLUMN quantidade_faturada NUMERIC(19, 4),
+    ADD COLUMN quantidade_separada NUMERIC(19, 4);
