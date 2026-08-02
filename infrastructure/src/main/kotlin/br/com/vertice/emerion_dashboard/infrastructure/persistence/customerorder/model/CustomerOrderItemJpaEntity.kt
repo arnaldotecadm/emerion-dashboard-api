@@ -179,4 +179,28 @@ class CustomerOrderItemJpaEntity(
 
     @Column(name = "cod_cfo")
     var codCfo: String? = null,
+
+    @Column(name = "codcor")
+    var codcor: String? = null,
+
+    @Column(name = "codtam")
+    var codtam: String? = null,
+
+    @Column(name = "descricao_nfe")
+    var descricaoNFe: String? = null,
+
+    @Column(name = "peso_liquido")
+    var pesoLiquido: BigDecimal? = null,
+
+    @Column(name = "peso_bruto")
+    var pesoBruto: BigDecimal? = null,
+
+    @Column(name = "referencia")
+    var referencia: String? = null,
+
+    @Column(name = "quantidade_faturada")
+    var quantidadeFaturada: BigDecimal? = null,
+
+    @Column(name = "quantidade_separada")
+    var quantidadeSeparada: BigDecimal? = null,
 )

@@ -1,6 +1,8 @@
 package br.com.vertice.emerion_dashboard.infrastructure.persistence.customer.projection
 
+import java.math.BigDecimal
 import java.time.Instant
+import java.time.LocalDate
 
 /**
  * Read-side projection for `customer`, populated straight from a native SQL
@@ -18,6 +20,20 @@ interface CustomerProjection {
     val inscricaoEstadual: String?
     val regimeTributario: String?
     val bloqueado: Boolean
+    val dataNascimento: LocalDate?
+    val dataCadastro: LocalDate?
+    val dataUltimaAtualizacao: LocalDate?
+    val email1: String?
+    val email2: String?
+    val website: String?
+    val limiteCredito: BigDecimal?
+    val observacoes: String?
+    val cnae: String?
+    val vendedorExternalId: Long?
+    val nomeVendedor: String?
+    val codigoTipoCliente: String?
+    val codigoGrupoCliente: String?
+    val codigoCategoriaCliente: String?
     val createdAt: Instant
     val updatedAt: Instant
 }

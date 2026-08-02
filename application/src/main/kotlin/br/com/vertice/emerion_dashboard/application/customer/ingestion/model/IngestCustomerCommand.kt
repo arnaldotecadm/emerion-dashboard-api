@@ -1,6 +1,8 @@
 package br.com.vertice.emerion_dashboard.application.customer.ingestion.model
 
 import java.time.Instant
+import java.time.LocalDate
+import java.math.BigDecimal
 
 /** Input command for a single customer inside an ingestion batch. */
 data class IngestCustomerCommand(
@@ -12,5 +14,19 @@ data class IngestCustomerCommand(
     val inscricaoEstadual: String?,
     val regimeTributario: String?,
     val bloqueado: Boolean,
+    val dataNascimento: LocalDate? = null,
+    val dataCadastro: LocalDate? = null,
+    val dataUltimaAtualizacao: LocalDate? = null,
+    val email1: String? = null,
+    val email2: String? = null,
+    val website: String? = null,
+    val limiteCredito: BigDecimal? = null,
+    val observacoes: String? = null,
+    val cnae: String? = null,
+    val vendedorExternalId: Long? = null,
+    val nomeVendedor: String? = null,
+    val codigoTipoCliente: String? = null,
+    val codigoGrupoCliente: String? = null,
+    val codigoCategoriaCliente: String? = null,
     val createdAt: Instant?,
 )

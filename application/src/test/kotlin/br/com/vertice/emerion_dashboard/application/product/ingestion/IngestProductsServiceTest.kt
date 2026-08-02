@@ -92,8 +92,18 @@ class IngestProductsServiceTest {
             IngestBatchCommand(
                 batchId = "batch-3",
                 items = listOf(
-                    IngestProductCommand("FB-OK", "12345678000199", "Ok Product", BigDecimal("5.00")),
-                    IngestProductCommand("FB-BAD", "12345678000199", "Bad Product", null),
+                    IngestProductCommand(
+                        externalId = "FB-OK",
+                        cnpjEmpresa = "12345678000199",
+                        nome = "Ok Product",
+                        preco = BigDecimal("5.00"),
+                    ),
+                    IngestProductCommand(
+                        externalId = "FB-BAD",
+                        cnpjEmpresa = "12345678000199",
+                        nome = "Bad Product",
+                        preco = null,
+                    ),
                 ),
             ),
         )
@@ -128,7 +138,12 @@ class IngestProductsServiceTest {
         every { productRepository.findByExternalId("FB-5") } throws RuntimeException("db down")
 
         val result = service.ingestSingle(
-            IngestProductCommand("FB-5", "12345678000199", "Bad Product", null),
+            IngestProductCommand(
+                externalId = "FB-5",
+                cnpjEmpresa = "12345678000199",
+                nome = "Bad Product",
+                preco = null,
+            ),
         )
 
         assertEquals(IngestOutcome.FAILED, result.outcome)

@@ -39,6 +39,19 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
                 totipi,
                 totsub,
                 totdescinc,
+                totfrt,
+                totseg,
+                totoutdesp,
+                vendedor_external_id AS vendedorExternalId,
+                atendente_cod AS atendenteCod,
+                data_entrega_prevista AS dataEntregaPrevista,
+                desconto_comercial AS descontoComercial,
+                desconto_regional AS descontoRegional,
+                codigo_transportadora AS codigoTransportadora,
+                linha_reserva AS linhaReserva,
+                pedido_anterior AS pedidoAnterior,
+                regime_tributario AS regimeTributario,
+                nome_regime_tributario AS nomeRegimeTributario,
                 created_at AS createdAt,
                 updated_at AS updatedAt
             FROM customer_order
@@ -64,6 +77,19 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
                 totipi,
                 totsub,
                 totdescinc,
+                totfrt,
+                totseg,
+                totoutdesp,
+                vendedor_external_id AS vendedorExternalId,
+                atendente_cod AS atendenteCod,
+                data_entrega_prevista AS dataEntregaPrevista,
+                desconto_comercial AS descontoComercial,
+                desconto_regional AS descontoRegional,
+                codigo_transportadora AS codigoTransportadora,
+                linha_reserva AS linhaReserva,
+                pedido_anterior AS pedidoAnterior,
+                regime_tributario AS regimeTributario,
+                nome_regime_tributario AS nomeRegimeTributario,
                 created_at AS createdAt,
                 updated_at AS updatedAt
             FROM customer_order
@@ -139,7 +165,15 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
                 flg_val AS flgVal,
                 flg_pac AS flgPac,
                 flg_lib AS flgLib,
-                cod_cfo AS codCfo
+                cod_cfo AS codCfo,
+                codcor,
+                codtam,
+                descricao_nfe AS descricaoNFe,
+                peso_liquido AS pesoLiquido,
+                peso_bruto AS pesoBruto,
+                referencia,
+                quantidade_faturada AS quantidadeFaturada,
+                quantidade_separada AS quantidadeSeparada
             FROM customer_order_item
             WHERE customer_order_id IN (:customerOrderIds)
             ORDER BY customer_order_id, produto

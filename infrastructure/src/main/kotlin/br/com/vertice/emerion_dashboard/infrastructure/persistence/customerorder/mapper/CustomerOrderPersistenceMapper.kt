@@ -29,6 +29,19 @@ object CustomerOrderPersistenceMapper {
             totipi = header.totipi,
             totsub = header.totsub,
             totdescinc = header.totdescinc,
+            totfrt = header.totfrt,
+            totseg = header.totseg,
+            totoutdesp = header.totoutdesp,
+            vendedorExternalId = header.vendedorExternalId,
+            atendenteCod = header.atendenteCod,
+            dataEntregaPrevista = header.dataEntregaPrevista,
+            descontoComercial = header.descontoComercial,
+            descontoRegional = header.descontoRegional,
+            codigoTransportadora = header.codigoTransportadora,
+            linhaReserva = header.linhaReserva,
+            pedidoAnterior = header.pedidoAnterior,
+            regimeTributario = header.regimeTributario,
+            nomeRegimeTributario = header.nomeRegimeTributario,
             itens = items.map(::toItemDomain),
             createdAt = header.createdAt,
             updatedAt = header.updatedAt,
@@ -85,6 +98,14 @@ object CustomerOrderPersistenceMapper {
             flgPac = projection.flgPac,
             flgLib = projection.flgLib,
             codCfo = projection.codCfo,
+            codcor = projection.codcor,
+            codtam = projection.codtam,
+            descricaoNFe = projection.descricaoNFe,
+            pesoLiquido = projection.pesoLiquido,
+            pesoBruto = projection.pesoBruto,
+            referencia = projection.referencia,
+            quantidadeFaturada = projection.quantidadeFaturada,
+            quantidadeSeparada = projection.quantidadeSeparada,
         )
 
     /** Write path: JPA entity -> domain model. */
@@ -103,6 +124,19 @@ object CustomerOrderPersistenceMapper {
             totipi = entity.totipi,
             totsub = entity.totsub,
             totdescinc = entity.totdescinc,
+            totfrt = entity.totfrt,
+            totseg = entity.totseg,
+            totoutdesp = entity.totoutdesp,
+            vendedorExternalId = entity.vendedorExternalId,
+            atendenteCod = entity.atendenteCod,
+            dataEntregaPrevista = entity.dataEntregaPrevista,
+            descontoComercial = entity.descontoComercial,
+            descontoRegional = entity.descontoRegional,
+            codigoTransportadora = entity.codigoTransportadora,
+            linhaReserva = entity.linhaReserva,
+            pedidoAnterior = entity.pedidoAnterior,
+            regimeTributario = entity.regimeTributario,
+            nomeRegimeTributario = entity.nomeRegimeTributario,
             itens = entity.itens.map(::toItemDomain),
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt,
@@ -159,6 +193,14 @@ object CustomerOrderPersistenceMapper {
             flgPac = entity.flgPac,
             flgLib = entity.flgLib,
             codCfo = entity.codCfo,
+            codcor = entity.codcor,
+            codtam = entity.codtam,
+            descricaoNFe = entity.descricaoNFe,
+            pesoLiquido = entity.pesoLiquido,
+            pesoBruto = entity.pesoBruto,
+            referencia = entity.referencia,
+            quantidadeFaturada = entity.quantidadeFaturada,
+            quantidadeSeparada = entity.quantidadeSeparada,
         )
 
     /**
@@ -188,6 +230,19 @@ object CustomerOrderPersistenceMapper {
         entity.totipi = domain.totipi
         entity.totsub = domain.totsub
         entity.totdescinc = domain.totdescinc
+        entity.totfrt = domain.totfrt
+        entity.totseg = domain.totseg
+        entity.totoutdesp = domain.totoutdesp
+        entity.vendedorExternalId = domain.vendedorExternalId
+        entity.atendenteCod = domain.atendenteCod
+        entity.dataEntregaPrevista = domain.dataEntregaPrevista
+        entity.descontoComercial = domain.descontoComercial
+        entity.descontoRegional = domain.descontoRegional
+        entity.codigoTransportadora = domain.codigoTransportadora
+        entity.linhaReserva = domain.linhaReserva
+        entity.pedidoAnterior = domain.pedidoAnterior
+        entity.regimeTributario = domain.regimeTributario
+        entity.nomeRegimeTributario = domain.nomeRegimeTributario
         entity.createdAt = domain.createdAt
         entity.updatedAt = domain.updatedAt
         upsertItems(entity, domain.itens)
@@ -257,6 +312,14 @@ object CustomerOrderPersistenceMapper {
         entity.flgPac = item.flgPac
         entity.flgLib = item.flgLib
         entity.codCfo = item.codCfo
+        entity.codcor = item.codcor
+        entity.codtam = item.codtam
+        entity.descricaoNFe = item.descricaoNFe
+        entity.pesoLiquido = item.pesoLiquido
+        entity.pesoBruto = item.pesoBruto
+        entity.referencia = item.referencia
+        entity.quantidadeFaturada = item.quantidadeFaturada
+        entity.quantidadeSeparada = item.quantidadeSeparada
     }
 
     private fun toItemEntity(item: CustomerOrderItem, parent: CustomerOrderJpaEntity): CustomerOrderItemJpaEntity =
@@ -311,5 +374,13 @@ object CustomerOrderPersistenceMapper {
             flgPac = item.flgPac,
             flgLib = item.flgLib,
             codCfo = item.codCfo,
+            codcor = item.codcor,
+            codtam = item.codtam,
+            descricaoNFe = item.descricaoNFe,
+            pesoLiquido = item.pesoLiquido,
+            pesoBruto = item.pesoBruto,
+            referencia = item.referencia,
+            quantidadeFaturada = item.quantidadeFaturada,
+            quantidadeSeparada = item.quantidadeSeparada,
         )
 }

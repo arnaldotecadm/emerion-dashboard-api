@@ -1000,6 +1000,32 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /vendedores/by-external-id/{externalId}:
+    get:
+      tags:
+        - vendedores
+      operationId: getVendedorByExternalId
+      summary: Get a single vendedor by externalId (the legacy Firebird ID)
+      parameters:
+        - name: externalId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Vendedor found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendedorResponse'
+        '404':
+          description: Vendedor not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /notifications:
     get:
       tags:
@@ -1171,6 +1197,52 @@ components:
           nullable: true
         bloqueado:
           type: boolean
+        dataNascimento:
+          type: string
+          format: date
+          nullable: true
+        dataCadastro:
+          type: string
+          format: date
+          nullable: true
+        dataUltimaAtualizacao:
+          type: string
+          format: date
+          nullable: true
+        email1:
+          type: string
+          nullable: true
+        email2:
+          type: string
+          nullable: true
+        website:
+          type: string
+          nullable: true
+        limiteCredito:
+          type: number
+          nullable: true
+        observacoes:
+          type: string
+          nullable: true
+        cnae:
+          type: string
+          nullable: true
+        vendedorExternalId:
+          type: integer
+          format: int64
+          nullable: true
+        nomeVendedor:
+          type: string
+          nullable: true
+        codigoTipoCliente:
+          type: string
+          nullable: true
+        codigoGrupoCliente:
+          type: string
+          nullable: true
+        codigoCategoriaCliente:
+          type: string
+          nullable: true
         createdAt:
           type: string
           format: date-time
@@ -1242,6 +1314,52 @@ components:
           nullable: true
         bloqueado:
           type: boolean
+        dataNascimento:
+          type: string
+          format: date
+          nullable: true
+        dataCadastro:
+          type: string
+          format: date
+          nullable: true
+        dataUltimaAtualizacao:
+          type: string
+          format: date
+          nullable: true
+        email1:
+          type: string
+          nullable: true
+        email2:
+          type: string
+          nullable: true
+        website:
+          type: string
+          nullable: true
+        limiteCredito:
+          type: number
+          nullable: true
+        observacoes:
+          type: string
+          nullable: true
+        cnae:
+          type: string
+          nullable: true
+        vendedorExternalId:
+          type: integer
+          format: int64
+          nullable: true
+        nomeVendedor:
+          type: string
+          nullable: true
+        codigoTipoCliente:
+          type: string
+          nullable: true
+        codigoGrupoCliente:
+          type: string
+          nullable: true
+        codigoCategoriaCliente:
+          type: string
+          nullable: true
         createdAt:
           type: string
           format: date-time
@@ -1305,7 +1423,61 @@ components:
           description: Retailer/tenant CNPJ that owns this record, used to segregate data per retailer.
         nome:
           type: string
+        descricaoReduzida:
+          type: string
+          nullable: true
+        referenciaInterna:
+          type: string
+          nullable: true
+        ncm:
+          type: string
+          nullable: true
+        cest:
+          type: string
+          nullable: true
+        origemProduto:
+          type: string
+          nullable: true
+        categoria:
+          type: string
+          nullable: true
+        tipo:
+          type: string
+          nullable: true
+        marca:
+          type: string
+          nullable: true
+        unidade:
+          type: string
+          nullable: true
+        pesoLiquido:
+          type: number
+          nullable: true
+        pesoBruto:
+          type: number
+          nullable: true
+        descontinuado:
+          type: boolean
+          nullable: true
+        codigoBarras:
+          type: string
+          nullable: true
+        codigoBarrasProprio:
+          type: string
+          nullable: true
         preco:
+          type: number
+          nullable: true
+        preco2:
+          type: number
+          nullable: true
+        preco3:
+          type: number
+          nullable: true
+        preco4:
+          type: number
+          nullable: true
+        preco5:
           type: number
           nullable: true
 
@@ -1610,6 +1782,30 @@ components:
         codCfo:
           type: string
           nullable: true
+        codcor:
+          type: string
+          nullable: true
+        codtam:
+          type: string
+          nullable: true
+        descricaoNFe:
+          type: string
+          nullable: true
+        pesoLiquido:
+          type: number
+          nullable: true
+        pesoBruto:
+          type: number
+          nullable: true
+        referencia:
+          type: string
+          nullable: true
+        quantidadeFaturada:
+          type: number
+          nullable: true
+        quantidadeSeparada:
+          type: number
+          nullable: true
 
     CustomerOrderIngestionItem:
       type: object
@@ -1665,6 +1861,47 @@ components:
           type: number
         totdescinc:
           type: number
+        totfrt:
+          type: number
+          nullable: true
+        totseg:
+          type: number
+          nullable: true
+        totoutdesp:
+          type: number
+          nullable: true
+        vendedorExternalId:
+          type: integer
+          format: int64
+          nullable: true
+        atendenteCod:
+          type: string
+          nullable: true
+        dataEntregaPrevista:
+          type: string
+          format: date
+          nullable: true
+        descontoComercial:
+          type: number
+          nullable: true
+        descontoRegional:
+          type: number
+          nullable: true
+        codigoTransportadora:
+          type: string
+          nullable: true
+        linhaReserva:
+          type: string
+          nullable: true
+        pedidoAnterior:
+          type: string
+          nullable: true
+        regimeTributario:
+          type: string
+          nullable: true
+        nomeRegimeTributario:
+          type: string
+          nullable: true
         itens:
           type: array
           items:
@@ -1696,7 +1933,61 @@ components:
           type: string
         nome:
           type: string
+        descricaoReduzida:
+          type: string
+          nullable: true
+        referenciaInterna:
+          type: string
+          nullable: true
+        ncm:
+          type: string
+          nullable: true
+        cest:
+          type: string
+          nullable: true
+        origemProduto:
+          type: string
+          nullable: true
+        categoria:
+          type: string
+          nullable: true
+        tipo:
+          type: string
+          nullable: true
+        marca:
+          type: string
+          nullable: true
+        unidade:
+          type: string
+          nullable: true
+        pesoLiquido:
+          type: number
+          nullable: true
+        pesoBruto:
+          type: number
+          nullable: true
+        descontinuado:
+          type: boolean
+          nullable: true
+        codigoBarras:
+          type: string
+          nullable: true
+        codigoBarrasProprio:
+          type: string
+          nullable: true
         preco:
+          type: number
+          nullable: true
+        preco2:
+          type: number
+          nullable: true
+        preco3:
+          type: number
+          nullable: true
+        preco4:
+          type: number
+          nullable: true
+        preco5:
           type: number
           nullable: true
         createdAt:
@@ -1982,6 +2273,30 @@ components:
         codCfo:
           type: string
           nullable: true
+        codcor:
+          type: string
+          nullable: true
+        codtam:
+          type: string
+          nullable: true
+        descricaoNFe:
+          type: string
+          nullable: true
+        pesoLiquido:
+          type: number
+          nullable: true
+        pesoBruto:
+          type: number
+          nullable: true
+        referencia:
+          type: string
+          nullable: true
+        quantidadeFaturada:
+          type: number
+          nullable: true
+        quantidadeSeparada:
+          type: number
+          nullable: true
 
     CustomerOrderResponse:
       type: object
@@ -2017,6 +2332,47 @@ components:
           type: number
         totdescinc:
           type: number
+        totfrt:
+          type: number
+          nullable: true
+        totseg:
+          type: number
+          nullable: true
+        totoutdesp:
+          type: number
+          nullable: true
+        vendedorExternalId:
+          type: integer
+          format: int64
+          nullable: true
+        atendenteCod:
+          type: string
+          nullable: true
+        dataEntregaPrevista:
+          type: string
+          format: date
+          nullable: true
+        descontoComercial:
+          type: number
+          nullable: true
+        descontoRegional:
+          type: number
+          nullable: true
+        codigoTransportadora:
+          type: string
+          nullable: true
+        linhaReserva:
+          type: string
+          nullable: true
+        pedidoAnterior:
+          type: string
+          nullable: true
+        regimeTributario:
+          type: string
+          nullable: true
+        nomeRegimeTributario:
+          type: string
+          nullable: true
         itens:
           type: array
           items:
@@ -2245,4 +2601,3 @@ components:
         syncedAt:
           type: string
           format: date-time
-

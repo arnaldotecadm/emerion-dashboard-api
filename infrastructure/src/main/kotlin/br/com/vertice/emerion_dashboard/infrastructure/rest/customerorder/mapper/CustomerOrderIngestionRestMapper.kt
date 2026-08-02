@@ -34,6 +34,19 @@ object CustomerOrderIngestionRestMapper {
             totipi = dto.totipi,
             totsub = dto.totsub,
             totdescinc = dto.totdescinc,
+            totfrt = dto.totfrt,
+            totseg = dto.totseg,
+            totoutdesp = dto.totoutdesp,
+            vendedorExternalId = dto.vendedorExternalId,
+            atendenteCod = dto.atendenteCod,
+            dataEntregaPrevista = dto.dataEntregaPrevista,
+            descontoComercial = dto.descontoComercial,
+            descontoRegional = dto.descontoRegional,
+            codigoTransportadora = dto.codigoTransportadora,
+            linhaReserva = dto.linhaReserva,
+            pedidoAnterior = dto.pedidoAnterior,
+            regimeTributario = dto.regimeTributario,
+            nomeRegimeTributario = dto.nomeRegimeTributario,
             itens = dto.itens.map(::toItemLineCommand),
         )
 
@@ -88,6 +101,14 @@ object CustomerOrderIngestionRestMapper {
             flgPac = dto.flgPac,
             flgLib = dto.flgLib,
             codCfo = dto.codCfo,
+            codcor = dto.codcor,
+            codtam = dto.codtam,
+            descricaoNFe = dto.descricaoNFe,
+            pesoLiquido = dto.pesoLiquido,
+            pesoBruto = dto.pesoBruto,
+            referencia = dto.referencia,
+            quantidadeFaturada = dto.quantidadeFaturada,
+            quantidadeSeparada = dto.quantidadeSeparada,
         )
 
     fun toResponse(result: IngestBatchResult): IngestionResult =

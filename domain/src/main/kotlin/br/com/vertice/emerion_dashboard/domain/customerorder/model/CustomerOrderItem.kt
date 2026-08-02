@@ -67,4 +67,12 @@ data class CustomerOrderItem(
     val flgPac: String? = null,
     val flgLib: String? = null,
     val codCfo: String? = null,
+    val codcor: String? = null,
+    val codtam: String? = null,
+    val descricaoNFe: String? = null,
+    val pesoLiquido: BigDecimal? = null,
+    val pesoBruto: BigDecimal? = null,
+    val referencia: String? = null,
+    val quantidadeFaturada: BigDecimal? = null,
+    val quantidadeSeparada: BigDecimal? = null,
 )

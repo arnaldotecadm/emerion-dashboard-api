@@ -2,6 +2,7 @@ package br.com.vertice.emerion_dashboard.infrastructure.rest.vendedor.controller
 
 import br.com.vertice.emerion_dashboard.application.vendedor.query.VendedorQueryUseCase
 import br.com.vertice.emerion_dashboard.application.vendedor.query.model.ListVendedoresQuery
+import br.com.vertice.emerion_dashboard.infrastructure.rest.customer.mapper.CustomerQueryRestMapper
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.api.VendedoresApi
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.VendedorPage
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.VendedorResponse
@@ -21,6 +22,11 @@ class VendedorQueryController(
 
     override fun getVendedorById(id: Long): ResponseEntity<VendedorResponse> {
         val vendedor = vendedorQueryUseCase.getById(id)
+        return ResponseEntity.ok(VendedorQueryRestMapper.toResponse(vendedor))
+    }
+
+    override fun getVendedorByExternalId(externalId: String): ResponseEntity<VendedorResponse> {
+        val vendedor = vendedorQueryUseCase.getByExternalId(externalId)
         return ResponseEntity.ok(VendedorQueryRestMapper.toResponse(vendedor))
     }
 

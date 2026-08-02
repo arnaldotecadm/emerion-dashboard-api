@@ -105,8 +105,28 @@ class IngestCustomersServiceTest {
             IngestBatchCommand(
                 batchId = "batch-3",
                 items = listOf(
-                    IngestCustomerCommand("FB-OK", "12345678000199", "Ok Co", "Ok Co Ltda", "12345678000190", null, null, false, null),
-                    IngestCustomerCommand("FB-BAD", "12345678000199", "Bad Co", "Bad Co Ltda", "12345678000190", null, null, false, null),
+                    IngestCustomerCommand(
+                        externalId = "FB-OK",
+                        cnpjEmpresa = "12345678000199",
+                        nomeFantasia = "Ok Co",
+                        razaoSocial = "Ok Co Ltda",
+                        cpfCnpj = "12345678000190",
+                        inscricaoEstadual = null,
+                        regimeTributario = null,
+                        bloqueado = false,
+                        createdAt = null,
+                    ),
+                    IngestCustomerCommand(
+                        externalId = "FB-BAD",
+                        cnpjEmpresa = "12345678000199",
+                        nomeFantasia = "Bad Co",
+                        razaoSocial = "Bad Co Ltda",
+                        cpfCnpj = "12345678000190",
+                        inscricaoEstadual = null,
+                        regimeTributario = null,
+                        bloqueado = false,
+                        createdAt = null,
+                    ),
                 ),
             ),
         )
@@ -146,7 +166,17 @@ class IngestCustomersServiceTest {
         every { customerRepository.findByExternalId("FB-5") } throws RuntimeException("db down")
 
         val result = service.ingestSingle(
-            IngestCustomerCommand("FB-5", "12345678000199", "Bad Co", "Bad Co Ltda", "12345678000190", null, null, false, null),
+            IngestCustomerCommand(
+                externalId = "FB-5",
+                cnpjEmpresa = "12345678000199",
+                nomeFantasia = "Bad Co",
+                razaoSocial = "Bad Co Ltda",
+                cpfCnpj = "12345678000190",
+                inscricaoEstadual = null,
+                regimeTributario = null,
+                bloqueado = false,
+                createdAt = null,
+            ),
         )
 
         assertEquals(IngestOutcome.FAILED, result.outcome)

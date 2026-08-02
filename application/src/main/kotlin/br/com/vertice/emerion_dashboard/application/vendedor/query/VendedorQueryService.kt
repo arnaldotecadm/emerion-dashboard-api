@@ -1,6 +1,8 @@
 package br.com.vertice.emerion_dashboard.application.vendedor.query
 
 import br.com.vertice.emerion_dashboard.application.vendedor.query.model.ListVendedoresQuery
+import br.com.vertice.emerion_dashboard.domain.customer.exception.CustomerNotFoundException
+import br.com.vertice.emerion_dashboard.domain.customer.model.Customer
 import br.com.vertice.emerion_dashboard.domain.shared.Page
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import br.com.vertice.emerion_dashboard.domain.vendedor.exception.VendedorNotFoundException
@@ -17,6 +19,10 @@ class VendedorQueryService(
     @Transactional(readOnly = true)
     override fun getById(id: Long): Vendedor =
         vendedorRepository.findById(id) ?: throw VendedorNotFoundException(id)
+
+    @Transactional(readOnly = true)
+    override fun getByExternalId(externalId: String): Vendedor =
+        vendedorRepository.findByExternalId(externalId) ?: throw VendedorNotFoundException(externalId)
 
     @Transactional(readOnly = true)
     override fun list(query: ListVendedoresQuery): Page<Vendedor> =

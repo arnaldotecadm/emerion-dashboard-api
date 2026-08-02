@@ -26,6 +26,19 @@ interface CustomerOrderHeaderProjection {
     val totipi: BigDecimal
     val totsub: BigDecimal
     val totdescinc: BigDecimal
+    val totfrt: BigDecimal?
+    val totseg: BigDecimal?
+    val totoutdesp: BigDecimal?
+    val vendedorExternalId: Long?
+    val atendenteCod: String?
+    val dataEntregaPrevista: LocalDate?
+    val descontoComercial: BigDecimal?
+    val descontoRegional: BigDecimal?
+    val codigoTransportadora: String?
+    val linhaReserva: String?
+    val pedidoAnterior: String?
+    val regimeTributario: String?
+    val nomeRegimeTributario: String?
     val createdAt: Instant
     val updatedAt: Instant
 }

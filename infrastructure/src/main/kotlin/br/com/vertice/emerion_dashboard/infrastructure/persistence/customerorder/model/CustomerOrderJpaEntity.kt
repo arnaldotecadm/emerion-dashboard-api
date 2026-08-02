@@ -67,6 +67,45 @@ class CustomerOrderJpaEntity(
     @Column(name = "totdescinc", nullable = false)
     var totdescinc: BigDecimal = BigDecimal.ZERO,
 
+    @Column(name = "totfrt")
+    var totfrt: BigDecimal? = null,
+
+    @Column(name = "totseg")
+    var totseg: BigDecimal? = null,
+
+    @Column(name = "totoutdesp")
+    var totoutdesp: BigDecimal? = null,
+
+    @Column(name = "vendedor_external_id")
+    var vendedorExternalId: Long? = null,
+
+    @Column(name = "atendente_cod")
+    var atendenteCod: String? = null,
+
+    @Column(name = "data_entrega_prevista")
+    var dataEntregaPrevista: LocalDate? = null,
+
+    @Column(name = "desconto_comercial")
+    var descontoComercial: BigDecimal? = null,
+
+    @Column(name = "desconto_regional")
+    var descontoRegional: BigDecimal? = null,
+
+    @Column(name = "codigo_transportadora")
+    var codigoTransportadora: String? = null,
+
+    @Column(name = "linha_reserva")
+    var linhaReserva: String? = null,
+
+    @Column(name = "pedido_anterior")
+    var pedidoAnterior: String? = null,
+
+    @Column(name = "regime_tributario")
+    var regimeTributario: String? = null,
+
+    @Column(name = "nome_regime_tributario")
+    var nomeRegimeTributario: String? = null,
+
     @OneToMany(mappedBy = "customerOrder", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     var itens: MutableList<CustomerOrderItemJpaEntity> = mutableListOf(),
 

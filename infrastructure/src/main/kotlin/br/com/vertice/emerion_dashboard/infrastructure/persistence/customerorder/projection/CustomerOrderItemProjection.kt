@@ -58,4 +58,12 @@ interface CustomerOrderItemProjection {
     val flgPac: String?
     val flgLib: String?
     val codCfo: String?
+    val codcor: String?
+    val codtam: String?
+    val descricaoNFe: String?
+    val pesoLiquido: BigDecimal?
+    val pesoBruto: BigDecimal?
+    val referencia: String?
+    val quantidadeFaturada: BigDecimal?
+    val quantidadeSeparada: BigDecimal?
 }
