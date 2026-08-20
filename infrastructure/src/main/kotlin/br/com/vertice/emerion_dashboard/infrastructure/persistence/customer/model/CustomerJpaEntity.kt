@@ -93,6 +93,18 @@ class CustomerJpaEntity(
     @Column(name = "codigo_categoria_cliente")
     var codigoCategoriaCliente: String? = null,
 
+    @Column(name = "uf")
+    var uf: String? = null,
+
+    @Column(name = "macro_regiao")
+    var macroRegiao: String? = null,
+
+    @Column(name = "micro_regiao")
+    var microRegiao: String? = null,
+
+    @Column(name = "setor")
+    var setor: String? = null,
+
     @Column(name = "created_at", nullable = false)
     var createdAt: Instant = Instant.now(),
 

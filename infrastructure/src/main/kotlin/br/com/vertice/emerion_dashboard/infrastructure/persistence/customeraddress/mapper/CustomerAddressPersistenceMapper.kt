@@ -39,6 +39,11 @@ object CustomerAddressPersistenceMapper {
             telefoneContato = projection.telefoneContato,
             complemento = projection.complemento,
             fax = projection.fax,
+            tipoEndereco = projection.tipoEndereco,
+            dddTelefone = projection.dddTelefone,
+            dddFax = projection.dddFax,
+            dddCelular = projection.dddCelular,
+            celular = projection.celular,
         )
 
     /** Write path: JPA entity -> domain model. */
@@ -67,6 +72,11 @@ object CustomerAddressPersistenceMapper {
             telefoneContato = entity.telefoneContato,
             complemento = entity.complemento,
             fax = entity.fax,
+            tipoEndereco = entity.tipoEndereco,
+            dddTelefone = entity.dddTelefone,
+            dddFax = entity.dddFax,
+            dddCelular = entity.dddCelular,
+            celular = entity.celular,
         )
 
     /**
@@ -103,5 +113,10 @@ object CustomerAddressPersistenceMapper {
             telefoneContato = detail.telefoneContato,
             complemento = detail.complemento,
             fax = detail.fax,
+            tipoEndereco = detail.tipoEndereco,
+            dddTelefone = detail.dddTelefone,
+            dddFax = detail.dddFax,
+            dddCelular = detail.dddCelular,
+            celular = detail.celular,
         )
 }

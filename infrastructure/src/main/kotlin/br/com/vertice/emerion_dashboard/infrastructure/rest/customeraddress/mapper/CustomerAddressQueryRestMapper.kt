@@ -37,6 +37,11 @@ object CustomerAddressQueryRestMapper {
             telefoneContato = detail.telefoneContato,
             complemento = detail.complemento,
             fax = detail.fax,
+            tipoEndereco = detail.tipoEndereco,
+            dddTelefone = detail.dddTelefone,
+            dddFax = detail.dddFax,
+            dddCelular = detail.dddCelular,
+            celular = detail.celular,
         )
 
     fun toPageResponse(page: DomainPage<CustomerAddress>): CustomerAddressPage =

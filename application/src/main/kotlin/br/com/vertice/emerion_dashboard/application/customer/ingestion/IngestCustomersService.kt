@@ -7,6 +7,9 @@ import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.Ing
 import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestOutcome
 import br.com.vertice.emerion_dashboard.domain.customer.model.Customer
 import br.com.vertice.emerion_dashboard.domain.customer.repository.CustomerRepository
+import br.com.vertice.emerion_dashboard.domain.customeraddress.model.CustomerAddress
+import br.com.vertice.emerion_dashboard.domain.customeraddress.model.CustomerAddressDetail
+import br.com.vertice.emerion_dashboard.domain.customeraddress.repository.CustomerAddressRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -21,6 +24,7 @@ import java.time.Instant
 @Service
 class IngestCustomersService(
     private val customerRepository: CustomerRepository,
+    private val customerAddressRepository: CustomerAddressRepository,
     private val clock: Clock = Clock.systemUTC(),
 ) : IngestCustomersUseCase {
 
@@ -72,6 +76,10 @@ class IngestCustomersService(
                 codigoTipoCliente = item.codigoTipoCliente,
                 codigoGrupoCliente = item.codigoGrupoCliente,
                 codigoCategoriaCliente = item.codigoCategoriaCliente,
+                uf = item.uf,
+                macroRegiao = item.macroRegiao,
+                microRegiao = item.microRegiao,
+                setor = item.setor,
                 now = now,
             ) ?: Customer.newFromIngestion(
                 externalId = item.externalId,
@@ -96,10 +104,17 @@ class IngestCustomersService(
                 codigoTipoCliente = item.codigoTipoCliente,
                 codigoGrupoCliente = item.codigoGrupoCliente,
                 codigoCategoriaCliente = item.codigoCategoriaCliente,
+                uf = item.uf,
+                macroRegiao = item.macroRegiao,
+                microRegiao = item.microRegiao,
+                setor = item.setor,
                 createdAt = item.createdAt,
                 now = now,
             )
             customerRepository.save(toSave)
+            if (item.enderecos.isNotEmpty()) {
+                upsertAddresses(item, now)
+            }
             IngestItemResult(
                 externalId = item.externalId,
                 outcome = if (existing == null) IngestOutcome.CREATED else IngestOutcome.UPDATED,
@@ -113,5 +128,33 @@ class IngestCustomersService(
                 errorMessage = ex.message,
             )
         }
+    }
+
+    private fun upsertAddresses(item: IngestCustomerCommand, now: Instant) {
+            val existing = customerAddressRepository.findByExternalId(item.externalId)
+            val details = item.enderecos.map {
+                CustomerAddressDetail(
+                    tipo = it.tipo,
+                    cep = it.cep,
+                    endereco = it.endereco,
+                    numero = it.numero,
+                    referencia = it.referencia,
+                    bairro = it.bairro,
+                    cidade = it.cidade,
+                    uf = it.uf,
+                    telefone = it.telefone,
+                    telefoneContato = it.telefoneContato,
+                    complemento = it.complemento,
+                    fax = it.fax,
+                    tipoEndereco = it.tipoEndereco,
+                    dddTelefone = it.dddTelefone,
+                    dddFax = it.dddFax,
+                    dddCelular = it.dddCelular,
+                    celular = it.celular,
+                )
+            }
+            val address = existing?.mergeFromIngestion(item.cnpjEmpresa, item.cpfCnpj, details, now)
+                ?: CustomerAddress.newFromIngestion(item.externalId, item.cnpjEmpresa, item.cpfCnpj, details, now)
+            customerAddressRepository.save(address)
     }
 }

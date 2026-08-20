@@ -19,4 +19,9 @@ interface CustomerAddressDetailProjection {
     val telefoneContato: String?
     val complemento: String?
     val fax: String?
+    val tipoEndereco: String?
+    val dddTelefone: String?
+    val dddFax: String?
+    val dddCelular: String?
+    val celular: String?
 }

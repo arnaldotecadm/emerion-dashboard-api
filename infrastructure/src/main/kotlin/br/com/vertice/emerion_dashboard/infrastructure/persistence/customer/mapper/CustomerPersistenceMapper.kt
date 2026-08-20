@@ -33,6 +33,10 @@ object CustomerPersistenceMapper {
             codigoTipoCliente = projection.codigoTipoCliente,
             codigoGrupoCliente = projection.codigoGrupoCliente,
             codigoCategoriaCliente = projection.codigoCategoriaCliente,
+            uf = projection.uf,
+            macroRegiao = projection.macroRegiao,
+            microRegiao = projection.microRegiao,
+            setor = projection.setor,
             createdAt = projection.createdAt,
             updatedAt = projection.updatedAt,
         )
@@ -63,6 +67,10 @@ object CustomerPersistenceMapper {
             codigoTipoCliente = entity.codigoTipoCliente,
             codigoGrupoCliente = entity.codigoGrupoCliente,
             codigoCategoriaCliente = entity.codigoCategoriaCliente,
+            uf = entity.uf,
+            macroRegiao = entity.macroRegiao,
+            microRegiao = entity.microRegiao,
+            setor = entity.setor,
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt,
         )
@@ -93,6 +101,10 @@ object CustomerPersistenceMapper {
             codigoTipoCliente = domain.codigoTipoCliente,
             codigoGrupoCliente = domain.codigoGrupoCliente,
             codigoCategoriaCliente = domain.codigoCategoriaCliente,
+            uf = domain.uf,
+            macroRegiao = domain.macroRegiao,
+            microRegiao = domain.microRegiao,
+            setor = domain.setor,
             createdAt = domain.createdAt,
             updatedAt = domain.updatedAt,
         )

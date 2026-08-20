@@ -82,7 +82,12 @@ interface CustomerAddressQueryRepository : Repository<CustomerAddressJpaEntity, 
                 telefone,
                 telefone_contato AS telefoneContato,
                 complemento,
-                fax
+                fax,
+                tipo_endereco AS tipoEndereco,
+                ddd_telefone AS dddTelefone,
+                ddd_fax AS dddFax,
+                ddd_celular AS dddCelular,
+                celular
             FROM customer_address_detail
             WHERE customer_address_id IN (:customerAddressIds)
             ORDER BY customer_address_id, tipo

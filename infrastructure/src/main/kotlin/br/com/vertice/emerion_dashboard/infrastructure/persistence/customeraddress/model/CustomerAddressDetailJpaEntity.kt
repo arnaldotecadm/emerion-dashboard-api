@@ -68,4 +68,19 @@ class CustomerAddressDetailJpaEntity(
 
     @Column(name = "fax")
     var fax: String? = null,
+
+    @Column(name = "tipo_endereco")
+    var tipoEndereco: String? = null,
+
+    @Column(name = "ddd_telefone")
+    var dddTelefone: String? = null,
+
+    @Column(name = "ddd_fax")
+    var dddFax: String? = null,
+
+    @Column(name = "ddd_celular")
+    var dddCelular: String? = null,
+
+    @Column(name = "celular")
+    var celular: String? = null,
 )

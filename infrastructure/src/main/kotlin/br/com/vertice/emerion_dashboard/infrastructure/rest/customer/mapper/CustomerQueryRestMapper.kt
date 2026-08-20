@@ -35,6 +35,10 @@ object CustomerQueryRestMapper {
             codigoTipoCliente = customer.codigoTipoCliente,
             codigoGrupoCliente = customer.codigoGrupoCliente,
             codigoCategoriaCliente = customer.codigoCategoriaCliente,
+            uf = customer.uf,
+            macroRegiao = customer.macroRegiao,
+            microRegiao = customer.microRegiao,
+            setor = customer.setor,
             createdAt = customer.createdAt.atOffset(ZoneOffset.UTC),
             updatedAt = customer.updatedAt.atOffset(ZoneOffset.UTC),
         )

@@ -46,6 +46,10 @@ interface CustomerQueryRepository : Repository<CustomerJpaEntity, Long> {
                 codigo_tipo_cliente AS codigoTipoCliente,
                 codigo_grupo_cliente AS codigoGrupoCliente,
                 codigo_categoria_cliente AS codigoCategoriaCliente,
+                uf,
+                macro_regiao AS macroRegiao,
+                micro_regiao AS microRegiao,
+                setor,
                 created_at AS createdAt,
                 updated_at AS updatedAt
             FROM customer
@@ -81,6 +85,10 @@ interface CustomerQueryRepository : Repository<CustomerJpaEntity, Long> {
                 codigo_tipo_cliente AS codigoTipoCliente,
                 codigo_grupo_cliente AS codigoGrupoCliente,
                 codigo_categoria_cliente AS codigoCategoriaCliente,
+                uf,
+                macro_regiao AS macroRegiao,
+                micro_regiao AS microRegiao,
+                setor,
                 created_at AS createdAt,
                 updated_at AS updatedAt
             FROM customer

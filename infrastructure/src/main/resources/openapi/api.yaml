@@ -1247,6 +1247,63 @@ components:
           type: string
           format: date-time
           nullable: true
+        uf:
+          type: string
+          nullable: true
+        macroRegiao:
+          type: string
+          nullable: true
+        microRegiao:
+          type: string
+          nullable: true
+        setor:
+          type: string
+          nullable: true
+        faturamentoCep: { type: string, nullable: true }
+        faturamentoTipoEndereco: { type: string, nullable: true }
+        faturamentoEndereco: { type: string, nullable: true }
+        faturamentoNumero: { type: string, nullable: true }
+        faturamentoComplemento: { type: string, nullable: true }
+        faturamentoBairro: { type: string, nullable: true }
+        faturamentoCidade: { type: string, nullable: true }
+        faturamentoUf: { type: string, nullable: true }
+        faturamentoDDDTelefone: { type: string, nullable: true }
+        faturamentoTelefone: { type: string, nullable: true }
+        faturamentoDDDFax: { type: string, nullable: true }
+        faturamentoFax: { type: string, nullable: true }
+        faturamentoContato: { type: string, nullable: true }
+        faturamentoDDDCelular: { type: string, nullable: true }
+        faturamentoCelular: { type: string, nullable: true }
+        cobrancaCep: { type: string, nullable: true }
+        cobrancaTipoEndereco: { type: string, nullable: true }
+        cobrancaEndereco: { type: string, nullable: true }
+        cobrancaNumero: { type: string, nullable: true }
+        cobrancaComplemento: { type: string, nullable: true }
+        cobrancaBairro: { type: string, nullable: true }
+        cobrancaCidade: { type: string, nullable: true }
+        cobrancaUf: { type: string, nullable: true }
+        cobrancaDDDTelefone: { type: string, nullable: true }
+        cobrancaTelefone: { type: string, nullable: true }
+        cobrancaDDDFax: { type: string, nullable: true }
+        cobrancaFax: { type: string, nullable: true }
+        cobrancaContato: { type: string, nullable: true }
+        cobrancaDDDCelular: { type: string, nullable: true }
+        cobrancaCelular: { type: string, nullable: true }
+        entregaCep: { type: string, nullable: true }
+        entregaTipoEndereco: { type: string, nullable: true }
+        entregaEndereco: { type: string, nullable: true }
+        entregaNumero: { type: string, nullable: true }
+        entregaComplemento: { type: string, nullable: true }
+        entregaBairro: { type: string, nullable: true }
+        entregaCidade: { type: string, nullable: true }
+        entregaUf: { type: string, nullable: true }
+        entregaDDDTelefone: { type: string, nullable: true }
+        entregaTelefone: { type: string, nullable: true }
+        entregaDDDFax: { type: string, nullable: true }
+        entregaFax: { type: string, nullable: true }
+        entregaContato: { type: string, nullable: true }
+        entregaDDDCelular: { type: string, nullable: true }
+        entregaCelular: { type: string, nullable: true }
 
     CustomerIngestionBatch:
       type: object
@@ -1358,6 +1415,18 @@ components:
           type: string
           nullable: true
         codigoCategoriaCliente:
+          type: string
+          nullable: true
+        uf:
+          type: string
+          nullable: true
+        macroRegiao:
+          type: string
+          nullable: true
+        microRegiao:
+          type: string
+          nullable: true
+        setor:
           type: string
           nullable: true
         createdAt:
@@ -1618,6 +1687,11 @@ components:
         fax:
           type: string
           nullable: true
+        tipoEndereco: { type: string, nullable: true }
+        dddTelefone: { type: string, nullable: true }
+        dddFax: { type: string, nullable: true }
+        dddCelular: { type: string, nullable: true }
+        celular: { type: string, nullable: true }
 
     CustomerAddressIngestionItem:
       type: object
@@ -2207,6 +2281,11 @@ components:
         fax:
           type: string
           nullable: true
+        tipoEndereco: { type: string, nullable: true }
+        dddTelefone: { type: string, nullable: true }
+        dddFax: { type: string, nullable: true }
+        dddCelular: { type: string, nullable: true }
+        celular: { type: string, nullable: true }
 
     CustomerAddressResponse:
       type: object

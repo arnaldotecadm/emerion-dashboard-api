@@ -14,4 +14,9 @@ data class IngestCustomerAddressDetailCommand(
     val telefoneContato: String?,
     val complemento: String?,
     val fax: String?,
+    val tipoEndereco: String? = null,
+    val dddTelefone: String? = null,
+    val dddFax: String? = null,
+    val dddCelular: String? = null,
+    val celular: String? = null,
 )

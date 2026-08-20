@@ -35,6 +35,10 @@ data class Customer(
     val codigoTipoCliente: String? = null,
     val codigoGrupoCliente: String? = null,
     val codigoCategoriaCliente: String? = null,
+    val uf: String? = null,
+    val macroRegiao: String? = null,
+    val microRegiao: String? = null,
+    val setor: String? = null,
     val createdAt: Instant,
     val updatedAt: Instant,
 ) {
@@ -63,6 +67,10 @@ data class Customer(
             codigoTipoCliente: String? = null,
             codigoGrupoCliente: String? = null,
             codigoCategoriaCliente: String? = null,
+            uf: String? = null,
+            macroRegiao: String? = null,
+            microRegiao: String? = null,
+            setor: String? = null,
             createdAt: Instant?,
             now: Instant,
         ) = Customer(
@@ -89,6 +97,10 @@ data class Customer(
             codigoTipoCliente = codigoTipoCliente,
             codigoGrupoCliente = codigoGrupoCliente,
             codigoCategoriaCliente = codigoCategoriaCliente,
+            uf = uf,
+            macroRegiao = macroRegiao,
+            microRegiao = microRegiao,
+            setor = setor,
             createdAt = createdAt ?: now,
             updatedAt = now,
         )
@@ -117,6 +129,10 @@ data class Customer(
         codigoTipoCliente: String? = null,
         codigoGrupoCliente: String? = null,
         codigoCategoriaCliente: String? = null,
+        uf: String? = null,
+        macroRegiao: String? = null,
+        microRegiao: String? = null,
+        setor: String? = null,
         now: Instant,
     ) = copy(
         cnpjEmpresa = cnpjEmpresa,
@@ -140,6 +156,10 @@ data class Customer(
         codigoTipoCliente = codigoTipoCliente,
         codigoGrupoCliente = codigoGrupoCliente,
         codigoCategoriaCliente = codigoCategoriaCliente,
+        uf = uf,
+        macroRegiao = macroRegiao,
+        microRegiao = microRegiao,
+        setor = setor,
         updatedAt = now,
     )
 }

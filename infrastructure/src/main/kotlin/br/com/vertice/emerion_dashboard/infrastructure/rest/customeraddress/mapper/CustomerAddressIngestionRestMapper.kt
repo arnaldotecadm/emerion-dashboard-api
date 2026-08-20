@@ -42,6 +42,11 @@ object CustomerAddressIngestionRestMapper {
             telefoneContato = dto.telefoneContato,
             complemento = dto.complemento,
             fax = dto.fax,
+            tipoEndereco = dto.tipoEndereco,
+            dddTelefone = dto.dddTelefone,
+            dddFax = dto.dddFax,
+            dddCelular = dto.dddCelular,
+            celular = dto.celular,
         )
 
     fun toResponse(result: IngestBatchResult): IngestionResult =

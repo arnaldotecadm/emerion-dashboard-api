@@ -5,6 +5,7 @@ import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.Ing
 import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestOutcome
 import br.com.vertice.emerion_dashboard.domain.customer.model.Customer
 import br.com.vertice.emerion_dashboard.domain.customer.repository.CustomerRepository
+import br.com.vertice.emerion_dashboard.domain.customeraddress.repository.CustomerAddressRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -19,7 +20,8 @@ class IngestCustomersServiceTest {
 
     private val fixedClock = Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC)
     private val customerRepository = mockk<CustomerRepository>()
-    private val service = IngestCustomersService(customerRepository, fixedClock)
+    private val customerAddressRepository = mockk<CustomerAddressRepository>()
+    private val service = IngestCustomersService(customerRepository, customerAddressRepository, fixedClock)
 
     @Test
     fun `creates a new customer when externalId is not known yet`() {

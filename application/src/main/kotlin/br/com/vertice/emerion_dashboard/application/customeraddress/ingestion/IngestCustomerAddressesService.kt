@@ -96,5 +96,10 @@ class IngestCustomerAddressesService(
         telefoneContato = telefoneContato,
         complemento = complemento,
         fax = fax,
+        tipoEndereco = tipoEndereco,
+        dddTelefone = dddTelefone,
+        dddFax = dddFax,
+        dddCelular = dddCelular,
+        celular = celular,
     )
 }
