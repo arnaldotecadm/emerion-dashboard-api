@@ -37,6 +37,12 @@ class IngestProductsServiceTest {
                         cnpjEmpresa = "12345678000199",
                         nome = "Widget",
                         preco = BigDecimal("19.90"),
+                        unidadeEntrada = "PC",
+                        unidadeSaida = "PC",
+                        estoqueReservado = BigDecimal("-30.0000"),
+                        estoqueRma = BigDecimal("1.5000"),
+                        codigoBarrasEmbalagem = "7899646300017",
+                        observacao = "AÇO, COBRE, PVC",
                     ),
                 ),
             ),
@@ -47,6 +53,9 @@ class IngestProductsServiceTest {
         assertEquals(0, result.totalFailed)
         assertEquals(IngestOutcome.CREATED, result.results.single().outcome)
         assertEquals("FB-1", savedSlot.captured.externalId)
+        assertEquals("PC", savedSlot.captured.unidadeEntrada)
+        assertEquals(BigDecimal("-30.0000"), savedSlot.captured.estoqueReservado)
+        assertEquals("AÇO, COBRE, PVC", savedSlot.captured.observacao)
         verify(exactly = 1) { productRepository.save(any()) }
     }
 

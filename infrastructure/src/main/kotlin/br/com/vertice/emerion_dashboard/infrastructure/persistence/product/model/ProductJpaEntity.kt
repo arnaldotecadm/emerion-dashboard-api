@@ -62,6 +62,12 @@ class ProductJpaEntity(
     @Column(name = "unidade")
     var unidade: String? = null,
 
+    @Column(name = "unidade_entrada")
+    var unidadeEntrada: String? = null,
+
+    @Column(name = "unidade_saida")
+    var unidadeSaida: String? = null,
+
     @Column(name = "peso_liquido")
     var pesoLiquido: BigDecimal? = null,
 
@@ -91,6 +97,81 @@ class ProductJpaEntity(
 
     @Column(name = "preco5")
     var preco5: BigDecimal? = null,
+
+    @Column(name = "desconto_padrao")
+    var descontoPadrao: BigDecimal? = null,
+
+    @Column(name = "estoque_disponivel")
+    var estoqueDisponivel: BigDecimal? = null,
+
+    @Column(name = "estoque_minimo")
+    var estoqueMinimo: BigDecimal? = null,
+
+    @Column(name = "estoque_maximo")
+    var estoqueMaximo: BigDecimal? = null,
+
+    @Column(name = "estoque_reservado")
+    var estoqueReservado: BigDecimal? = null,
+
+    @Column(name = "estoque_adquirido")
+    var estoqueAdquirido: BigDecimal? = null,
+
+    @Column(name = "estoque_atual")
+    var estoqueAtual: BigDecimal? = null,
+
+    @Column(name = "estoque_rma")
+    var estoqueRma: BigDecimal? = null,
+
+    @Column(name = "similar_product")
+    var similar: String? = null,
+
+    @Column(name = "quantidade_volumes")
+    var quantidadeVolumes: BigDecimal? = null,
+
+    @Column(name = "quantidade_embalagem")
+    var quantidadeEmbalagem: BigDecimal? = null,
+
+    @Column(name = "localizacao")
+    var localizacao: String? = null,
+
+    @Column(name = "cubagem")
+    var cubagem: BigDecimal? = null,
+
+    @Column(name = "codigo_barras_embalagem")
+    var codigoBarrasEmbalagem: String? = null,
+
+    @Column(name = "ibs_c_class_trib")
+    var ibsCClassTrib: String? = null,
+
+    @Column(name = "ibs_cst")
+    var ibsCst: String? = null,
+
+    @Column(name = "fcp_entrada")
+    var fcpEntrada: BigDecimal? = null,
+
+    @Column(name = "fcp_saida")
+    var fcpSaida: BigDecimal? = null,
+
+    @Column(name = "ipi_saida")
+    var ipiSaida: String? = null,
+
+    @Column(name = "ipi_entrada")
+    var ipiEntrada: String? = null,
+
+    @Column(name = "icm_saida")
+    var icmSaida: String? = null,
+
+    @Column(name = "icm_entrada")
+    var icmEntrada: String? = null,
+
+    @Column(name = "icm_st_saida")
+    var icmStSaida: String? = null,
+
+    @Column(name = "icm_st_entrada")
+    var icmStEntrada: String? = null,
+
+    @Column(name = "observacao")
+    var observacao: String? = null,
 
     @Column(name = "created_at", nullable = false)
     var createdAt: Instant = Instant.now(),

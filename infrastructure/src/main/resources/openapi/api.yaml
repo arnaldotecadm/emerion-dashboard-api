@@ -1450,6 +1450,12 @@ components:
         unidade:
           type: string
           nullable: true
+        unidadeEntrada:
+          type: string
+          nullable: true
+        unidadeSaida:
+          type: string
+          nullable: true
         pesoLiquido:
           type: number
           nullable: true
@@ -1479,6 +1485,81 @@ components:
           nullable: true
         preco5:
           type: number
+          nullable: true
+        descontoPadrao:
+          type: number
+          nullable: true
+        estoqueDisponivel:
+          type: number
+          nullable: true
+        estoqueMinimo:
+          type: number
+          nullable: true
+        estoqueMaximo:
+          type: number
+          nullable: true
+        estoqueReservado:
+          type: number
+          nullable: true
+        estoqueAdquirido:
+          type: number
+          nullable: true
+        estoqueAtual:
+          type: number
+          nullable: true
+        estoqueRMA:
+          type: number
+          nullable: true
+        similar:
+          type: string
+          nullable: true
+        quantidadeVolumes:
+          type: number
+          nullable: true
+        quantidadeEmbalagem:
+          type: number
+          nullable: true
+        localizacao:
+          type: string
+          nullable: true
+        cubagem:
+          type: number
+          nullable: true
+        codigoBarrasEmbalagem:
+          type: string
+          nullable: true
+        ibsCClassTrib:
+          type: string
+          nullable: true
+        ibsCst:
+          type: string
+          nullable: true
+        fcpEntrada:
+          type: number
+          nullable: true
+        fcpSaida:
+          type: number
+          nullable: true
+        ipiSaida:
+          type: string
+          nullable: true
+        ipiEntrada:
+          type: string
+          nullable: true
+        icmSaida:
+          type: string
+          nullable: true
+        icmEntrada:
+          type: string
+          nullable: true
+        icmStSaida:
+          type: string
+          nullable: true
+        icmStEntrada:
+          type: string
+          nullable: true
+        observacao:
+          type: string
           nullable: true
 
     ProductIngestionBatch:
@@ -1960,6 +2041,12 @@ components:
         unidade:
           type: string
           nullable: true
+        unidadeEntrada:
+          type: string
+          nullable: true
+        unidadeSaida:
+          type: string
+          nullable: true
         pesoLiquido:
           type: number
           nullable: true
@@ -1989,6 +2076,81 @@ components:
           nullable: true
         preco5:
           type: number
+          nullable: true
+        descontoPadrao:
+          type: number
+          nullable: true
+        estoqueDisponivel:
+          type: number
+          nullable: true
+        estoqueMinimo:
+          type: number
+          nullable: true
+        estoqueMaximo:
+          type: number
+          nullable: true
+        estoqueReservado:
+          type: number
+          nullable: true
+        estoqueAdquirido:
+          type: number
+          nullable: true
+        estoqueAtual:
+          type: number
+          nullable: true
+        estoqueRMA:
+          type: number
+          nullable: true
+        similar:
+          type: string
+          nullable: true
+        quantidadeVolumes:
+          type: number
+          nullable: true
+        quantidadeEmbalagem:
+          type: number
+          nullable: true
+        localizacao:
+          type: string
+          nullable: true
+        cubagem:
+          type: number
+          nullable: true
+        codigoBarrasEmbalagem:
+          type: string
+          nullable: true
+        ibsCClassTrib:
+          type: string
+          nullable: true
+        ibsCst:
+          type: string
+          nullable: true
+        fcpEntrada:
+          type: number
+          nullable: true
+        fcpSaida:
+          type: number
+          nullable: true
+        ipiSaida:
+          type: string
+          nullable: true
+        ipiEntrada:
+          type: string
+          nullable: true
+        icmSaida:
+          type: string
+          nullable: true
+        icmEntrada:
+          type: string
+          nullable: true
+        icmStSaida:
+          type: string
+          nullable: true
+        icmStEntrada:
+          type: string
+          nullable: true
+        observacao:
+          type: string
           nullable: true
         createdAt:
           type: string
