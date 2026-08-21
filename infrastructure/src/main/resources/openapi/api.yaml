@@ -35,6 +35,11 @@ tags:
     description: >
       Endpoints called by emerion-load-service to push IPI rules into
       PostgreSQL. Not consumed by the React app.
+  - name: fincre-ingestion
+    description: >
+      Endpoints called by emerion-load-service to push títulos a receber
+      (FINCRE) and their parcelas into PostgreSQL. Not consumed by the
+      React app.
   - name: customer-address-ingestion
     description: >
       Endpoints called by emerion-load-service to push a customer's full
@@ -559,6 +564,77 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/IpiIngestionItem'
+      responses:
+        '200':
+          description: Item processed (outcome reflects CREATED/UPDATED/FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionItemResult'
+        '400':
+          description: Malformed request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /ingestion/fincre:
+    post:
+      tags:
+        - fincre-ingestion
+      operationId: ingestFincre
+      summary: Ingest a batch of títulos a receber (FINCRE) from emerion-load-service
+      description: >
+        Upserts títulos a receber by the tenant-safe combination of
+        cnpjEmpresa and documento. Each item's full parcelas list replaces any
+        previously stored parcelas for that documento, so retries are idempotent.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FincreIngestionBatch'
+      responses:
+        '200':
+          description: Batch processed (see per-item results for partial failures)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionResult'
+        '400':
+          description: Malformed request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /ingestion/fincre/single:
+    post:
+      tags:
+        - fincre-ingestion
+      operationId: ingestSingleFincre
+      summary: Ingest a single título a receber (FINCRE) from emerion-load-service
+      description: >
+        Equivalent to sending a one-item batch to POST /ingestion/fincre.
+        Upserts by the tenant-safe combination of cnpjEmpresa and documento.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FincreIngestionItem'
       responses:
         '200':
           description: Item processed (outcome reflects CREATED/UPDATED/FAILED)
@@ -1917,6 +1993,130 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/IpiIngestionItem'
+
+    FincreParcelaIngestionItem:
+      type: object
+      required:
+        - numeroParcela
+      properties:
+        numeroParcela:
+          type: integer
+        flagIncobravel:
+          type: string
+          nullable: true
+        dataIncobravel:
+          type: string
+          format: date
+          nullable: true
+        dataVencimento:
+          type: string
+          format: date
+          nullable: true
+        prazoEmDias:
+          type: integer
+          nullable: true
+        valorParcela:
+          type: number
+          nullable: true
+        numeroBancario:
+          type: string
+          nullable: true
+        codigoBanco:
+          type: string
+          nullable: true
+        nomeBanco:
+          type: string
+          nullable: true
+        observacoes:
+          type: string
+          nullable: true
+        flagCartaAnuencia:
+          type: string
+          nullable: true
+        dataCartaAnuencia:
+          type: string
+          format: date
+          nullable: true
+        flagPago:
+          type: string
+          nullable: true
+
+    FincreIngestionItem:
+      type: object
+      description: One título a receber (FINCRE) and its parcelas.
+      required:
+        - cnpjEmpresa
+        - documento
+        - parcelas
+      properties:
+        cnpjEmpresa:
+          type: string
+          description: Retailer/tenant CNPJ that owns this título.
+        codigoEmpresa:
+          type: integer
+          format: int64
+          nullable: true
+        dataEmissao:
+          type: string
+          format: date
+          nullable: true
+        documento:
+          type: string
+          description: Título identifier used as the foreign key for parcelas.
+        codigoCondicaoRecebimento:
+          type: string
+          nullable: true
+        nomeCondicaoRecebimento:
+          type: string
+          nullable: true
+        nomeEmpresa:
+          type: string
+          nullable: true
+        codigoComissao:
+          type: integer
+          format: int64
+          nullable: true
+        percentualComissao:
+          type: number
+          nullable: true
+        codigoCliente:
+          type: integer
+          format: int64
+          nullable: true
+        nomeCliente:
+          type: string
+          nullable: true
+        codigoVendedor:
+          type: integer
+          format: int64
+          nullable: true
+        nomeVendedor:
+          type: string
+          nullable: true
+        codigoTipoDocumento:
+          type: string
+          nullable: true
+        nomeTipoDocumento:
+          type: string
+          nullable: true
+        parcelas:
+          type: array
+          items:
+            $ref: '#/components/schemas/FincreParcelaIngestionItem'
+
+    FincreIngestionBatch:
+      type: object
+      required:
+        - batchId
+        - items
+      properties:
+        batchId:
+          type: string
+          description: Correlation id supplied by emerion-load-service for tracing/logging.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FincreIngestionItem'
 
     CustomerAddressDetailIngestionItem:
       type: object
