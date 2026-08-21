@@ -31,6 +31,10 @@ tags:
     description: >
       Endpoints called by emerion-load-service to push ICMS rules into
       PostgreSQL. Not consumed by the React app.
+  - name: ipi-ingestion
+    description: >
+      Endpoints called by emerion-load-service to push IPI rules into
+      PostgreSQL. Not consumed by the React app.
   - name: customer-address-ingestion
     description: >
       Endpoints called by emerion-load-service to push a customer's full
@@ -492,6 +496,76 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IngestionResult'
+        '400':
+          description: Malformed request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /ingestion/ipi:
+    post:
+      tags:
+        - ipi-ingestion
+      operationId: ingestIpi
+      summary: Ingest a batch of IPI rules from emerion-load-service
+      description: >
+        Upserts IPI rules by the tenant-safe combination of cnpjEmpresa and
+        codigoIpi, making retries idempotent.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IpiIngestionBatch'
+      responses:
+        '200':
+          description: Batch processed (see per-item results for partial failures)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionResult'
+        '400':
+          description: Malformed request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /ingestion/ipi/single:
+    post:
+      tags:
+        - ipi-ingestion
+      operationId: ingestSingleIpi
+      summary: Ingest a single IPI rule from emerion-load-service
+      description: >
+        Equivalent to sending a one-item batch to POST /ingestion/ipi.
+        Upserts by the tenant-safe combination of cnpjEmpresa and codigoIpi.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IpiIngestionItem'
+      responses:
+        '200':
+          description: Item processed (outcome reflects CREATED/UPDATED/FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionItemResult'
         '400':
           description: Malformed request payload
           content:
@@ -1758,6 +1832,91 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/IcmsIngestionItem'
+
+    IpiIngestionItem:
+      type: object
+      description: One IPI rule as produced by emerion-load-service.
+      required:
+        - cnpjEmpresa
+        - codigoIpi
+      properties:
+        cnpjEmpresa:
+          type: string
+          description: Retailer/tenant CNPJ that owns this rule.
+        codigoIpi:
+          type: string
+          description: IPI rule code; together with cnpjEmpresa this is the upsert key.
+        flgAtivo:
+          type: string
+          nullable: true
+        tipoIpi:
+          type: string
+          nullable: true
+        nomeIpi:
+          type: string
+          nullable: true
+        ncmIpi:
+          type: string
+          nullable: true
+        codigoEnquadramentoLegal:
+          type: string
+          nullable: true
+        cstIpi:
+          type: string
+          nullable: true
+        descricaoSituacaoTributariaIpi:
+          type: string
+          nullable: true
+        aliquotaIpi:
+          type: number
+          nullable: true
+        percentualBaseCalculoIpi:
+          type: number
+          nullable: true
+        flgSineif20:
+          type: string
+          nullable: true
+        codigoTextoFiscal:
+          type: string
+          nullable: true
+        cstPis:
+          type: string
+          nullable: true
+        descricaoSituacaoTributariaPis:
+          type: string
+          nullable: true
+        aliquotaPis:
+          type: number
+          nullable: true
+        incluiDescontoSuframaPis:
+          type: string
+          nullable: true
+        cstCofins:
+          type: string
+          nullable: true
+        descricaoSituacaoTributariaCofins:
+          type: string
+          nullable: true
+        aliquotaCofins:
+          type: number
+          nullable: true
+        incluiDescontoSuframaCofins:
+          type: string
+          nullable: true
+
+    IpiIngestionBatch:
+      type: object
+      required:
+        - batchId
+        - items
+      properties:
+        batchId:
+          type: string
+          description: Correlation id supplied by emerion-load-service for tracing/logging.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/IpiIngestionItem'
 
     CustomerAddressDetailIngestionItem:
       type: object
