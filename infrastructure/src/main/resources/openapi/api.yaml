@@ -27,6 +27,10 @@ tags:
       product data into PostgreSQL. Not consumed by the React app.
   - name: products
     description: Read endpoints consumed by the React frontend.
+  - name: icms-ingestion
+    description: >
+      Endpoints called by emerion-load-service to push ICMS rules into
+      PostgreSQL. Not consumed by the React app.
   - name: customer-address-ingestion
     description: >
       Endpoints called by emerion-load-service to push a customer's full
@@ -311,6 +315,64 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /ingestion/icms:
+    post:
+      tags:
+        - icms-ingestion
+      operationId: ingestIcms
+      summary: Ingest a batch of ICMS rules from emerion-load-service
+      description: >
+        Upserts ICMS rules by the tenant-safe combination of cnpjEmpresa and
+        codigoIcms, making retries idempotent.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: '#/components/schemas/IcmsIngestionBatch'
+      responses:
+        '200':
+          description: Batch processed (see per-item results for partial failures)
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/IngestionResult'
+        '400':
+          description: Malformed request payload
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /ingestion/icms/single:
+    post:
+      tags:
+        - icms-ingestion
+      operationId: ingestSingleIcms
+      summary: Ingest a single ICMS rule from emerion-load-service
+      description: >
+        Equivalent to sending a one-item batch to POST /ingestion/icms.
+        Upserts by the tenant-safe combination of cnpjEmpresa and codigoIcms.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: '#/components/schemas/IcmsIngestionItem'
+      responses:
+        '200':
+          description: Item processed (outcome reflects CREATED/UPDATED/FAILED)
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/IngestionItemResult'
+        '400':
+          description: Malformed request payload
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/ErrorResponse'
 
   /products:
     get:
@@ -1644,6 +1706,58 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProductIngestionItem'
+
+    IcmsIngestionItem:
+      type: object
+      description: One ICMS rule as produced by emerion-load-service.
+      required:
+        - cnpjEmpresa
+        - codigoIcms
+      properties:
+        cnpjEmpresa:
+          type: string
+          description: Retailer/tenant CNPJ that owns this rule.
+        codigoIcms:
+          type: string
+          description: ICMS rule code; together with cnpjEmpresa this is the upsert key.
+        tipoIcms:
+          type: string
+          nullable: true
+        nomeIcms:
+          type: string
+          nullable: true
+        ufEmitente:
+          type: string
+          nullable: true
+        codigoRegimeTributario:
+          type: string
+          nullable: true
+        aliquotaIcms:
+          type: number
+          nullable: true
+        percentualReducaoValorImposto:
+          type: number
+          nullable: true
+        percentualBaseCalculoIcms:
+          type: number
+          nullable: true
+        situacaoTributariaIcms:
+          type: string
+          nullable: true
+
+    IcmsIngestionBatch:
+      type: object
+      required:
+        - batchId
+        - items
+      properties:
+        batchId:
+          type: string
+          description: Correlation id supplied by emerion-load-service for tracing/logging.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/IcmsIngestionItem'
 
     CustomerAddressDetailIngestionItem:
       type: object
