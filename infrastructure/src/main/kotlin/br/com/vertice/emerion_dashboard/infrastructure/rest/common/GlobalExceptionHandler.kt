@@ -4,6 +4,7 @@ import br.com.vertice.emerion_dashboard.domain.customer.exception.CustomerNotFou
 import br.com.vertice.emerion_dashboard.domain.customeraddress.exception.CustomerAddressNotFoundException
 import br.com.vertice.emerion_dashboard.domain.customercredit.exception.CustomerCreditNotFoundException
 import br.com.vertice.emerion_dashboard.domain.customerorder.exception.CustomerOrderNotFoundException
+import br.com.vertice.emerion_dashboard.domain.liberacao.exception.LiberacaoNotFoundException
 import br.com.vertice.emerion_dashboard.domain.notification.exception.NotificationNotFoundException
 import br.com.vertice.emerion_dashboard.domain.product.exception.ProductNotFoundException
 import br.com.vertice.emerion_dashboard.domain.vendedor.exception.VendedorNotFoundException
@@ -30,6 +31,7 @@ class GlobalExceptionHandler {
         CustomerAddressNotFoundException::class,
         CustomerCreditNotFoundException::class,
         CustomerOrderNotFoundException::class,
+        LiberacaoNotFoundException::class,
         VendedorNotFoundException::class,
         NotificationNotFoundException::class,
     )
