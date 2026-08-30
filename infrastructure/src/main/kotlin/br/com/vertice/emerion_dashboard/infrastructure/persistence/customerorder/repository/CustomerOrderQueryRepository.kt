@@ -28,30 +28,30 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
             SELECT
                 id,
                 external_id AS externalId,
-                cod_cli AS codCli,
-                cnpj_empresa AS cnpjEmpresa,
+                codigo_empresa AS codigoEmpresa,
+                codigo_cliente AS codigoCliente,
                 cpf_cnpj AS cpfCnpj,
-                nronfe,
-                dteres,
-                sitres,
-                totger,
-                totres,
-                totipi,
-                totsub,
-                totdescinc,
-                totfrt,
-                totseg,
-                totoutdesp,
+                numero_pedido AS numeroPedido,
+                data_pedido AS dataPedido,
+                status_pedido AS statusPedido,
+                total_pedido_com_impostos AS totalPedidoComImpostos,
+                total_pedido_sem_impostos AS totalPedidoSemImpostos,
+                total_ipi AS totalIpi,
+                total_icms AS totalIcms,
+                total_pis AS totalPis,
+                total_cofins AS totalCofins,
+                total_substituicao_tributaria AS totalSubstituicaoTributaria,
+                total_desconto_incondicional AS totalDescontoIncondicional,
+                total_frete AS totalFrete,
+                total_seguro AS totalSeguro,
+                total_outras_despesas AS totalOutrasDespesas,
                 vendedor_external_id AS vendedorExternalId,
-                atendente_cod AS atendenteCod,
                 data_entrega_prevista AS dataEntregaPrevista,
-                desconto_comercial AS descontoComercial,
-                desconto_regional AS descontoRegional,
                 codigo_transportadora AS codigoTransportadora,
-                linha_reserva AS linhaReserva,
                 pedido_anterior AS pedidoAnterior,
                 regime_tributario AS regimeTributario,
                 nome_regime_tributario AS nomeRegimeTributario,
+                codigo_padrao_faturamento AS codigoPadraoFaturamento,
                 created_at AS createdAt,
                 updated_at AS updatedAt
             FROM customer_order
@@ -66,49 +66,49 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
             SELECT
                 id,
                 external_id AS externalId,
-                cod_cli AS codCli,
-                cnpj_empresa AS cnpjEmpresa,
+                codigo_empresa AS codigoEmpresa,
+                codigo_cliente AS codigoCliente,
                 cpf_cnpj AS cpfCnpj,
-                nronfe,
-                dteres,
-                sitres,
-                totger,
-                totres,
-                totipi,
-                totsub,
-                totdescinc,
-                totfrt,
-                totseg,
-                totoutdesp,
+                numero_pedido AS numeroPedido,
+                data_pedido AS dataPedido,
+                status_pedido AS statusPedido,
+                total_pedido_com_impostos AS totalPedidoComImpostos,
+                total_pedido_sem_impostos AS totalPedidoSemImpostos,
+                total_ipi AS totalIpi,
+                total_icms AS totalIcms,
+                total_pis AS totalPis,
+                total_cofins AS totalCofins,
+                total_substituicao_tributaria AS totalSubstituicaoTributaria,
+                total_desconto_incondicional AS totalDescontoIncondicional,
+                total_frete AS totalFrete,
+                total_seguro AS totalSeguro,
+                total_outras_despesas AS totalOutrasDespesas,
                 vendedor_external_id AS vendedorExternalId,
-                atendente_cod AS atendenteCod,
                 data_entrega_prevista AS dataEntregaPrevista,
-                desconto_comercial AS descontoComercial,
-                desconto_regional AS descontoRegional,
                 codigo_transportadora AS codigoTransportadora,
-                linha_reserva AS linhaReserva,
                 pedido_anterior AS pedidoAnterior,
                 regime_tributario AS regimeTributario,
                 nome_regime_tributario AS nomeRegimeTributario,
+                codigo_padrao_faturamento AS codigoPadraoFaturamento,
                 created_at AS createdAt,
                 updated_at AS updatedAt
             FROM customer_order
-            WHERE (:codCli IS NULL OR cod_cli = :codCli)
-              AND (:sitres IS NULL OR sitres = :sitres)
-              AND (:cnpjEmpresa IS NULL OR cnpj_empresa = :cnpjEmpresa)
+            WHERE (:codigoCliente IS NULL OR codigo_cliente = :codigoCliente)
+              AND (:statusPedido IS NULL OR status_pedido = :statusPedido)
+              AND (:codigoEmpresa IS NULL OR codigo_empresa = :codigoEmpresa)
         """,
         countQuery = """
             SELECT count(*)
             FROM customer_order
-            WHERE (:codCli IS NULL OR cod_cli = :codCli)
-              AND (:sitres IS NULL OR sitres = :sitres)
-              AND (:cnpjEmpresa IS NULL OR cnpj_empresa = :cnpjEmpresa)
+            WHERE (:codigoCliente IS NULL OR codigo_cliente = :codigoCliente)
+              AND (:statusPedido IS NULL OR status_pedido = :statusPedido)
+              AND (:codigoEmpresa IS NULL OR codigo_empresa = :codigoEmpresa)
         """,
     )
     fun searchHeaders(
-        @Param("codCli") codCli: String?,
-        @Param("sitres") sitres: String?,
-        @Param("cnpjEmpresa") cnpjEmpresa: String?,
+        @Param("codigoCliente") codigoCliente: Int?,
+        @Param("statusPedido") statusPedido: String?,
+        @Param("codigoEmpresa") codigoEmpresa: Int?,
         pageable: Pageable,
     ): Page<CustomerOrderHeaderProjection>
 
@@ -117,6 +117,9 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
         value = """
             SELECT
                 customer_order_id AS customerOrderId,
+                cod_emp AS codEmp,
+                dteres,
+                numres,
                 produto,
                 descricao,
                 quantidade,
@@ -173,7 +176,10 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
                 peso_bruto AS pesoBruto,
                 referencia,
                 quantidade_faturada AS quantidadeFaturada,
-                quantidade_separada AS quantidadeSeparada
+                quantidade_separada AS quantidadeSeparada,
+                custo_total AS custoTotal,
+                lucro_valor AS lucroValor,
+                lucro_porcentagem AS lucroPorcentagem
             FROM customer_order_item
             WHERE customer_order_id IN (:customerOrderIds)
             ORDER BY customer_order_id, produto

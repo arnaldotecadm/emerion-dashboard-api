@@ -22,8 +22,8 @@ class CustomerOrderQueryService(
     override fun list(query: ListCustomerOrdersQuery): Page<CustomerOrder> =
         customerOrderRepository.findAll(
             pageRequest = PageRequest(page = query.page, size = query.size),
-            codCli = query.codCli,
-            sitres = query.sitres,
-            cnpjEmpresa = query.cnpjEmpresa,
+            codigoCliente = query.codigoCliente,
+            statusPedido = query.statusPedido,
+            codigoEmpresa = query.codigoEmpresa,
         )
 }

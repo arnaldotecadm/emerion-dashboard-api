@@ -1144,24 +1144,24 @@ paths:
             minimum: 1
             maximum: 100
             default: 20
-        - name: codCli
+        - name: codigoCliente
           in: query
-          description: Exact match on the owning customer's externalId (codCli)
+          description: Exact match on the customer code.
+          required: false
+          schema:
+            type: integer
+        - name: statusPedido
+          in: query
+          description: Exact match on order status.
           required: false
           schema:
             type: string
-        - name: sitres
+        - name: codigoEmpresa
           in: query
-          description: Exact match on order status (sitres)
+          description: Exact match on the company code.
           required: false
           schema:
-            type: string
-        - name: cnpjEmpresa
-          in: query
-          description: Exact match on the owning retailer's cnpjEmpresa
-          required: false
-          schema:
-            type: string
+            type: integer
       responses:
         '200':
           description: Paginated list of customer orders
@@ -2652,12 +2652,22 @@ components:
         emerion-load-service's CustomerOrderItemProjection (tax/fiscal
         breakdown, discounts, and legacy tracking flags).
       required:
+        - codEmp
+        - dteres
+        - numres
         - produto
         - quantidade
         - valorUnitario
         - valorTotal
         - seqRe2
       properties:
+        codEmp:
+          type: integer
+        dteres:
+          type: string
+          format: date
+        numres:
+          type: string
         produto:
           type: string
           description: Composite legacy product code (codGru.codSub.codPro).
@@ -2825,6 +2835,15 @@ components:
         quantidadeSeparada:
           type: number
           nullable: true
+        custoTotal:
+          type: number
+          nullable: true
+        lucroValor:
+          type: number
+          nullable: true
+        lucroPorcentagem:
+          type: number
+          nullable: true
 
     CustomerOrderIngestionItem:
       type: object
@@ -2833,14 +2852,18 @@ components:
         emerion-load-service's CustomerOrderController.
       required:
         - externalId
-        - customerExternalId
-        - cnpjEmpresa
-        - dteres
-        - totger
-        - totres
-        - totipi
-        - totsub
-        - totdescinc
+        - codigoEmpresa
+        - codigoCliente
+        - numeroPedido
+        - dataPedido
+        - totalPedidoComImpostos
+        - totalPedidoSemImpostos
+        - totalIpi
+        - totalIcms
+        - totalPis
+        - totalCofins
+        - totalSubstituicaoTributaria
+        - totalDescontoIncondicional
         - itens
       properties:
         externalId:
@@ -2848,68 +2871,56 @@ components:
           description: >
             Order's legacy Firebird primary key (numres), used as the
             upsert/idempotency key.
-        customerExternalId:
-          type: string
-          description: >
-            Customer's legacy Firebird primary key (codCli), matching
-            emerion-load-service's CustomerOrderIngestionDto.customerExternalId
-            wire property name.
-        cnpjEmpresa:
-          type: string
-          description: Retailer/tenant CNPJ that owns this record, used to segregate data per retailer.
+        codigoEmpresa:
+          type: integer
+        codigoCliente:
+          type: integer
         cpfCnpj:
           type: string
           nullable: true
           description: The order's customer's own CPF/CNPJ (distinct from cnpjEmpresa, the retailer's CNPJ).
-        nronfe:
+        numeroPedido:
+          type: string
+        dataPedido:
+          type: string
+          description: Local order date-time in ISO-8601 format.
+        statusPedido:
           type: string
           nullable: true
-        dteres:
-          type: string
-          format: date
-        sitres:
-          type: string
-          nullable: true
-        totger:
+        totalPedidoComImpostos:
           type: number
-        totres:
+        totalPedidoSemImpostos:
           type: number
-        totipi:
+        totalIpi:
           type: number
-        totsub:
+        totalIcms:
           type: number
-        totdescinc:
+        totalPis:
           type: number
-        totfrt:
+        totalCofins:
           type: number
-          nullable: true
-        totseg:
+        totalSubstituicaoTributaria:
+          type: number
+        totalDescontoIncondicional:
+          type: number
+        totalFrete:
           type: number
           nullable: true
-        totoutdesp:
+        totalSeguro:
+          type: number
+          nullable: true
+        totalOutrasDespesas:
           type: number
           nullable: true
         vendedorExternalId:
           type: integer
           format: int64
           nullable: true
-        atendenteCod:
-          type: string
-          nullable: true
         dataEntregaPrevista:
           type: string
-          format: date
           nullable: true
-        descontoComercial:
-          type: number
-          nullable: true
-        descontoRegional:
-          type: number
-          nullable: true
+          description: Local expected delivery date-time in ISO-8601 format.
         codigoTransportadora:
-          type: string
-          nullable: true
-        linhaReserva:
           type: string
           nullable: true
         pedidoAnterior:
@@ -2919,6 +2930,9 @@ components:
           type: string
           nullable: true
         nomeRegimeTributario:
+          type: string
+          nullable: true
+        codigoPadraoFaturamento:
           type: string
           nullable: true
         itens:
@@ -3236,6 +3250,13 @@ components:
     CustomerOrderItemResponse:
       type: object
       properties:
+        codEmp:
+          type: integer
+        dteres:
+          type: string
+          format: date
+        numres:
+          type: string
         produto:
           type: string
         descricao:
@@ -3402,6 +3423,15 @@ components:
         quantidadeSeparada:
           type: number
           nullable: true
+        custoTotal:
+          type: number
+          nullable: true
+        lucroValor:
+          type: number
+          nullable: true
+        lucroPorcentagem:
+          type: number
+          nullable: true
 
     CustomerOrderResponse:
       type: object
@@ -3411,62 +3441,55 @@ components:
           format: int64
         externalId:
           type: string
-        codCli:
-          type: string
-        cnpjEmpresa:
-          type: string
+        codigoEmpresa:
+          type: integer
+        codigoCliente:
+          type: integer
         cpfCnpj:
           type: string
           nullable: true
-        nronfe:
+        numeroPedido:
           type: string
-          nullable: true
-        dteres:
+        dataPedido:
           type: string
           format: date
-        sitres:
+        statusPedido:
           type: string
           nullable: true
-        totger:
+        totalPedidoComImpostos:
           type: number
-        totres:
+        totalPedidoSemImpostos:
           type: number
-        totipi:
+        totalIpi:
           type: number
-        totsub:
+        totalIcms:
           type: number
-        totdescinc:
+        totalPis:
           type: number
-        totfrt:
+        totalCofins:
+          type: number
+        totalSubstituicaoTributaria:
+          type: number
+        totalDescontoIncondicional:
+          type: number
+        totalFrete:
           type: number
           nullable: true
-        totseg:
+        totalSeguro:
           type: number
           nullable: true
-        totoutdesp:
+        totalOutrasDespesas:
           type: number
           nullable: true
         vendedorExternalId:
           type: integer
           format: int64
           nullable: true
-        atendenteCod:
-          type: string
-          nullable: true
         dataEntregaPrevista:
           type: string
           format: date
           nullable: true
-        descontoComercial:
-          type: number
-          nullable: true
-        descontoRegional:
-          type: number
-          nullable: true
         codigoTransportadora:
-          type: string
-          nullable: true
-        linhaReserva:
           type: string
           nullable: true
         pedidoAnterior:
@@ -3476,6 +3499,9 @@ components:
           type: string
           nullable: true
         nomeRegimeTributario:
+          type: string
+          nullable: true
+        codigoPadraoFaturamento:
           type: string
           nullable: true
         itens:

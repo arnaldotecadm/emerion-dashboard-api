@@ -9,6 +9,9 @@ import java.math.BigDecimal
  */
 interface CustomerOrderItemProjection {
     val customerOrderId: Long
+    val codEmp: Int
+    val dteres: java.time.LocalDate
+    val numres: String
     val produto: String
     val descricao: String?
     val quantidade: BigDecimal
@@ -66,4 +69,7 @@ interface CustomerOrderItemProjection {
     val referencia: String?
     val quantidadeFaturada: BigDecimal?
     val quantidadeSeparada: BigDecimal?
+    val custoTotal: BigDecimal?
+    val lucroValor: BigDecimal?
+    val lucroPorcentagem: BigDecimal?
 }

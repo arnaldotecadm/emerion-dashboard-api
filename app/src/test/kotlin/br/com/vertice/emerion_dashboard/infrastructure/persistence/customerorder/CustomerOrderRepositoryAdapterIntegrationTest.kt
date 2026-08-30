@@ -25,6 +25,9 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
 ) : PostgresIntegrationTest() {
 
     private fun item(produto: String, seqRe2: Int) = CustomerOrderItem(
+        codEmp = 1,
+        dteres = LocalDate.parse("2024-01-01"),
+        numres = "order-test",
         produto = produto,
         descricao = "Descricao $produto",
         quantidade = BigDecimal("2.0000"),
@@ -39,17 +42,20 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
         val saved = customerOrderRepository.save(
             CustomerOrder.newFromIngestion(
                 externalId = "order-ext-1",
-                codCli = "cust-1",
-                cnpjEmpresa = "00000000000191",
+                codigoEmpresa = 1,
+                codigoCliente = 1,
                 cpfCnpj = null,
-                nronfe = "NF-1",
-                dteres = LocalDate.parse("2024-01-01"),
-                sitres = "ABERTO",
-                totger = BigDecimal("100.0000"),
-                totres = BigDecimal("90.0000"),
-                totipi = BigDecimal("5.0000"),
-                totsub = BigDecimal("95.0000"),
-                totdescinc = BigDecimal("0.0000"),
+                numeroPedido = "NF-1",
+                dataPedido = LocalDate.parse("2024-01-01"),
+                statusPedido = "ABERTO",
+                totalPedidoComImpostos = BigDecimal("100.0000"),
+                totalPedidoSemImpostos = BigDecimal("90.0000"),
+                totalIpi = BigDecimal("5.0000"),
+                totalIcms = BigDecimal("0.0000"),
+                totalPis = BigDecimal("0.0000"),
+                totalCofins = BigDecimal("0.0000"),
+                totalSubstituicaoTributaria = BigDecimal("95.0000"),
+                totalDescontoIncondicional = BigDecimal("0.0000"),
                 itens = listOf(item("1.1.1", 1), item("1.1.2", 2)),
                 now = now,
             ),
@@ -66,17 +72,20 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
         customerOrderRepository.save(
             CustomerOrder.newFromIngestion(
                 externalId = "order-ext-other",
-                codCli = "cust-other",
-                cnpjEmpresa = "12345678000199",
+                codigoEmpresa = 2,
+                codigoCliente = 2,
                 cpfCnpj = null,
-                nronfe = null,
-                dteres = LocalDate.parse("2024-01-01"),
-                sitres = "FECHADO",
-                totger = BigDecimal("10.0000"),
-                totres = BigDecimal("10.0000"),
-                totipi = BigDecimal("0.0000"),
-                totsub = BigDecimal("10.0000"),
-                totdescinc = BigDecimal("0.0000"),
+                numeroPedido = "NF-2",
+                dataPedido = LocalDate.parse("2024-01-01"),
+                statusPedido = "FECHADO",
+                totalPedidoComImpostos = BigDecimal("10.0000"),
+                totalPedidoSemImpostos = BigDecimal("10.0000"),
+                totalIpi = BigDecimal("0.0000"),
+                totalIcms = BigDecimal("0.0000"),
+                totalPis = BigDecimal("0.0000"),
+                totalCofins = BigDecimal("0.0000"),
+                totalSubstituicaoTributaria = BigDecimal("10.0000"),
+                totalDescontoIncondicional = BigDecimal("0.0000"),
                 itens = listOf(item("2.1.1", 1)),
                 now = now,
             ),
@@ -84,17 +93,20 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
         customerOrderRepository.save(
             CustomerOrder.newFromIngestion(
                 externalId = "order-ext-match",
-                codCli = "cust-match",
-                cnpjEmpresa = "99999999000199",
+                codigoEmpresa = 3,
+                codigoCliente = 3,
                 cpfCnpj = null,
-                nronfe = null,
-                dteres = LocalDate.parse("2024-01-01"),
-                sitres = "ABERTO",
-                totger = BigDecimal("10.0000"),
-                totres = BigDecimal("10.0000"),
-                totipi = BigDecimal("0.0000"),
-                totsub = BigDecimal("10.0000"),
-                totdescinc = BigDecimal("0.0000"),
+                numeroPedido = "NF-3",
+                dataPedido = LocalDate.parse("2024-01-01"),
+                statusPedido = "ABERTO",
+                totalPedidoComImpostos = BigDecimal("10.0000"),
+                totalPedidoSemImpostos = BigDecimal("10.0000"),
+                totalIpi = BigDecimal("0.0000"),
+                totalIcms = BigDecimal("0.0000"),
+                totalPis = BigDecimal("0.0000"),
+                totalCofins = BigDecimal("0.0000"),
+                totalSubstituicaoTributaria = BigDecimal("10.0000"),
+                totalDescontoIncondicional = BigDecimal("0.0000"),
                 itens = listOf(item("3.1.1", 1)),
                 now = now,
             ),
@@ -102,9 +114,9 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
 
         val page = customerOrderRepository.findAll(
             pageRequest = PageRequest(page = 0, size = 10),
-            codCli = "cust-match",
-            sitres = "ABERTO",
-            cnpjEmpresa = "99999999000199",
+            codigoCliente = 3,
+            statusPedido = "ABERTO",
+            codigoEmpresa = 3,
         )
 
         assertEquals(listOf("order-ext-match"), page.content.map { it.externalId })
@@ -117,17 +129,20 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
         val firstSave = customerOrderRepository.save(
             CustomerOrder.newFromIngestion(
                 externalId = "order-ext-reingest",
-                codCli = "cust-reingest",
-                cnpjEmpresa = "12345678000199",
+                codigoEmpresa = 4,
+                codigoCliente = 4,
                 cpfCnpj = null,
-                nronfe = null,
-                dteres = LocalDate.parse("2024-01-01"),
-                sitres = "ABERTO",
-                totger = BigDecimal("10.0000"),
-                totres = BigDecimal("10.0000"),
-                totipi = BigDecimal("0.0000"),
-                totsub = BigDecimal("10.0000"),
-                totdescinc = BigDecimal("0.0000"),
+                numeroPedido = "NF-4",
+                dataPedido = LocalDate.parse("2024-01-01"),
+                statusPedido = "ABERTO",
+                totalPedidoComImpostos = BigDecimal("10.0000"),
+                totalPedidoSemImpostos = BigDecimal("10.0000"),
+                totalIpi = BigDecimal("0.0000"),
+                totalIcms = BigDecimal("0.0000"),
+                totalPis = BigDecimal("0.0000"),
+                totalCofins = BigDecimal("0.0000"),
+                totalSubstituicaoTributaria = BigDecimal("10.0000"),
+                totalDescontoIncondicional = BigDecimal("0.0000"),
                 itens = listOf(item("4.1.1", 1), item("4.1.2", 2)),
                 now = now,
             ),
@@ -136,17 +151,20 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
         val existing = customerOrderRepository.findByExternalId("order-ext-reingest")!!
         val resaved = customerOrderRepository.save(
             existing.mergeFromIngestion(
-                codCli = existing.codCli,
-                cnpjEmpresa = existing.cnpjEmpresa,
+                codigoEmpresa = existing.codigoEmpresa,
+                codigoCliente = existing.codigoCliente,
                 cpfCnpj = null,
-                nronfe = existing.nronfe,
-                dteres = existing.dteres,
-                sitres = "FATURADO",
-                totger = existing.totger,
-                totres = existing.totres,
-                totipi = existing.totipi,
-                totsub = existing.totsub,
-                totdescinc = existing.totdescinc,
+                numeroPedido = existing.numeroPedido,
+                dataPedido = existing.dataPedido,
+                statusPedido = "FATURADO",
+                totalPedidoComImpostos = existing.totalPedidoComImpostos,
+                totalPedidoSemImpostos = existing.totalPedidoSemImpostos,
+                totalIpi = existing.totalIpi,
+                totalIcms = existing.totalIcms,
+                totalPis = existing.totalPis,
+                totalCofins = existing.totalCofins,
+                totalSubstituicaoTributaria = existing.totalSubstituicaoTributaria,
+                totalDescontoIncondicional = existing.totalDescontoIncondicional,
                 // Same seqRe2 keys as before (upserted), same produto repeated
                 // across two lines (only distinguishable by seqRe2), plus one
                 // brand-new line.
@@ -161,7 +179,7 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
 
         val found = customerOrderRepository.findById(resaved.id!!)!!
         assertEquals(firstSave.id, resaved.id)
-        assertEquals("FATURADO", found.sitres)
+        assertEquals("FATURADO", found.statusPedido)
         assertEquals(3, found.itens.size)
         assertEquals(setOf(1, 2, 3), found.itens.map { it.seqRe2 }.toSet())
         assertEquals("Updated", found.itens.single { it.seqRe2 == 1 }.descricao)

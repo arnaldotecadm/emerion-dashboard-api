@@ -34,68 +34,65 @@ class CustomerOrderJpaEntity(
     @Column(name = "external_id", nullable = false)
     var externalId: String = "",
 
-    @Column(name = "cod_cli", nullable = false)
-    var codCli: String = "",
+    @Column(name = "codigo_empresa", nullable = false)
+    var codigoEmpresa: Int = 0,
 
-    @Column(name = "cnpj_empresa", nullable = false)
-    var cnpjEmpresa: String = "",
+    @Column(name = "codigo_cliente", nullable = false)
+    var codigoCliente: Int = 0,
 
     @Column(name = "cpf_cnpj")
     var cpfCnpj: String? = null,
 
-    @Column(name = "nronfe")
-    var nronfe: String? = null,
+    @Column(name = "numero_pedido", nullable = false)
+    var numeroPedido: String = "",
 
-    @Column(name = "dteres", nullable = false)
-    var dteres: LocalDate = LocalDate.now(),
+    @Column(name = "data_pedido", nullable = false)
+    var dataPedido: LocalDate = LocalDate.now(),
 
-    @Column(name = "sitres")
-    var sitres: String? = null,
+    @Column(name = "status_pedido")
+    var statusPedido: String? = null,
 
-    @Column(name = "totger", nullable = false)
-    var totger: BigDecimal = BigDecimal.ZERO,
+    @Column(name = "total_pedido_com_impostos", nullable = false)
+    var totalPedidoComImpostos: BigDecimal = BigDecimal.ZERO,
 
-    @Column(name = "totres", nullable = false)
-    var totres: BigDecimal = BigDecimal.ZERO,
+    @Column(name = "total_pedido_sem_impostos", nullable = false)
+    var totalPedidoSemImpostos: BigDecimal = BigDecimal.ZERO,
 
-    @Column(name = "totipi", nullable = false)
-    var totipi: BigDecimal = BigDecimal.ZERO,
+    @Column(name = "total_ipi", nullable = false)
+    var totalIpi: BigDecimal = BigDecimal.ZERO,
 
-    @Column(name = "totsub", nullable = false)
-    var totsub: BigDecimal = BigDecimal.ZERO,
+    @Column(name = "total_icms", nullable = false)
+    var totalIcms: BigDecimal = BigDecimal.ZERO,
 
-    @Column(name = "totdescinc", nullable = false)
-    var totdescinc: BigDecimal = BigDecimal.ZERO,
+    @Column(name = "total_pis", nullable = false)
+    var totalPis: BigDecimal = BigDecimal.ZERO,
 
-    @Column(name = "totfrt")
-    var totfrt: BigDecimal? = null,
+    @Column(name = "total_cofins", nullable = false)
+    var totalCofins: BigDecimal = BigDecimal.ZERO,
 
-    @Column(name = "totseg")
-    var totseg: BigDecimal? = null,
+    @Column(name = "total_substituicao_tributaria", nullable = false)
+    var totalSubstituicaoTributaria: BigDecimal = BigDecimal.ZERO,
 
-    @Column(name = "totoutdesp")
-    var totoutdesp: BigDecimal? = null,
+    @Column(name = "total_desconto_incondicional", nullable = false)
+    var totalDescontoIncondicional: BigDecimal = BigDecimal.ZERO,
+
+    @Column(name = "total_frete")
+    var totalFrete: BigDecimal? = null,
+
+    @Column(name = "total_seguro")
+    var totalSeguro: BigDecimal? = null,
+
+    @Column(name = "total_outras_despesas")
+    var totalOutrasDespesas: BigDecimal? = null,
 
     @Column(name = "vendedor_external_id")
     var vendedorExternalId: Long? = null,
 
-    @Column(name = "atendente_cod")
-    var atendenteCod: String? = null,
-
     @Column(name = "data_entrega_prevista")
     var dataEntregaPrevista: LocalDate? = null,
 
-    @Column(name = "desconto_comercial")
-    var descontoComercial: BigDecimal? = null,
-
-    @Column(name = "desconto_regional")
-    var descontoRegional: BigDecimal? = null,
-
     @Column(name = "codigo_transportadora")
     var codigoTransportadora: String? = null,
-
-    @Column(name = "linha_reserva")
-    var linhaReserva: String? = null,
 
     @Column(name = "pedido_anterior")
     var pedidoAnterior: String? = null,
@@ -105,6 +102,9 @@ class CustomerOrderJpaEntity(
 
     @Column(name = "nome_regime_tributario")
     var nomeRegimeTributario: String? = null,
+
+    @Column(name = "codigo_padrao_faturamento")
+    var codigoPadraoFaturamento: String? = null,
 
     @OneToMany(mappedBy = "customerOrder", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     var itens: MutableList<CustomerOrderItemJpaEntity> = mutableListOf(),

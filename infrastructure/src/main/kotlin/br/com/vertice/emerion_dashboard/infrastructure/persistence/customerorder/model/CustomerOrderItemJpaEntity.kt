@@ -33,6 +33,15 @@ class CustomerOrderItemJpaEntity(
     @JoinColumn(name = "customer_order_id", nullable = false)
     var customerOrder: CustomerOrderJpaEntity? = null,
 
+    @Column(name = "cod_emp", nullable = false)
+    var codEmp: Int = 0,
+
+    @Column(name = "dteres", nullable = false)
+    var dteres: java.time.LocalDate = java.time.LocalDate.now(),
+
+    @Column(name = "numres", nullable = false)
+    var numres: String = "",
+
     @Column(name = "produto", nullable = false)
     var produto: String = "",
 
@@ -203,4 +212,13 @@ class CustomerOrderItemJpaEntity(
 
     @Column(name = "quantidade_separada")
     var quantidadeSeparada: BigDecimal? = null,
+
+    @Column(name = "custo_total")
+    var custoTotal: BigDecimal? = null,
+
+    @Column(name = "lucro_valor")
+    var lucroValor: BigDecimal? = null,
+
+    @Column(name = "lucro_porcentagem")
+    var lucroPorcentagem: BigDecimal? = null,
 )

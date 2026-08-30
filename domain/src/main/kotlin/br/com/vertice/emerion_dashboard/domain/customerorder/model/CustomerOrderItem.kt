@@ -1,6 +1,7 @@
 package br.com.vertice.emerion_dashboard.domain.customerorder.model
 
 import java.math.BigDecimal
+import java.time.LocalDate
 
 /**
  * One line item of a CustomerOrder. A value object with no id of its own —
@@ -18,6 +19,9 @@ import java.math.BigDecimal
  * discounts, and legacy tracking flags for the line item.
  */
 data class CustomerOrderItem(
+    val codEmp: Int,
+    val dteres: LocalDate,
+    val numres: String,
     val produto: String,
     val descricao: String? = null,
     val quantidade: BigDecimal,
@@ -75,4 +79,7 @@ data class CustomerOrderItem(
     val referencia: String? = null,
     val quantidadeFaturada: BigDecimal? = null,
     val quantidadeSeparada: BigDecimal? = null,
+val custoTotal: BigDecimal? = null,
+val lucroValor: BigDecimal? = null,
+val lucroPorcentagem: BigDecimal? = null,
 )

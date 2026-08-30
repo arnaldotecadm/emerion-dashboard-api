@@ -34,15 +34,15 @@ class CustomerOrderRepositoryAdapter(
 
     override fun findAll(
         pageRequest: PageRequest,
-        codCli: String?,
-        sitres: String?,
-        cnpjEmpresa: String?,
+        codigoCliente: Int?,
+        statusPedido: String?,
+        codigoEmpresa: Int?,
     ): Page<CustomerOrder> {
         val springPageable = SpringPageRequest.of(pageRequest.page, pageRequest.size)
         val headerPage = queryRepository.searchHeaders(
-            codCli?.takeIf { it.isNotBlank() },
-            sitres?.takeIf { it.isNotBlank() },
-            cnpjEmpresa?.takeIf { it.isNotBlank() },
+            codigoCliente,
+            statusPedido?.takeIf { it.isNotBlank() },
+            codigoEmpresa,
             springPageable,
         )
         val headerIds = headerPage.content.map { it.id }

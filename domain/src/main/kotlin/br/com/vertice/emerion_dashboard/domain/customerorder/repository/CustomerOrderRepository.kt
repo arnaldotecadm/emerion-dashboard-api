@@ -16,9 +16,9 @@ interface CustomerOrderRepository {
 
     fun findAll(
         pageRequest: PageRequest,
-        codCli: String?,
-        sitres: String?,
-        cnpjEmpresa: String?,
+        codigoCliente: Int?,
+        statusPedido: String?,
+        codigoEmpresa: Int?,
     ): Page<CustomerOrder>
 
     /** Insert or update (by externalId), replacing the itens list wholesale, and return the persisted order. */

@@ -39,6 +39,9 @@ class IngestCustomerOrdersServiceTest {
     )
 
     private fun itemCommand(produto: String) = IngestCustomerOrderItemCommand(
+        codEmp = 1,
+        dteres = LocalDate.parse("2025-06-01"),
+        numres = "NUM-TEST",
         produto = produto,
         descricao = "Produto de teste",
         quantidade = BigDecimal("2"),
@@ -49,17 +52,20 @@ class IngestCustomerOrdersServiceTest {
 
     private fun orderCommand(externalId: String, itens: List<IngestCustomerOrderItemCommand>) = IngestCustomerOrderCommand(
         externalId = externalId,
-        codCli = "100",
-        cnpjEmpresa = "12345678000190",
+        codigoEmpresa = 1,
+        codigoCliente = 100,
         cpfCnpj = null,
-        nronfe = "NF-1",
-        dteres = LocalDate.parse("2025-06-01"),
-        sitres = "FATURADO",
-        totger = BigDecimal("20.00"),
-        totres = BigDecimal("20.00"),
-        totipi = BigDecimal.ZERO,
-        totsub = BigDecimal.ZERO,
-        totdescinc = BigDecimal.ZERO,
+        numeroPedido = "NF-1",
+        dataPedido = LocalDate.parse("2025-06-01"),
+        statusPedido = "FATURADO",
+        totalPedidoComImpostos = BigDecimal("20.00"),
+        totalPedidoSemImpostos = BigDecimal("20.00"),
+        totalIpi = BigDecimal.ZERO,
+        totalIcms = BigDecimal.ZERO,
+        totalPis = BigDecimal.ZERO,
+        totalCofins = BigDecimal.ZERO,
+        totalSubstituicaoTributaria = BigDecimal.ZERO,
+        totalDescontoIncondicional = BigDecimal.ZERO,
         itens = itens,
     )
 
@@ -108,19 +114,25 @@ class IngestCustomerOrdersServiceTest {
         val existing = CustomerOrder(
             id = 42L,
             externalId = "NUM-2",
-            codCli = "100",
-            cnpjEmpresa = "12345678000199",
+            codigoEmpresa = 1,
+            codigoCliente = 100,
             cpfCnpj = null,
-            nronfe = null,
-            dteres = LocalDate.parse("2025-01-01"),
-            sitres = "ABERTO",
-            totger = BigDecimal("10.00"),
-            totres = BigDecimal("10.00"),
-            totipi = BigDecimal.ZERO,
-            totsub = BigDecimal.ZERO,
-            totdescinc = BigDecimal.ZERO,
+            numeroPedido = "NF-2",
+            dataPedido = LocalDate.parse("2025-01-01"),
+            statusPedido = "ABERTO",
+            totalPedidoComImpostos = BigDecimal("10.00"),
+            totalPedidoSemImpostos = BigDecimal("10.00"),
+            totalIpi = BigDecimal.ZERO,
+            totalIcms = BigDecimal.ZERO,
+            totalPis = BigDecimal.ZERO,
+            totalCofins = BigDecimal.ZERO,
+            totalSubstituicaoTributaria = BigDecimal.ZERO,
+            totalDescontoIncondicional = BigDecimal.ZERO,
             itens = listOf(
                 CustomerOrderItem(
+                    codEmp = 1,
+                    dteres = LocalDate.parse("2025-01-01"),
+                    numres = "NUM-2",
                     produto = "1.1.1",
                     descricao = "Old",
                     quantidade = BigDecimal.ONE,
@@ -144,7 +156,7 @@ class IngestCustomerOrdersServiceTest {
         )
 
         assertEquals(IngestOutcome.UPDATED, result.results.single().outcome)
-        verify(exactly = 1) { customerOrderRepository.save(match { it.id == 42L && it.itens.size == 2 && it.sitres == "FATURADO" }) }
+        verify(exactly = 1) { customerOrderRepository.save(match { it.id == 42L && it.itens.size == 2 && it.statusPedido == "FATURADO" }) }
         verify(exactly = 0) { createNotificationUseCase.create(any()) }
     }
 

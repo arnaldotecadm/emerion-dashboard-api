@@ -1,9 +1,13 @@
 package br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model
 
 import java.math.BigDecimal
+import java.time.LocalDate
 
 /** Input command for a single line item inside a customer order ingestion item. */
 data class IngestCustomerOrderItemCommand(
+    val codEmp: Int,
+    val dteres: LocalDate,
+    val numres: String,
     val produto: String,
     val descricao: String? = null,
     val quantidade: BigDecimal,
@@ -61,4 +65,7 @@ data class IngestCustomerOrderItemCommand(
     val referencia: String? = null,
     val quantidadeFaturada: BigDecimal? = null,
     val quantidadeSeparada: BigDecimal? = null,
+    val custoTotal: BigDecimal? = null,
+    val lucroValor: BigDecimal? = null,
+    val lucroPorcentagem: BigDecimal? = null,
 )

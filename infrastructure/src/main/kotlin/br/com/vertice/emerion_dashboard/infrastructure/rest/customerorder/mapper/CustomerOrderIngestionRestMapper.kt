@@ -10,6 +10,9 @@ import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.Cust
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerOrderItemIngestionItem
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IngestionItemResult
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IngestionResult
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeParseException
 
 /** Maps between the generated OpenAPI DTOs and the application layer's use-case commands/results. */
 object CustomerOrderIngestionRestMapper {
@@ -23,35 +26,38 @@ object CustomerOrderIngestionRestMapper {
     fun toItemCommand(dto: CustomerOrderIngestionItem): IngestCustomerOrderCommand =
         IngestCustomerOrderCommand(
             externalId = dto.externalId,
-            codCli = dto.customerExternalId,
-            cnpjEmpresa = dto.cnpjEmpresa,
+            codigoEmpresa = dto.codigoEmpresa,
+            codigoCliente = dto.codigoCliente,
             cpfCnpj = dto.cpfCnpj,
-            nronfe = dto.nronfe,
-            dteres = dto.dteres,
-            sitres = dto.sitres,
-            totger = dto.totger,
-            totres = dto.totres,
-            totipi = dto.totipi,
-            totsub = dto.totsub,
-            totdescinc = dto.totdescinc,
-            totfrt = dto.totfrt,
-            totseg = dto.totseg,
-            totoutdesp = dto.totoutdesp,
+            numeroPedido = dto.numeroPedido,
+            dataPedido = dto.dataPedido.toLocalOrderDate(),
+            statusPedido = dto.statusPedido,
+            totalPedidoComImpostos = dto.totalPedidoComImpostos,
+            totalPedidoSemImpostos = dto.totalPedidoSemImpostos,
+            totalIpi = dto.totalIpi,
+            totalIcms = dto.totalIcms,
+            totalPis = dto.totalPis,
+            totalCofins = dto.totalCofins,
+            totalSubstituicaoTributaria = dto.totalSubstituicaoTributaria,
+            totalDescontoIncondicional = dto.totalDescontoIncondicional,
+            totalFrete = dto.totalFrete,
+            totalSeguro = dto.totalSeguro,
+            totalOutrasDespesas = dto.totalOutrasDespesas,
             vendedorExternalId = dto.vendedorExternalId,
-            atendenteCod = dto.atendenteCod,
-            dataEntregaPrevista = dto.dataEntregaPrevista,
-            descontoComercial = dto.descontoComercial,
-            descontoRegional = dto.descontoRegional,
+            dataEntregaPrevista = dto.dataEntregaPrevista?.toLocalOrderDate(),
             codigoTransportadora = dto.codigoTransportadora,
-            linhaReserva = dto.linhaReserva,
             pedidoAnterior = dto.pedidoAnterior,
             regimeTributario = dto.regimeTributario,
             nomeRegimeTributario = dto.nomeRegimeTributario,
+            codigoPadraoFaturamento = dto.codigoPadraoFaturamento,
             itens = dto.itens.map(::toItemLineCommand),
         )
 
     private fun toItemLineCommand(dto: CustomerOrderItemIngestionItem): IngestCustomerOrderItemCommand =
         IngestCustomerOrderItemCommand(
+            codEmp = dto.codEmp,
+            dteres = dto.dteres,
+            numres = dto.numres,
             produto = dto.produto,
             descricao = dto.descricao,
             quantidade = dto.quantidade,
@@ -109,6 +115,9 @@ object CustomerOrderIngestionRestMapper {
             referencia = dto.referencia,
             quantidadeFaturada = dto.quantidadeFaturada,
             quantidadeSeparada = dto.quantidadeSeparada,
+            custoTotal = dto.custoTotal,
+            lucroValor = dto.lucroValor,
+            lucroPorcentagem = dto.lucroPorcentagem,
         )
 
     fun toResponse(result: IngestBatchResult): IngestionResult =
@@ -126,4 +135,11 @@ object CustomerOrderIngestionRestMapper {
             outcome = IngestionItemResult.Outcome.valueOf(result.outcome.name),
             errorMessage = result.errorMessage,
         )
+
+    private fun String.toLocalOrderDate(): LocalDate =
+        try {
+            LocalDateTime.parse(this).toLocalDate()
+        } catch (_: DateTimeParseException) {
+            LocalDate.parse(this)
+        }
 }

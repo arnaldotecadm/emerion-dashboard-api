@@ -18,30 +18,30 @@ object CustomerOrderPersistenceMapper {
         CustomerOrder(
             id = header.id,
             externalId = header.externalId,
-            codCli = header.codCli,
-            cnpjEmpresa = header.cnpjEmpresa,
+            codigoEmpresa = header.codigoEmpresa,
+            codigoCliente = header.codigoCliente,
             cpfCnpj = header.cpfCnpj,
-            nronfe = header.nronfe,
-            dteres = header.dteres,
-            sitres = header.sitres,
-            totger = header.totger,
-            totres = header.totres,
-            totipi = header.totipi,
-            totsub = header.totsub,
-            totdescinc = header.totdescinc,
-            totfrt = header.totfrt,
-            totseg = header.totseg,
-            totoutdesp = header.totoutdesp,
+            numeroPedido = header.numeroPedido,
+            dataPedido = header.dataPedido,
+            statusPedido = header.statusPedido,
+            totalPedidoComImpostos = header.totalPedidoComImpostos,
+            totalPedidoSemImpostos = header.totalPedidoSemImpostos,
+            totalIpi = header.totalIpi,
+            totalIcms = header.totalIcms,
+            totalPis = header.totalPis,
+            totalCofins = header.totalCofins,
+            totalSubstituicaoTributaria = header.totalSubstituicaoTributaria,
+            totalDescontoIncondicional = header.totalDescontoIncondicional,
+            totalFrete = header.totalFrete,
+            totalSeguro = header.totalSeguro,
+            totalOutrasDespesas = header.totalOutrasDespesas,
             vendedorExternalId = header.vendedorExternalId,
-            atendenteCod = header.atendenteCod,
             dataEntregaPrevista = header.dataEntregaPrevista,
-            descontoComercial = header.descontoComercial,
-            descontoRegional = header.descontoRegional,
             codigoTransportadora = header.codigoTransportadora,
-            linhaReserva = header.linhaReserva,
             pedidoAnterior = header.pedidoAnterior,
             regimeTributario = header.regimeTributario,
             nomeRegimeTributario = header.nomeRegimeTributario,
+            codigoPadraoFaturamento = header.codigoPadraoFaturamento,
             itens = items.map(::toItemDomain),
             createdAt = header.createdAt,
             updatedAt = header.updatedAt,
@@ -49,6 +49,9 @@ object CustomerOrderPersistenceMapper {
 
     private fun toItemDomain(projection: CustomerOrderItemProjection): CustomerOrderItem =
         CustomerOrderItem(
+            codEmp = projection.codEmp,
+            dteres = projection.dteres,
+            numres = projection.numres,
             produto = projection.produto,
             descricao = projection.descricao,
             quantidade = projection.quantidade,
@@ -106,6 +109,9 @@ object CustomerOrderPersistenceMapper {
             referencia = projection.referencia,
             quantidadeFaturada = projection.quantidadeFaturada,
             quantidadeSeparada = projection.quantidadeSeparada,
+            custoTotal = projection.custoTotal,
+            lucroValor = projection.lucroValor,
+            lucroPorcentagem = projection.lucroPorcentagem,
         )
 
     /** Write path: JPA entity -> domain model. */
@@ -113,30 +119,30 @@ object CustomerOrderPersistenceMapper {
         CustomerOrder(
             id = entity.id,
             externalId = entity.externalId,
-            codCli = entity.codCli,
-            cnpjEmpresa = entity.cnpjEmpresa,
+            codigoEmpresa = entity.codigoEmpresa,
+            codigoCliente = entity.codigoCliente,
             cpfCnpj = entity.cpfCnpj,
-            nronfe = entity.nronfe,
-            dteres = entity.dteres,
-            sitres = entity.sitres,
-            totger = entity.totger,
-            totres = entity.totres,
-            totipi = entity.totipi,
-            totsub = entity.totsub,
-            totdescinc = entity.totdescinc,
-            totfrt = entity.totfrt,
-            totseg = entity.totseg,
-            totoutdesp = entity.totoutdesp,
+            numeroPedido = entity.numeroPedido,
+            dataPedido = entity.dataPedido,
+            statusPedido = entity.statusPedido,
+            totalPedidoComImpostos = entity.totalPedidoComImpostos,
+            totalPedidoSemImpostos = entity.totalPedidoSemImpostos,
+            totalIpi = entity.totalIpi,
+            totalIcms = entity.totalIcms,
+            totalPis = entity.totalPis,
+            totalCofins = entity.totalCofins,
+            totalSubstituicaoTributaria = entity.totalSubstituicaoTributaria,
+            totalDescontoIncondicional = entity.totalDescontoIncondicional,
+            totalFrete = entity.totalFrete,
+            totalSeguro = entity.totalSeguro,
+            totalOutrasDespesas = entity.totalOutrasDespesas,
             vendedorExternalId = entity.vendedorExternalId,
-            atendenteCod = entity.atendenteCod,
             dataEntregaPrevista = entity.dataEntregaPrevista,
-            descontoComercial = entity.descontoComercial,
-            descontoRegional = entity.descontoRegional,
             codigoTransportadora = entity.codigoTransportadora,
-            linhaReserva = entity.linhaReserva,
             pedidoAnterior = entity.pedidoAnterior,
             regimeTributario = entity.regimeTributario,
             nomeRegimeTributario = entity.nomeRegimeTributario,
+            codigoPadraoFaturamento = entity.codigoPadraoFaturamento,
             itens = entity.itens.map(::toItemDomain),
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt,
@@ -144,6 +150,9 @@ object CustomerOrderPersistenceMapper {
 
     private fun toItemDomain(entity: CustomerOrderItemJpaEntity): CustomerOrderItem =
         CustomerOrderItem(
+            codEmp = entity.codEmp,
+            dteres = entity.dteres,
+            numres = entity.numres,
             produto = entity.produto,
             descricao = entity.descricao,
             quantidade = entity.quantidade,
@@ -201,6 +210,9 @@ object CustomerOrderPersistenceMapper {
             referencia = entity.referencia,
             quantidadeFaturada = entity.quantidadeFaturada,
             quantidadeSeparada = entity.quantidadeSeparada,
+            custoTotal = entity.custoTotal,
+            lucroValor = entity.lucroValor,
+            lucroPorcentagem = entity.lucroPorcentagem,
         )
 
     /**
@@ -219,30 +231,30 @@ object CustomerOrderPersistenceMapper {
     fun toEntity(domain: CustomerOrder, existing: CustomerOrderJpaEntity?): CustomerOrderJpaEntity {
         val entity = existing ?: CustomerOrderJpaEntity(id = domain.id)
         entity.externalId = domain.externalId
-        entity.codCli = domain.codCli
-        entity.cnpjEmpresa = domain.cnpjEmpresa
+        entity.codigoEmpresa = domain.codigoEmpresa
+        entity.codigoCliente = domain.codigoCliente
         entity.cpfCnpj = domain.cpfCnpj
-        entity.nronfe = domain.nronfe
-        entity.dteres = domain.dteres
-        entity.sitres = domain.sitres
-        entity.totger = domain.totger
-        entity.totres = domain.totres
-        entity.totipi = domain.totipi
-        entity.totsub = domain.totsub
-        entity.totdescinc = domain.totdescinc
-        entity.totfrt = domain.totfrt
-        entity.totseg = domain.totseg
-        entity.totoutdesp = domain.totoutdesp
+        entity.numeroPedido = domain.numeroPedido
+        entity.dataPedido = domain.dataPedido
+        entity.statusPedido = domain.statusPedido
+        entity.totalPedidoComImpostos = domain.totalPedidoComImpostos
+        entity.totalPedidoSemImpostos = domain.totalPedidoSemImpostos
+        entity.totalIpi = domain.totalIpi
+        entity.totalIcms = domain.totalIcms
+        entity.totalPis = domain.totalPis
+        entity.totalCofins = domain.totalCofins
+        entity.totalSubstituicaoTributaria = domain.totalSubstituicaoTributaria
+        entity.totalDescontoIncondicional = domain.totalDescontoIncondicional
+        entity.totalFrete = domain.totalFrete
+        entity.totalSeguro = domain.totalSeguro
+        entity.totalOutrasDespesas = domain.totalOutrasDespesas
         entity.vendedorExternalId = domain.vendedorExternalId
-        entity.atendenteCod = domain.atendenteCod
         entity.dataEntregaPrevista = domain.dataEntregaPrevista
-        entity.descontoComercial = domain.descontoComercial
-        entity.descontoRegional = domain.descontoRegional
         entity.codigoTransportadora = domain.codigoTransportadora
-        entity.linhaReserva = domain.linhaReserva
         entity.pedidoAnterior = domain.pedidoAnterior
         entity.regimeTributario = domain.regimeTributario
         entity.nomeRegimeTributario = domain.nomeRegimeTributario
+        entity.codigoPadraoFaturamento = domain.codigoPadraoFaturamento
         entity.createdAt = domain.createdAt
         entity.updatedAt = domain.updatedAt
         upsertItems(entity, domain.itens)
@@ -264,6 +276,9 @@ object CustomerOrderPersistenceMapper {
     }
 
     private fun applyItemFields(entity: CustomerOrderItemJpaEntity, item: CustomerOrderItem) {
+        entity.codEmp = item.codEmp
+        entity.dteres = item.dteres
+        entity.numres = item.numres
         entity.produto = item.produto
         entity.descricao = item.descricao
         entity.quantidade = item.quantidade
@@ -320,11 +335,17 @@ object CustomerOrderPersistenceMapper {
         entity.referencia = item.referencia
         entity.quantidadeFaturada = item.quantidadeFaturada
         entity.quantidadeSeparada = item.quantidadeSeparada
+        entity.custoTotal = item.custoTotal
+        entity.lucroValor = item.lucroValor
+        entity.lucroPorcentagem = item.lucroPorcentagem
     }
 
     private fun toItemEntity(item: CustomerOrderItem, parent: CustomerOrderJpaEntity): CustomerOrderItemJpaEntity =
         CustomerOrderItemJpaEntity(
             customerOrder = parent,
+            codEmp = item.codEmp,
+            dteres = item.dteres,
+            numres = item.numres,
             produto = item.produto,
             descricao = item.descricao,
             quantidade = item.quantidade,
@@ -382,5 +403,8 @@ object CustomerOrderPersistenceMapper {
             referencia = item.referencia,
             quantidadeFaturada = item.quantidadeFaturada,
             quantidadeSeparada = item.quantidadeSeparada,
+            custoTotal = item.custoTotal,
+            lucroValor = item.lucroValor,
+            lucroPorcentagem = item.lucroPorcentagem,
         )
 }

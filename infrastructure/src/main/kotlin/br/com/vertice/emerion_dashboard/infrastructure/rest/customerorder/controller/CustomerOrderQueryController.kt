@@ -27,16 +27,16 @@ class CustomerOrderQueryController(
     override fun listCustomerOrders(
         page: Int,
         size: Int,
-        codCli: String?,
-        sitres: String?,
-        cnpjEmpresa: String?,
+        codigoCliente: Int?,
+        statusPedido: String?,
+        codigoEmpresa: Int?,
     ): ResponseEntity<CustomerOrderPage> {
         val query = ListCustomerOrdersQuery(
             page = page,
             size = size,
-            codCli = codCli,
-            sitres = sitres,
-            cnpjEmpresa = cnpjEmpresa,
+            codigoCliente = codigoCliente,
+            statusPedido = statusPedido,
+            codigoEmpresa = codigoEmpresa,
         )
         val result = customerOrderQueryUseCase.list(query)
         return ResponseEntity.ok(CustomerOrderQueryRestMapper.toPageResponse(result))

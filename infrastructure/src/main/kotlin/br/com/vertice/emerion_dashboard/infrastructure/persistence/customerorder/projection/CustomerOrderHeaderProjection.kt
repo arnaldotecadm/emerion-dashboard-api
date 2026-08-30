@@ -15,30 +15,30 @@ import java.time.LocalDate
 interface CustomerOrderHeaderProjection {
     val id: Long
     val externalId: String
-    val codCli: String
-    val cnpjEmpresa: String
+    val codigoEmpresa: Int
+    val codigoCliente: Int
     val cpfCnpj: String?
-    val nronfe: String?
-    val dteres: LocalDate
-    val sitres: String?
-    val totger: BigDecimal
-    val totres: BigDecimal
-    val totipi: BigDecimal
-    val totsub: BigDecimal
-    val totdescinc: BigDecimal
-    val totfrt: BigDecimal?
-    val totseg: BigDecimal?
-    val totoutdesp: BigDecimal?
+    val numeroPedido: String
+    val dataPedido: LocalDate
+    val statusPedido: String?
+    val totalPedidoComImpostos: BigDecimal
+    val totalPedidoSemImpostos: BigDecimal
+    val totalIpi: BigDecimal
+    val totalIcms: BigDecimal
+    val totalPis: BigDecimal
+    val totalCofins: BigDecimal
+    val totalSubstituicaoTributaria: BigDecimal
+    val totalDescontoIncondicional: BigDecimal
+    val totalFrete: BigDecimal?
+    val totalSeguro: BigDecimal?
+    val totalOutrasDespesas: BigDecimal?
     val vendedorExternalId: Long?
-    val atendenteCod: String?
     val dataEntregaPrevista: LocalDate?
-    val descontoComercial: BigDecimal?
-    val descontoRegional: BigDecimal?
     val codigoTransportadora: String?
-    val linhaReserva: String?
     val pedidoAnterior: String?
     val regimeTributario: String?
     val nomeRegimeTributario: String?
+    val codigoPadraoFaturamento: String?
     val createdAt: Instant
     val updatedAt: Instant
 }

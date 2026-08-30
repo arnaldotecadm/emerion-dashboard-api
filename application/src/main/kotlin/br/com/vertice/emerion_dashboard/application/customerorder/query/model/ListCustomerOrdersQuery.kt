@@ -7,7 +7,7 @@ package br.com.vertice.emerion_dashboard.application.customerorder.query.model
 data class ListCustomerOrdersQuery(
     val page: Int,
     val size: Int,
-    val codCli: String?,
-    val sitres: String?,
-    val cnpjEmpresa: String?,
+    val codigoCliente: Int?,
+    val statusPedido: String?,
+    val codigoEmpresa: Int?,
 )
