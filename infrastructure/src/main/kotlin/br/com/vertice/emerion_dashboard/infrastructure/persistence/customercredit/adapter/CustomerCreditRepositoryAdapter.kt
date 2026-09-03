@@ -7,8 +7,9 @@ import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import br.com.vertice.emerion_dashboard.infrastructure.persistence.customercredit.mapper.CustomerCreditPersistenceMapper
 import br.com.vertice.emerion_dashboard.infrastructure.persistence.customercredit.repository.CustomerCreditQueryRepository
 import br.com.vertice.emerion_dashboard.infrastructure.persistence.customercredit.repository.CustomerCreditSpringDataRepository
-import org.springframework.data.domain.PageRequest as SpringPageRequest
 import org.springframework.stereotype.Component
+import java.time.LocalDate
+import org.springframework.data.domain.PageRequest as SpringPageRequest
 
 /**
  * Adapter implementing the domain's outbound port
@@ -26,8 +27,12 @@ class CustomerCreditRepositoryAdapter(
     override fun findById(id: Long): CustomerCredit? =
         queryRepository.findProjectionById(id)?.let(CustomerCreditPersistenceMapper::toDomain)
 
-    override fun findByCustomerExternalIdAndSequencia(customerExternalId: String, sequencia: String): CustomerCredit? =
-        springDataRepository.findByCustomerExternalIdAndSequencia(customerExternalId, sequencia)
+    override fun findByCustomerExternalIdAndDataAndSequencia(
+        customerExternalId: String,
+        data: LocalDate,
+        sequencia: String
+    ): CustomerCredit? =
+        springDataRepository.findByCustomerExternalIdAndDataAndSequencia(customerExternalId, data, sequencia)
             ?.let(CustomerCreditPersistenceMapper::toDomain)
 
     override fun findAll(
@@ -53,7 +58,7 @@ class CustomerCreditRepositoryAdapter(
 
     override fun save(credit: CustomerCredit): CustomerCredit {
         val existing = credit.sequencia?.let {
-            springDataRepository.findByCustomerExternalIdAndSequencia(credit.customerExternalId, it)
+            springDataRepository.findByCustomerExternalIdAndDataAndSequencia(credit.customerExternalId, credit.data, it)
         }
         val entity = CustomerCreditPersistenceMapper.toEntity(credit, existing)
         val saved = springDataRepository.save(entity)

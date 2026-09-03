@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.Clock
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneOffset
 import kotlin.test.assertEquals
 
@@ -22,11 +23,11 @@ class IngestCustomerCreditsServiceTest {
     private val customerCreditRepository = mockk<CustomerCreditRepository>()
     private val service = IngestCustomerCreditsService(customerCreditRepository, fixedClock)
 
-    private fun command(customerExternalId: String, sequencia: String?) = IngestCustomerCreditCommand(
+    private fun command(customerExternalId: String, sequencia: String?, data: LocalDate? = LocalDate.parse("2025-06-01")) = IngestCustomerCreditCommand(
         customerExternalId = customerExternalId,
         cnpjEmpresa = "12345678000199",
         sequencia = sequencia,
-        data = Instant.parse("2025-06-01T00:00:00Z"),
+        data = data!!,
         dataPedido = null,
         valorUtilizado = BigDecimal("100.00"),
         valorTotal = BigDecimal("500.00"),
@@ -37,7 +38,13 @@ class IngestCustomerCreditsServiceTest {
 
     @Test
     fun `creates a new credit entry when the (customerExternalId, sequencia) key is not known yet`() {
-        every { customerCreditRepository.findByCustomerExternalIdAndSequencia("100", "1") } returns null
+        every {
+            customerCreditRepository.findByCustomerExternalIdAndDataAndSequencia(
+                "100",
+                LocalDate.parse("2025-06-01"),
+                "1"
+            )
+        } returns null
         val savedSlot = slot<CustomerCredit>()
         every { customerCreditRepository.save(capture(savedSlot)) } answers { savedSlot.captured.copy(id = 1L) }
 
@@ -60,7 +67,7 @@ class IngestCustomerCreditsServiceTest {
             customerExternalId = "200",
             cnpjEmpresa = "12345678000199",
             sequencia = "5",
-            data = Instant.parse("2025-01-01T00:00:00Z"),
+            data = LocalDate.parse("2025-01-01"),
             dataPedido = null,
             valorUtilizado = BigDecimal("50.00"),
             valorTotal = BigDecimal("500.00"),
@@ -70,11 +77,26 @@ class IngestCustomerCreditsServiceTest {
             createdAt = Instant.parse("2025-01-01T00:00:00Z"),
             updatedAt = Instant.parse("2025-01-01T00:00:00Z"),
         )
-        every { customerCreditRepository.findByCustomerExternalIdAndSequencia("200", "5") } returns existing
+        every {
+            customerCreditRepository.findByCustomerExternalIdAndDataAndSequencia(
+                "200",
+                LocalDate.parse("2025-01-01"),
+                "5"
+            )
+        } returns existing
         every { customerCreditRepository.save(any()) } answers { firstArg() }
 
         val result = service.ingest(
-            IngestBatchCommand(batchId = "batch-2", items = listOf(command("200", "5"))),
+            IngestBatchCommand(
+                batchId = "batch-2",
+                items = listOf(
+                    command(
+                        customerExternalId = "200",
+                        data = LocalDate.parse("2025-01-01"),
+                        sequencia = "5"
+                    )
+                )
+            ),
         )
 
         assertEquals(IngestOutcome.UPDATED, result.results.single().outcome)
@@ -89,14 +111,32 @@ class IngestCustomerCreditsServiceTest {
         val result = service.ingestSingle(command("300", null))
 
         assertEquals(IngestOutcome.CREATED, result.outcome)
-        verify(exactly = 0) { customerCreditRepository.findByCustomerExternalIdAndSequencia(any(), any()) }
+        verify(exactly = 0) {
+            customerCreditRepository.findByCustomerExternalIdAndDataAndSequencia(
+                any(),
+                any(),
+                any()
+            )
+        }
         verify(exactly = 1) { customerCreditRepository.save(any()) }
     }
 
     @Test
     fun `records a failure for one item without aborting the rest of the batch`() {
-        every { customerCreditRepository.findByCustomerExternalIdAndSequencia("OK", "1") } returns null
-        every { customerCreditRepository.findByCustomerExternalIdAndSequencia("BAD", "1") } throws RuntimeException("db down")
+        every {
+            customerCreditRepository.findByCustomerExternalIdAndDataAndSequencia(
+                "OK",
+                LocalDate.parse("2025-06-01"),
+                "1"
+            )
+        } returns null
+        every {
+            customerCreditRepository.findByCustomerExternalIdAndDataAndSequencia(
+                "BAD",
+                LocalDate.parse("2025-06-01"),
+                "1"
+            )
+        } throws RuntimeException("db down")
         every { customerCreditRepository.save(any()) } answers { firstArg<CustomerCredit>().copy(id = 1L) }
 
         val result = service.ingest(
@@ -113,7 +153,13 @@ class IngestCustomerCreditsServiceTest {
 
     @Test
     fun `ingestSingle reports a failure without throwing when the item fails`() {
-        every { customerCreditRepository.findByCustomerExternalIdAndSequencia("400", "1") } throws RuntimeException("db down")
+        every {
+            customerCreditRepository.findByCustomerExternalIdAndDataAndSequencia(
+                "400",
+                LocalDate.parse("2025-06-01"),
+                "1"
+            )
+        } throws RuntimeException("db down")
 
         val result = service.ingestSingle(command("400", "1"))
 

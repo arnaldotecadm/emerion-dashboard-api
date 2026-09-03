@@ -58,7 +58,11 @@ class IngestCustomerCreditsService(
         val itemLabel = "${item.customerExternalId}:${item.sequencia ?: "-"}"
         return try {
             val existing = item.sequencia?.let {
-                customerCreditRepository.findByCustomerExternalIdAndSequencia(item.customerExternalId, it)
+                customerCreditRepository.findByCustomerExternalIdAndDataAndSequencia(
+                    item.customerExternalId,
+                    item.data,
+                    it
+                )
             }
             val toSave = existing?.mergeFromIngestion(
                 cnpjEmpresa = item.cnpjEmpresa,

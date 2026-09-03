@@ -2,6 +2,7 @@ package br.com.vertice.emerion_dashboard.infrastructure.persistence.customercred
 
 import java.math.BigDecimal
 import java.time.Instant
+import java.time.LocalDate
 
 /**
  * Read-side projection for `customer_credit`, populated straight from a
@@ -13,8 +14,8 @@ interface CustomerCreditProjection {
     val customerExternalId: String
     val cnpjEmpresa: String
     val sequencia: String?
-    val data: Instant
-    val dataPedido: Instant?
+    val data: LocalDate
+    val dataPedido: LocalDate?
     val valorUtilizado: BigDecimal
     val valorTotal: BigDecimal
     val saldo: BigDecimal

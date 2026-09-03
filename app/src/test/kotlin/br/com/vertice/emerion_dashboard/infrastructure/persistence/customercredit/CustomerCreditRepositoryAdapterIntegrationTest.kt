@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.math.BigDecimal
 import java.time.Instant
+import java.time.LocalDate
 import kotlin.test.assertEquals
 
 /**
@@ -30,8 +31,8 @@ class CustomerCreditRepositoryAdapterIntegrationTest(
                 customerExternalId = "cust-ext-1",
                 cnpjEmpresa = "12345678000199",
                 sequencia = "1",
-                data = now,
-                dataPedido = now,
+                data = LocalDate.now(),
+                dataPedido = LocalDate.now(),
                 valorUtilizado = BigDecimal("10.0000"),
                 valorTotal = BigDecimal("100.0000"),
                 saldo = BigDecimal("90.0000"),
@@ -54,7 +55,7 @@ class CustomerCreditRepositoryAdapterIntegrationTest(
                 customerExternalId = "cust-ext-other",
                 cnpjEmpresa = "12345678000198",
                 sequencia = "1",
-                data = now,
+                data = LocalDate.now(),
                 dataPedido = null,
                 valorUtilizado = BigDecimal("5.0000"),
                 valorTotal = BigDecimal("50.0000"),
@@ -69,7 +70,7 @@ class CustomerCreditRepositoryAdapterIntegrationTest(
                 customerExternalId = "cust-ext-match",
                 cnpjEmpresa = "12345678000199",
                 sequencia = "1",
-                data = now,
+                data = LocalDate.now(),
                 dataPedido = null,
                 valorUtilizado = BigDecimal("5.0000"),
                 valorTotal = BigDecimal("50.0000"),

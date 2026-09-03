@@ -2368,10 +2368,10 @@ components:
             always inserted as a new row.
         data:
           type: string
-          format: date-time
+          format: date
         dataPedido:
           type: string
-          format: date-time
+          format: date
           nullable: true
         valorUtilizado:
           type: number
@@ -3214,10 +3214,10 @@ components:
           nullable: true
         data:
           type: string
-          format: date-time
+          format: date
         dataPedido:
           type: string
-          format: date-time
+          format: date
           nullable: true
         valorUtilizado:
           type: number

@@ -2,6 +2,7 @@ package br.com.vertice.emerion_dashboard.domain.customercredit.model
 
 import java.math.BigDecimal
 import java.time.Instant
+import java.time.LocalDate
 
 /**
  * Domain model for a single customer credit ledger entry. Plain Kotlin, no
@@ -18,8 +19,8 @@ data class CustomerCredit(
     val customerExternalId: String,
     val cnpjEmpresa: String,
     val sequencia: String?,
-    val data: Instant,
-    val dataPedido: Instant?,
+    val data: LocalDate,
+    val dataPedido: LocalDate?,
     val valorUtilizado: BigDecimal,
     val valorTotal: BigDecimal,
     val saldo: BigDecimal,
@@ -34,8 +35,8 @@ data class CustomerCredit(
             customerExternalId: String,
             cnpjEmpresa: String,
             sequencia: String?,
-            data: Instant,
-            dataPedido: Instant?,
+            data: LocalDate,
+            dataPedido: LocalDate?,
             valorUtilizado: BigDecimal,
             valorTotal: BigDecimal,
             saldo: BigDecimal,
@@ -62,8 +63,8 @@ data class CustomerCredit(
     /** Applies an ingestion update on top of an existing credit entry, bumping updatedAt. */
     fun mergeFromIngestion(
         cnpjEmpresa: String,
-        data: Instant,
-        dataPedido: Instant?,
+        data: LocalDate,
+        dataPedido: LocalDate?,
         valorUtilizado: BigDecimal,
         valorTotal: BigDecimal,
         saldo: BigDecimal,

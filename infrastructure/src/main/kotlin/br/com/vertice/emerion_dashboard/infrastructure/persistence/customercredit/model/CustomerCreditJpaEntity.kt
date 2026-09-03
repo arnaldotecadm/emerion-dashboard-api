@@ -9,6 +9,7 @@ import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
 import java.math.BigDecimal
 import java.time.Instant
+import java.time.LocalDate
 
 /**
  * JPA entity for the `customer_credit` table. Lives entirely in the
@@ -39,10 +40,10 @@ class CustomerCreditJpaEntity(
     var sequencia: String? = null,
 
     @Column(name = "data", nullable = false)
-    var data: Instant = Instant.now(),
+    var data: LocalDate = LocalDate.now(),
 
     @Column(name = "data_pedido")
-    var dataPedido: Instant? = null,
+    var dataPedido: LocalDate? = null,
 
     @Column(name = "valor_utilizado", nullable = false)
     var valorUtilizado: BigDecimal = BigDecimal.ZERO,
