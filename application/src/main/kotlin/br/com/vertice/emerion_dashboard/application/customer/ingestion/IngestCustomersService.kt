@@ -132,7 +132,9 @@ class IngestCustomersService(
 
     private fun upsertAddresses(item: IngestCustomerCommand, now: Instant) {
             val existing = customerAddressRepository.findByExternalId(item.externalId)
-            val details = item.enderecos.map {
+            val details = item.enderecos
+                .distinctBy { it.tipo.trim().uppercase() }
+                .map {
                 CustomerAddressDetail(
                     tipo = it.tipo,
                     cep = it.cep,

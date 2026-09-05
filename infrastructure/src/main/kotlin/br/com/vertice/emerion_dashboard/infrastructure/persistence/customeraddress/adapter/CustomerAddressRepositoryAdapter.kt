@@ -5,6 +5,7 @@ import br.com.vertice.emerion_dashboard.domain.customeraddress.repository.Custom
 import br.com.vertice.emerion_dashboard.domain.shared.Page
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import br.com.vertice.emerion_dashboard.infrastructure.persistence.customeraddress.mapper.CustomerAddressPersistenceMapper
+import br.com.vertice.emerion_dashboard.infrastructure.persistence.customeraddress.model.CustomerAddressDetailJpaEntity
 import br.com.vertice.emerion_dashboard.infrastructure.persistence.customeraddress.repository.CustomerAddressQueryRepository
 import br.com.vertice.emerion_dashboard.infrastructure.persistence.customeraddress.repository.CustomerAddressSpringDataRepository
 import org.springframework.data.domain.PageRequest as SpringPageRequest
@@ -62,9 +63,48 @@ class CustomerAddressRepositoryAdapter(
     }
 
     override fun save(address: CustomerAddress): CustomerAddress {
-        val existing = springDataRepository.findByExternalId(address.externalId)
-        val entity = CustomerAddressPersistenceMapper.toEntity(address, existing)
-        val saved = springDataRepository.save(entity)
+        val existing = address.id?.let(springDataRepository::findById)?.orElse(null)
+            ?: springDataRepository.findByExternalId(address.externalId)
+
+        val saved = if (existing == null) {
+            val entity = CustomerAddressPersistenceMapper.toEntity(address, null)
+            springDataRepository.save(entity)
+        } else {
+            existing.externalId = address.externalId
+            existing.cnpjEmpresa = address.cnpjEmpresa
+            existing.cpfCnpj = address.cpfCnpj
+            existing.createdAt = address.createdAt
+            existing.updatedAt = address.updatedAt
+
+            existing.enderecos.clear()
+            springDataRepository.saveAndFlush(existing)
+
+            existing.enderecos.addAll(
+                address.enderecos.map { detail ->
+                    CustomerAddressDetailJpaEntity(
+                        customerAddress = existing,
+                        tipo = detail.tipo,
+                        cep = detail.cep,
+                        endereco = detail.endereco,
+                        numero = detail.numero,
+                        referencia = detail.referencia,
+                        bairro = detail.bairro,
+                        cidade = detail.cidade,
+                        uf = detail.uf,
+                        telefone = detail.telefone,
+                        telefoneContato = detail.telefoneContato,
+                        complemento = detail.complemento,
+                        fax = detail.fax,
+                        tipoEndereco = detail.tipoEndereco,
+                        dddTelefone = detail.dddTelefone,
+                        dddFax = detail.dddFax,
+                        dddCelular = detail.dddCelular,
+                        celular = detail.celular,
+                    )
+                },
+            )
+            springDataRepository.save(existing)
+        }
         return CustomerAddressPersistenceMapper.toDomain(saved)
     }
 }
