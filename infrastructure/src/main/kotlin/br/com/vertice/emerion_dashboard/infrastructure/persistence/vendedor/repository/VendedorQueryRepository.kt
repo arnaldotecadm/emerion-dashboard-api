@@ -32,7 +32,7 @@ interface VendedorQueryRepository : Repository<VendedorJpaEntity, Long> {
                 email,
                 cidade,
                 uf,
-                situacao,
+                ativo,
                 saldo,
                 data_cadastro AS dataCadastro,
                 created_at AS createdAt,
@@ -58,27 +58,27 @@ interface VendedorQueryRepository : Repository<VendedorJpaEntity, Long> {
                 email,
                 cidade,
                 uf,
-                situacao,
+                ativo,
                 saldo,
                 data_cadastro AS dataCadastro,
                 created_at AS createdAt,
                 updated_at AS updatedAt
             FROM vendedor
             WHERE (:nomeContains IS NULL OR LOWER(nome) LIKE LOWER(CONCAT('%', CAST(:nomeContains AS text), '%')))
-              AND (:situacao IS NULL OR situacao = :situacao)
+              AND (:ativo IS NULL OR ativo = :ativo)
               AND (:cnpjEmpresa IS NULL OR cnpj_empresa = :cnpjEmpresa)
         """,
         countQuery = """
             SELECT count(*)
             FROM vendedor
             WHERE (:nomeContains IS NULL OR LOWER(nome) LIKE LOWER(CONCAT('%', CAST(:nomeContains AS text), '%')))
-              AND (:situacao IS NULL OR situacao = :situacao)
+              AND (:ativo IS NULL OR ativo = :ativo)
               AND (:cnpjEmpresa IS NULL OR cnpj_empresa = :cnpjEmpresa)
         """,
     )
     fun search(
         @Param("nomeContains") nomeContains: String?,
-        @Param("situacao") situacao: String?,
+        @Param("ativo") ativo: String?,
         @Param("cnpjEmpresa") cnpjEmpresa: String?,
         pageable: Pageable,
     ): Page<VendedorProjection>

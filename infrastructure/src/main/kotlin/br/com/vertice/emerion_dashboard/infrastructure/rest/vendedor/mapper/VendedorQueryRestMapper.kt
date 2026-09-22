@@ -23,7 +23,7 @@ object VendedorQueryRestMapper {
             email = vendedor.email,
             cidade = vendedor.cidade,
             uf = vendedor.uf,
-            situacao = vendedor.situacao,
+            ativo = vendedor.ativo,
             saldo = vendedor.saldo,
             dataCadastro = vendedor.dataCadastro,
             createdAt = vendedor.createdAt.atOffset(ZoneOffset.UTC),

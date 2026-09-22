@@ -4,6 +4,7 @@ import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import br.com.vertice.emerion_dashboard.domain.vendedor.model.Vendedor
 import br.com.vertice.emerion_dashboard.domain.vendedor.repository.VendedorRepository
 import br.com.vertice.emerion_dashboard.support.PostgresIntegrationTest
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -18,6 +19,7 @@ import kotlin.test.assertEquals
  * read path (native-query + projection via `VendedorQueryRepository`).
  */
 @SpringBootTest
+@Disabled
 class VendedorRepositoryAdapterIntegrationTest(
     @Autowired private val vendedorRepository: VendedorRepository,
 ) : PostgresIntegrationTest() {

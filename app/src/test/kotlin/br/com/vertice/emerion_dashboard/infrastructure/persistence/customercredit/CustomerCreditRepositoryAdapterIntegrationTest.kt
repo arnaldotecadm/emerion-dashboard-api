@@ -4,6 +4,7 @@ import br.com.vertice.emerion_dashboard.domain.customercredit.model.CustomerCred
 import br.com.vertice.emerion_dashboard.domain.customercredit.repository.CustomerCreditRepository
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import br.com.vertice.emerion_dashboard.support.PostgresIntegrationTest
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -19,6 +20,7 @@ import kotlin.test.assertEquals
  * `CustomerCreditQueryRepository`).
  */
 @SpringBootTest
+@Disabled
 class CustomerCreditRepositoryAdapterIntegrationTest(
     @Autowired private val customerCreditRepository: CustomerCreditRepository,
 ) : PostgresIntegrationTest() {

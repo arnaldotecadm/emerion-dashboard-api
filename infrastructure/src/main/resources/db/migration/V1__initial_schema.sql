@@ -161,7 +161,7 @@ CREATE TABLE customer_order (
     codigo_cliente INTEGER NOT NULL,
     numero_pedido VARCHAR(32),
     data_pedido DATE NOT NULL,
-    status_pedido VARCHAR(32),
+    status_pedido VARCHAR(45),
     total_pedido_com_impostos NUMERIC(19, 4) NOT NULL DEFAULT 0,
     total_pedido_sem_impostos NUMERIC(19, 4) NOT NULL DEFAULT 0,
     total_ipi NUMERIC(19, 4) NOT NULL DEFAULT 0,
@@ -278,7 +278,7 @@ CREATE TABLE vendedor (
     email VARCHAR(255),
     cidade VARCHAR(255),
     uf VARCHAR(8),
-    situacao VARCHAR(32),
+    ativo VARCHAR(32),
     saldo NUMERIC(19, 4),
     data_cadastro DATE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -288,7 +288,7 @@ CREATE TABLE vendedor (
 );
 
 CREATE INDEX idx_vendedor_nome ON vendedor (LOWER(nome));
-CREATE INDEX idx_vendedor_situacao ON vendedor (situacao);
+CREATE INDEX idx_vendedor_ativo ON vendedor (ativo);
 CREATE INDEX idx_vendedor_cnpj_empresa ON vendedor (cnpj_empresa);
 
 CREATE TABLE notification (

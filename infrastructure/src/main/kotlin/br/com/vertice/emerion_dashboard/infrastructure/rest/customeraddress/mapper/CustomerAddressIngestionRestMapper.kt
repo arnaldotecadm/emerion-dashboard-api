@@ -1,10 +1,10 @@
 package br.com.vertice.emerion_dashboard.infrastructure.rest.customeraddress.mapper
 
 import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestBatchCommand
-import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestBatchResult
 import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestCustomerAddressCommand
 import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestCustomerAddressDetailCommand
-import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestItemResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerAddressDetailIngestionItem
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerAddressIngestionBatch
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerAddressIngestionItem

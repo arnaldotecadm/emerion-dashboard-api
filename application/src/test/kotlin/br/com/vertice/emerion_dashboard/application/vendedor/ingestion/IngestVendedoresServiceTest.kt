@@ -1,8 +1,8 @@
 package br.com.vertice.emerion_dashboard.application.vendedor.ingestion
 
 import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestBatchCommand
-import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestOutcome
 import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestVendedorCommand
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import br.com.vertice.emerion_dashboard.domain.vendedor.model.Vendedor
 import br.com.vertice.emerion_dashboard.domain.vendedor.repository.VendedorRepository
 import io.mockk.every
@@ -34,7 +34,7 @@ class IngestVendedoresServiceTest {
         email = "vendedor@example.com",
         cidade = "Sao Paulo",
         uf = "SP",
-        situacao = "ATIVO",
+        ativo = "ATIVO",
         saldo = BigDecimal("100.00"),
         dataCadastro = LocalDate.parse("2025-01-01"),
     )
@@ -74,7 +74,7 @@ class IngestVendedoresServiceTest {
             email = null,
             cidade = null,
             uf = null,
-            situacao = "ATIVO",
+            ativo = "ATIVO",
             saldo = BigDecimal("10.00"),
             dataCadastro = null,
             createdAt = Instant.parse("2025-01-01T00:00:00Z"),

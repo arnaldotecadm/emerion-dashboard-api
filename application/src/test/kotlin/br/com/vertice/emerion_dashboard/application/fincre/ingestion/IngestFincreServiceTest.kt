@@ -2,10 +2,10 @@ package br.com.vertice.emerion_dashboard.application.fincre.ingestion
 
 import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreBatchCommand
 import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreCommand
-import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreOutcome
 import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreParcelaCommand
 import br.com.vertice.emerion_dashboard.domain.fincre.model.Fincre
 import br.com.vertice.emerion_dashboard.domain.fincre.repository.FincreRepository
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -60,7 +60,7 @@ class IngestFincreServiceTest {
 
         val result = service.ingestSingle(item)
 
-        assertEquals(IngestFincreOutcome.CREATED, result.outcome)
+        assertEquals(IngestOutcome.CREATED, result.outcome)
         verify { repository.save(match { it.documento == "1" && it.parcelas.size == 1 }) }
     }
 
@@ -81,7 +81,7 @@ class IngestFincreServiceTest {
 
         val result = service.ingestSingle(item)
 
-        assertEquals(IngestFincreOutcome.UPDATED, result.outcome)
+        assertEquals(IngestOutcome.UPDATED, result.outcome)
         verify { repository.save(match { it.id == 42L && it.nomeCliente == "YUJING INTERNATIONAL LTD" }) }
     }
 

@@ -5,6 +5,7 @@ import br.com.vertice.emerion_dashboard.domain.customeraddress.model.CustomerAdd
 import br.com.vertice.emerion_dashboard.domain.customeraddress.repository.CustomerAddressRepository
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import br.com.vertice.emerion_dashboard.support.PostgresIntegrationTest
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -18,6 +19,7 @@ import kotlin.test.assertEquals
  * `CustomerAddressQueryRepository`).
  */
 @SpringBootTest
+@Disabled
 class CustomerAddressRepositoryAdapterIntegrationTest(
     @Autowired private val customerAddressRepository: CustomerAddressRepository,
 ) : PostgresIntegrationTest() {

@@ -2,9 +2,9 @@ package br.com.vertice.emerion_dashboard.application.customercredit.ingestion
 
 import br.com.vertice.emerion_dashboard.application.customercredit.ingestion.model.IngestBatchCommand
 import br.com.vertice.emerion_dashboard.application.customercredit.ingestion.model.IngestCustomerCreditCommand
-import br.com.vertice.emerion_dashboard.application.customercredit.ingestion.model.IngestOutcome
 import br.com.vertice.emerion_dashboard.domain.customercredit.model.CustomerCredit
 import br.com.vertice.emerion_dashboard.domain.customercredit.repository.CustomerCreditRepository
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot

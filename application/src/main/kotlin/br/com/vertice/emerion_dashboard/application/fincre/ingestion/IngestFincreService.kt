@@ -1,14 +1,14 @@
 package br.com.vertice.emerion_dashboard.application.fincre.ingestion
 
 import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreBatchCommand
-import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreBatchResult
 import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreCommand
-import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreItemResult
-import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreOutcome
 import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreParcelaCommand
 import br.com.vertice.emerion_dashboard.domain.fincre.model.Fincre
 import br.com.vertice.emerion_dashboard.domain.fincre.model.FincreParcela
 import br.com.vertice.emerion_dashboard.domain.fincre.repository.FincreRepository
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -23,21 +23,22 @@ class IngestFincreService(
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @Transactional
-    override fun ingest(command: IngestFincreBatchCommand): IngestFincreBatchResult {
+    override fun ingest(command: IngestFincreBatchCommand): IngestBatchResult {
         val results = command.items.map { ingestItem(it, Instant.now(clock)) }
         logger.info(
             "FINCRE batch '{}' processed: {} succeeded, {} failed",
             command.batchId,
-            results.count { it.outcome != IngestFincreOutcome.FAILED },
-            results.count { it.outcome == IngestFincreOutcome.FAILED },
+            results.count { it.outcome != IngestOutcome.FAILED },
+            results.count { it.outcome == IngestOutcome.FAILED },
         )
-        return IngestFincreBatchResult(command.batchId, results)
+        return IngestBatchResult(command.batchId, results)
     }
 
     @Transactional
-    override fun ingestSingle(command: IngestFincreCommand): IngestFincreItemResult = ingestItem(command, Instant.now(clock))
+    override fun ingestSingle(command: IngestFincreCommand): IngestItemResult =
+        ingestItem(command, Instant.now(clock))
 
-    private fun ingestItem(item: IngestFincreCommand, now: Instant): IngestFincreItemResult = try {
+    private fun ingestItem(item: IngestFincreCommand, now: Instant): IngestItemResult = try {
         val existing = fincreRepository.findByCnpjEmpresaAndDocumento(item.cnpjEmpresa, item.documento)
         val parcelas = item.parcelas.map { it.toDomain() }
         val toSave = existing?.mergeFromIngestion(
@@ -76,10 +77,14 @@ class IngestFincreService(
             now = now,
         )
         fincreRepository.save(toSave)
-        IngestFincreItemResult(key(item), if (existing == null) IngestFincreOutcome.CREATED else IngestFincreOutcome.UPDATED, null)
+        IngestItemResult(
+            key(item),
+            if (existing == null) IngestOutcome.CREATED else IngestOutcome.UPDATED,
+            null
+        )
     } catch (ex: Exception) {
         logger.error("Failed to ingest FINCRE cnpjEmpresa='{}', documento='{}'", item.cnpjEmpresa, item.documento, ex)
-        IngestFincreItemResult(key(item), IngestFincreOutcome.FAILED, ex.message)
+        IngestItemResult(key(item), IngestOutcome.FAILED, ex.message)
     }
 
     private fun IngestFincreParcelaCommand.toDomain() = FincreParcela(

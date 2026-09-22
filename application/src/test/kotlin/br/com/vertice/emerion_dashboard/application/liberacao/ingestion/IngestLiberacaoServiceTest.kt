@@ -2,7 +2,7 @@ package br.com.vertice.emerion_dashboard.application.liberacao.ingestion
 
 import br.com.vertice.emerion_dashboard.application.liberacao.ingestion.model.IngestLiberacaoCommand
 import br.com.vertice.emerion_dashboard.application.liberacao.ingestion.model.IngestLiberacaoDetalheCommand
-import br.com.vertice.emerion_dashboard.application.liberacao.ingestion.model.IngestLiberacaoOutcome
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import br.com.vertice.emerion_dashboard.domain.liberacao.model.Liberacao
 import br.com.vertice.emerion_dashboard.domain.liberacao.repository.LiberacaoRepository
 import io.mockk.every
@@ -71,7 +71,7 @@ class IngestLiberacaoServiceTest {
 
         val result = service.ingestSingle(command())
 
-        assertEquals(IngestLiberacaoOutcome.CREATED, result.outcome)
+        assertEquals(IngestOutcome.CREATED, result.outcome)
         assertEquals("25687:1", result.externalId)
         assertEquals(1, saved.captured.detalhes.size)
         assertEquals(Instant.parse("2026-08-26T10:00:00Z"), saved.captured.createdAt)
@@ -103,23 +103,28 @@ class IngestLiberacaoServiceTest {
 
         val result = service.ingestSingle(command())
 
-        assertEquals(IngestLiberacaoOutcome.UPDATED, result.outcome)
+        assertEquals(IngestOutcome.UPDATED, result.outcome)
         verify {
             liberacaoRepository.save(match {
                 it.id == 42L &&
-                    it.detalhes.single().numeroSequenciaLiberacao == 1 &&
-                    it.updatedAt == Instant.parse("2026-08-26T10:00:00Z")
+                        it.detalhes.single().numeroSequenciaLiberacao == 1 &&
+                        it.updatedAt == Instant.parse("2026-08-26T10:00:00Z")
             })
         }
     }
 
     @Test
     fun `returns a failure result when persistence fails`() {
-        every { liberacaoRepository.findByNumeroPedidoAndNumeroLiberacao("25687", 1) } throws RuntimeException("database unavailable")
+        every {
+            liberacaoRepository.findByNumeroPedidoAndNumeroLiberacao(
+                "25687",
+                1
+            )
+        } throws RuntimeException("database unavailable")
 
         val result = service.ingestSingle(command())
 
-        assertEquals(IngestLiberacaoOutcome.FAILED, result.outcome)
+        assertEquals(IngestOutcome.FAILED, result.outcome)
         assertEquals("database unavailable", result.errorMessage)
         verify(exactly = 0) { liberacaoRepository.save(any()) }
     }

@@ -74,7 +74,7 @@ class CustomerOrderJpaEntity(
     var totalSubstituicaoTributaria: BigDecimal = BigDecimal.ZERO,
 
     @Column(name = "total_desconto_incondicional", nullable = false)
-    var totalDescontoIncondicional: BigDecimal = BigDecimal.ZERO,
+    var totalDescontoIncondicional: BigDecimal? = BigDecimal.ZERO,
 
     @Column(name = "total_frete")
     var totalFrete: BigDecimal? = null,

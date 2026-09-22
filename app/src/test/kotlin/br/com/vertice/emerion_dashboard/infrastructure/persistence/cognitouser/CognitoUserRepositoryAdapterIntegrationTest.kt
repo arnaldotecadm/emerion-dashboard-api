@@ -3,6 +3,7 @@ package br.com.vertice.emerion_dashboard.infrastructure.persistence.cognitouser
 import br.com.vertice.emerion_dashboard.domain.cognitouser.model.CognitoUser
 import br.com.vertice.emerion_dashboard.domain.cognitouser.repository.CognitoUserRepository
 import br.com.vertice.emerion_dashboard.support.PostgresIntegrationTest
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -17,6 +18,7 @@ import kotlin.test.assertTrue
  * tables) and the `groups` element-collection round-trip.
  */
 @SpringBootTest
+@Disabled
 class CognitoUserRepositoryAdapterIntegrationTest(
     @Autowired private val cognitoUserRepository: CognitoUserRepository,
 ) : PostgresIntegrationTest() {

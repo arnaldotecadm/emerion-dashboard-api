@@ -19,7 +19,7 @@ data class IngestCustomerOrderCommand(
     val totalPis: BigDecimal,
     val totalCofins: BigDecimal,
     val totalSubstituicaoTributaria: BigDecimal,
-    val totalDescontoIncondicional: BigDecimal,
+    val totalDescontoIncondicional: BigDecimal?,
     val totalFrete: BigDecimal? = null,
     val totalSeguro: BigDecimal? = null,
     val totalOutrasDespesas: BigDecimal? = null,

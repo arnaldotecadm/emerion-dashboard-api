@@ -1,4 +1,4 @@
-package br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model
+package br.com.vertice.emerion_dashboard.domain.ingestion
 
 /** Result of ingesting a single vendedor item, whether standalone or as part of a batch. */
 data class IngestItemResult(

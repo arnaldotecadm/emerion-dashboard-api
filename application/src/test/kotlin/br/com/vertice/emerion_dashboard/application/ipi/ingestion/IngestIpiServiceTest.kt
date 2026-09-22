@@ -2,7 +2,7 @@ package br.com.vertice.emerion_dashboard.application.ipi.ingestion
 
 import br.com.vertice.emerion_dashboard.application.ipi.ingestion.model.IngestIpiBatchCommand
 import br.com.vertice.emerion_dashboard.application.ipi.ingestion.model.IngestIpiCommand
-import br.com.vertice.emerion_dashboard.application.ipi.ingestion.model.IngestIpiOutcome
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import br.com.vertice.emerion_dashboard.domain.ipi.model.Ipi
 import br.com.vertice.emerion_dashboard.domain.ipi.repository.IpiRepository
 import io.mockk.every
@@ -18,7 +18,8 @@ import kotlin.test.assertEquals
 
 class IngestIpiServiceTest {
     private val repository = mockk<IpiRepository>()
-    private val service = IngestIpiService(repository, Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC))
+    private val service =
+        IngestIpiService(repository, Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC))
     private val item = IngestIpiCommand(
         cnpjEmpresa = "15323240000102",
         codigoIpi = "22071010E0",
@@ -44,7 +45,7 @@ class IngestIpiServiceTest {
 
         val result = service.ingestSingle(item)
 
-        assertEquals(IngestIpiOutcome.CREATED, result.outcome)
+        assertEquals(IngestOutcome.CREATED, result.outcome)
         verify { repository.save(match { it.cnpjEmpresa == item.cnpjEmpresa && it.codigoIpi == item.codigoIpi }) }
     }
 
@@ -82,7 +83,7 @@ class IngestIpiServiceTest {
 
         val result = service.ingestSingle(item)
 
-        assertEquals(IngestIpiOutcome.UPDATED, result.outcome)
+        assertEquals(IngestOutcome.UPDATED, result.outcome)
         verify { repository.save(match { it.id == 42L && it.nomeIpi == "REGRA IPI ENTRADA 0" }) }
     }
 

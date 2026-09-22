@@ -20,7 +20,7 @@ interface VendedorProjection {
     val email: String?
     val cidade: String?
     val uf: String?
-    val situacao: String?
+    val ativo: String?
     val saldo: BigDecimal?
     val dataCadastro: LocalDate?
     val createdAt: Instant

@@ -2863,7 +2863,6 @@ components:
         - totalPis
         - totalCofins
         - totalSubstituicaoTributaria
-        - totalDescontoIncondicional
         - itens
       properties:
         externalId:
@@ -3620,7 +3619,7 @@ components:
         uf:
           type: string
           nullable: true
-        situacao:
+        ativo:
           type: string
           nullable: true
         saldo:

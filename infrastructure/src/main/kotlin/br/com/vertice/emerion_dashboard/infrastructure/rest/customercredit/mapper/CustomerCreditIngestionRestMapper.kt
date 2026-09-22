@@ -1,13 +1,13 @@
 package br.com.vertice.emerion_dashboard.infrastructure.rest.customercredit.mapper
 
 import br.com.vertice.emerion_dashboard.application.customercredit.ingestion.model.IngestBatchCommand
-import br.com.vertice.emerion_dashboard.application.customercredit.ingestion.model.IngestBatchResult
 import br.com.vertice.emerion_dashboard.application.customercredit.ingestion.model.IngestCustomerCreditCommand
-import br.com.vertice.emerion_dashboard.application.customercredit.ingestion.model.IngestItemResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerCreditIngestionItem
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IngestionItemResult
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IngestionResult
-import java.util.UUID
+import java.util.*
 
 /** Maps between the generated OpenAPI DTOs and the application layer's use-case commands/results. */
 object CustomerCreditIngestionRestMapper {

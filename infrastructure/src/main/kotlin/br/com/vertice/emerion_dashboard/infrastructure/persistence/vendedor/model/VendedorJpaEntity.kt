@@ -57,8 +57,8 @@ class VendedorJpaEntity(
     @Column(name = "uf")
     var uf: String? = null,
 
-    @Column(name = "situacao")
-    var situacao: String? = null,
+    @Column(name = "ativo")
+    var ativo: String? = null,
 
     @Column(name = "saldo")
     var saldo: BigDecimal? = null,

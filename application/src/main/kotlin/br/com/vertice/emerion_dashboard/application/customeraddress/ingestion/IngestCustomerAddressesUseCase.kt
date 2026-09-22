@@ -1,9 +1,9 @@
 package br.com.vertice.emerion_dashboard.application.customeraddress.ingestion
 
 import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestBatchCommand
-import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestBatchResult
 import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestCustomerAddressCommand
-import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestItemResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 
 /**
  * Inbound port (driving port) for ingesting customer address sets sent by

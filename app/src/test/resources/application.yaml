@@ -1,0 +1,28 @@
+spring:
+  cloud:
+    aws:
+      sqs:
+        listener:
+          auto-startup: false
+app:
+  cors:
+    allowed-origins: http://localhost:5173
+  aws:
+    region: eu-north-1
+    queues:
+      ingestion-requests:
+        products: https://sqs.${app.aws.region}.amazonaws.com/${AWS_ACCOUNT_ID}/emerion-dashboard-products
+        products-batch: https://sqs.${app.aws.region}.amazonaws.com/${AWS_ACCOUNT_ID}/emerion-dashboard-products-batch
+
+        customer-orders: https://sqs.${app.aws.region}.amazonaws.com/${AWS_ACCOUNT_ID}/emerion-dashboard-customer-orders
+        customer-orders-batch: https://sqs.${app.aws.region}.amazonaws.com/${AWS_ACCOUNT_ID}/emerion-dashboard-customer-orders-batch
+
+        customer: https://sqs.${app.aws.region}.amazonaws.com/${AWS_ACCOUNT_ID}/emerion-dashboard-customer
+        customer-batch: https://sqs.${app.aws.region}.amazonaws.com/${AWS_ACCOUNT_ID}/emerion-dashboard-customer-batch
+  security:
+    cognito:
+      issuer-uri: https://cognito-idp.eu-north-1.amazonaws.com/user-pool-id
+      client-id: client-id
+      required-group: COMPANY
+      admin-group: ADMIN
+      user-pool-id: user-pool-id

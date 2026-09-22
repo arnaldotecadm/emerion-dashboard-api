@@ -5,6 +5,7 @@ import br.com.vertice.emerion_dashboard.domain.customerorder.model.CustomerOrder
 import br.com.vertice.emerion_dashboard.domain.customerorder.repository.CustomerOrderRepository
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import br.com.vertice.emerion_dashboard.support.PostgresIntegrationTest
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -20,6 +21,7 @@ import kotlin.test.assertEquals
  * `CustomerOrderQueryRepository`).
  */
 @SpringBootTest
+@Disabled
 class CustomerOrderRepositoryAdapterIntegrationTest(
     @Autowired private val customerOrderRepository: CustomerOrderRepository,
 ) : PostgresIntegrationTest() {

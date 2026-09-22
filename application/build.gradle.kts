@@ -16,6 +16,10 @@ dependencies {
     implementation("org.springframework:spring-tx")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.slf4j:slf4j-api")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
+    implementation(platform("io.awspring.cloud:spring-cloud-aws-dependencies:4.1.0"))
+    implementation("io.awspring.cloud:spring-cloud-aws-starter-sqs")
+    implementation("tools.jackson.module:jackson-module-kotlin")
 
     testImplementation(libs.kotlin.test.junit5)
     testImplementation(libs.mockk)

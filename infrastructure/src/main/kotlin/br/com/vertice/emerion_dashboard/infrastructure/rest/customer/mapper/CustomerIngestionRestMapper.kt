@@ -1,10 +1,10 @@
 package br.com.vertice.emerion_dashboard.infrastructure.rest.customer.mapper
 
 import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestBatchCommand
-import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestBatchResult
 import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestCustomerCommand
-import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestItemResult
 import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestCustomerAddressDetailCommand
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerIngestionBatch
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerIngestionItem
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IngestionItemResult
@@ -48,9 +48,60 @@ object CustomerIngestionRestMapper {
             microRegiao = dto.microRegiao,
             setor = dto.setor,
             enderecos = listOf(
-                address("FATURAMENTO", dto.faturamentoCep, dto.faturamentoTipoEndereco, dto.faturamentoEndereco, dto.faturamentoNumero, dto.faturamentoComplemento, dto.faturamentoBairro, dto.faturamentoCidade, dto.faturamentoUf, dto.faturamentoDDDTelefone, dto.faturamentoTelefone, dto.faturamentoDDDFax, dto.faturamentoFax, dto.faturamentoContato, dto.faturamentoDDDCelular, dto.faturamentoCelular),
-                address("COBRANCA", dto.cobrancaCep, dto.cobrancaTipoEndereco, dto.cobrancaEndereco, dto.cobrancaNumero, dto.cobrancaComplemento, dto.cobrancaBairro, dto.cobrancaCidade, dto.cobrancaUf, dto.cobrancaDDDTelefone, dto.cobrancaTelefone, dto.cobrancaDDDFax, dto.cobrancaFax, dto.cobrancaContato, dto.cobrancaDDDCelular, dto.cobrancaCelular),
-                address("ENTREGA", dto.entregaCep, dto.entregaTipoEndereco, dto.entregaEndereco, dto.entregaNumero, dto.entregaComplemento, dto.entregaBairro, dto.entregaCidade, dto.entregaUf, dto.entregaDDDTelefone, dto.entregaTelefone, dto.entregaDDDFax, dto.entregaFax, dto.entregaContato, dto.entregaDDDCelular, dto.entregaCelular),
+                address(
+                    "FATURAMENTO",
+                    dto.faturamentoCep,
+                    dto.faturamentoTipoEndereco,
+                    dto.faturamentoEndereco,
+                    dto.faturamentoNumero,
+                    dto.faturamentoComplemento,
+                    dto.faturamentoBairro,
+                    dto.faturamentoCidade,
+                    dto.faturamentoUf,
+                    dto.faturamentoDDDTelefone,
+                    dto.faturamentoTelefone,
+                    dto.faturamentoDDDFax,
+                    dto.faturamentoFax,
+                    dto.faturamentoContato,
+                    dto.faturamentoDDDCelular,
+                    dto.faturamentoCelular
+                ),
+                address(
+                    "COBRANCA",
+                    dto.cobrancaCep,
+                    dto.cobrancaTipoEndereco,
+                    dto.cobrancaEndereco,
+                    dto.cobrancaNumero,
+                    dto.cobrancaComplemento,
+                    dto.cobrancaBairro,
+                    dto.cobrancaCidade,
+                    dto.cobrancaUf,
+                    dto.cobrancaDDDTelefone,
+                    dto.cobrancaTelefone,
+                    dto.cobrancaDDDFax,
+                    dto.cobrancaFax,
+                    dto.cobrancaContato,
+                    dto.cobrancaDDDCelular,
+                    dto.cobrancaCelular
+                ),
+                address(
+                    "ENTREGA",
+                    dto.entregaCep,
+                    dto.entregaTipoEndereco,
+                    dto.entregaEndereco,
+                    dto.entregaNumero,
+                    dto.entregaComplemento,
+                    dto.entregaBairro,
+                    dto.entregaCidade,
+                    dto.entregaUf,
+                    dto.entregaDDDTelefone,
+                    dto.entregaTelefone,
+                    dto.entregaDDDFax,
+                    dto.entregaFax,
+                    dto.entregaContato,
+                    dto.entregaDDDCelular,
+                    dto.entregaCelular
+                ),
             ),
             createdAt = dto.createdAt?.toInstant(),
         )

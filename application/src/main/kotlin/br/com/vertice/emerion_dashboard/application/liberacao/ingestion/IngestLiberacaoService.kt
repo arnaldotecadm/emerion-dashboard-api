@@ -3,7 +3,7 @@ package br.com.vertice.emerion_dashboard.application.liberacao.ingestion
 import br.com.vertice.emerion_dashboard.application.liberacao.ingestion.model.IngestLiberacaoCommand
 import br.com.vertice.emerion_dashboard.application.liberacao.ingestion.model.IngestLiberacaoDetalheCommand
 import br.com.vertice.emerion_dashboard.application.liberacao.ingestion.model.IngestLiberacaoItemResult
-import br.com.vertice.emerion_dashboard.application.liberacao.ingestion.model.IngestLiberacaoOutcome
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import br.com.vertice.emerion_dashboard.domain.liberacao.model.Liberacao
 import br.com.vertice.emerion_dashboard.domain.liberacao.model.LiberacaoDetalhe
 import br.com.vertice.emerion_dashboard.domain.liberacao.repository.LiberacaoRepository
@@ -69,12 +69,12 @@ class IngestLiberacaoService(
             liberacaoRepository.save(toSave)
             IngestLiberacaoItemResult(
                 externalId = key,
-                outcome = if (existing == null) IngestLiberacaoOutcome.CREATED else IngestLiberacaoOutcome.UPDATED,
+                outcome = if (existing == null) IngestOutcome.CREATED else IngestOutcome.UPDATED,
                 errorMessage = null,
             )
         } catch (ex: Exception) {
             logger.error("Failed to ingest PEDLIB release '{}'", key, ex)
-            IngestLiberacaoItemResult(key, IngestLiberacaoOutcome.FAILED, ex.message)
+            IngestLiberacaoItemResult(key, IngestOutcome.FAILED, ex.message)
         }
     }
 

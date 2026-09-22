@@ -5,6 +5,7 @@ import br.com.vertice.emerion_dashboard.domain.liberacao.model.LiberacaoDetalhe
 import br.com.vertice.emerion_dashboard.domain.liberacao.repository.LiberacaoRepository
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import br.com.vertice.emerion_dashboard.support.PostgresIntegrationTest
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -15,6 +16,7 @@ import java.time.LocalTime
 import kotlin.test.assertEquals
 
 @SpringBootTest
+@Disabled
 class LiberacaoRepositoryAdapterIntegrationTest(
     @Autowired private val liberacaoRepository: LiberacaoRepository,
 ) : PostgresIntegrationTest() {

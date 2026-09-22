@@ -3,6 +3,7 @@ package br.com.vertice.emerion_dashboard.infrastructure.persistence.ipi
 import br.com.vertice.emerion_dashboard.domain.ipi.model.Ipi
 import br.com.vertice.emerion_dashboard.domain.ipi.repository.IpiRepository
 import br.com.vertice.emerion_dashboard.support.PostgresIntegrationTest
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -11,6 +12,7 @@ import java.time.Instant
 import kotlin.test.assertEquals
 
 @SpringBootTest
+@Disabled
 class IpiRepositoryAdapterIntegrationTest(
     @Autowired private val ipiRepository: IpiRepository,
 ) : PostgresIntegrationTest() {

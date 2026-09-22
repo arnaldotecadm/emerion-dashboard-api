@@ -1,16 +1,18 @@
 package br.com.vertice.emerion_dashboard.application.customer.ingestion
 
+import br.com.vertice.emerion_dashboard.application.config.SQSProducer
 import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestBatchCommand
-import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestBatchResult
 import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestCustomerCommand
-import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestItemResult
-import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestOutcome
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import br.com.vertice.emerion_dashboard.domain.customer.model.Customer
 import br.com.vertice.emerion_dashboard.domain.customer.repository.CustomerRepository
 import br.com.vertice.emerion_dashboard.domain.customeraddress.model.CustomerAddress
 import br.com.vertice.emerion_dashboard.domain.customeraddress.model.CustomerAddressDetail
 import br.com.vertice.emerion_dashboard.domain.customeraddress.repository.CustomerAddressRepository
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
@@ -26,6 +28,8 @@ class IngestCustomersService(
     private val customerRepository: CustomerRepository,
     private val customerAddressRepository: CustomerAddressRepository,
     private val clock: Clock = Clock.systemUTC(),
+    private val sqsProducer: SQSProducer,
+    @Value($$"${app.aws.queues.ingestion-requests.customer-batch}") private val batchQueueUrl: String
 ) : IngestCustomersUseCase {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -34,15 +38,21 @@ class IngestCustomersService(
     override fun ingest(command: IngestBatchCommand): IngestBatchResult {
         logger.info("Ingesting batch '{}' with {} customer(s)", command.batchId, command.items.size)
 
-        val results = command.items.map { item -> ingestItem(item, Instant.now(clock)) }
+        sqsProducer.sendMessageBatch(batchQueueUrl, command.items)
+        //val results = command.items.map { item -> ingestItem(item, Instant.now(clock)) }
 
         logger.info(
-            "Batch '{}' processed: {} succeeded, {} failed",
+            "Ingested batch '{}' with {} customer(s)",
             command.batchId,
-            results.count { it.outcome != IngestOutcome.FAILED },
-            results.count { it.outcome == IngestOutcome.FAILED },
+            command.items.size
         )
-        return IngestBatchResult(batchId = command.batchId, results = results)
+        return IngestBatchResult(batchId = command.batchId, results = command.items.map { item ->
+            IngestItemResult(
+                externalId = item.externalId,
+                outcome = IngestOutcome.QUEUED,
+                errorMessage = null
+            )
+        })
     }
 
     @Transactional
@@ -131,10 +141,10 @@ class IngestCustomersService(
     }
 
     private fun upsertAddresses(item: IngestCustomerCommand, now: Instant) {
-            val existing = customerAddressRepository.findByExternalId(item.externalId)
-            val details = item.enderecos
-                .distinctBy { it.tipo.trim().uppercase() }
-                .map {
+        val existing = customerAddressRepository.findByExternalId(item.externalId)
+        val details = item.enderecos
+            .distinctBy { it.tipo.trim().uppercase() }
+            .map {
                 CustomerAddressDetail(
                     tipo = it.tipo,
                     cep = it.cep,
@@ -155,8 +165,8 @@ class IngestCustomersService(
                     celular = it.celular,
                 )
             }
-            val address = existing?.mergeFromIngestion(item.cnpjEmpresa, item.cpfCnpj, details, now)
-                ?: CustomerAddress.newFromIngestion(item.externalId, item.cnpjEmpresa, item.cpfCnpj, details, now)
-            customerAddressRepository.save(address)
+        val address = existing?.mergeFromIngestion(item.cnpjEmpresa, item.cpfCnpj, details, now)
+            ?: CustomerAddress.newFromIngestion(item.externalId, item.cnpjEmpresa, item.cpfCnpj, details, now)
+        customerAddressRepository.save(address)
     }
 }

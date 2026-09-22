@@ -15,7 +15,7 @@ data class IngestVendedorCommand(
     val email: String?,
     val cidade: String?,
     val uf: String?,
-    val situacao: String?,
+    val ativo: String?,
     val saldo: BigDecimal?,
     val dataCadastro: LocalDate?,
 )

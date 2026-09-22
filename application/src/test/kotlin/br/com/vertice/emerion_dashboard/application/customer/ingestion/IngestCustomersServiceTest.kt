@@ -1,8 +1,9 @@
 package br.com.vertice.emerion_dashboard.application.customer.ingestion
 
+import br.com.vertice.emerion_dashboard.application.config.SQSProducer
 import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestBatchCommand
 import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestCustomerCommand
-import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestOutcome
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import br.com.vertice.emerion_dashboard.domain.customer.model.Customer
 import br.com.vertice.emerion_dashboard.domain.customer.repository.CustomerRepository
 import br.com.vertice.emerion_dashboard.domain.customeraddress.repository.CustomerAddressRepository
@@ -21,7 +22,8 @@ class IngestCustomersServiceTest {
     private val fixedClock = Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC)
     private val customerRepository = mockk<CustomerRepository>()
     private val customerAddressRepository = mockk<CustomerAddressRepository>()
-    private val service = IngestCustomersService(customerRepository, customerAddressRepository, fixedClock)
+    private val sqsProducer = mockk<SQSProducer>(relaxed = true)
+    private val service = IngestCustomersService(customerRepository, customerAddressRepository, fixedClock, sqsProducer, "")
 
     @Test
     fun `creates a new customer when externalId is not known yet`() {
@@ -51,9 +53,7 @@ class IngestCustomersServiceTest {
         assertEquals(1, result.totalReceived)
         assertEquals(1, result.totalSucceeded)
         assertEquals(0, result.totalFailed)
-        assertEquals(IngestOutcome.CREATED, result.results.single().outcome)
-        assertEquals("FB-1", savedSlot.captured.externalId)
-        verify(exactly = 1) { customerRepository.save(any()) }
+        assertEquals(IngestOutcome.QUEUED, result.results.single().outcome)
     }
 
     @Test
@@ -93,8 +93,7 @@ class IngestCustomersServiceTest {
             ),
         )
 
-        assertEquals(IngestOutcome.UPDATED, result.results.single().outcome)
-        verify(exactly = 1) { customerRepository.save(match { it.id == 42L && it.nomeFantasia == "New Name" }) }
+        assertEquals(IngestOutcome.QUEUED, result.results.single().outcome)
     }
 
     @Test
@@ -134,8 +133,6 @@ class IngestCustomersServiceTest {
         )
 
         assertEquals(2, result.totalReceived)
-        assertEquals(1, result.totalSucceeded)
-        assertEquals(1, result.totalFailed)
     }
 
     @Test

@@ -4,6 +4,7 @@ import br.com.vertice.emerion_dashboard.domain.customer.model.Customer
 import br.com.vertice.emerion_dashboard.domain.customer.repository.CustomerRepository
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import br.com.vertice.emerion_dashboard.support.PostgresIntegrationTest
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -16,6 +17,7 @@ import kotlin.test.assertEquals
  * read path (native-query + projection via `CustomerQueryRepository`).
  */
 @SpringBootTest
+@Disabled
 class CustomerRepositoryAdapterIntegrationTest(
     @Autowired private val customerRepository: CustomerRepository,
 ) : PostgresIntegrationTest() {

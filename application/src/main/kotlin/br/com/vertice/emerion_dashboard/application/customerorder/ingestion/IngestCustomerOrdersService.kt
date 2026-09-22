@@ -1,20 +1,22 @@
 package br.com.vertice.emerion_dashboard.application.customerorder.ingestion
 
+import br.com.vertice.emerion_dashboard.application.config.SQSProducer
 import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestBatchCommand
-import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestBatchResult
 import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestCustomerOrderCommand
 import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestCustomerOrderItemCommand
-import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestItemResult
-import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestOutcome
 import br.com.vertice.emerion_dashboard.application.notification.creation.CreateNotificationUseCase
 import br.com.vertice.emerion_dashboard.application.notification.creation.model.CreateNotificationCommand
 import br.com.vertice.emerion_dashboard.domain.cognitouser.repository.CognitoUserRepository
 import br.com.vertice.emerion_dashboard.domain.customerorder.model.CustomerOrder
 import br.com.vertice.emerion_dashboard.domain.customerorder.model.CustomerOrderItem
 import br.com.vertice.emerion_dashboard.domain.customerorder.repository.CustomerOrderRepository
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import br.com.vertice.emerion_dashboard.domain.notification.model.NotificationCategory
 import br.com.vertice.emerion_dashboard.domain.notification.model.NotificationPriority
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
@@ -33,6 +35,8 @@ class IngestCustomerOrdersService(
     private val cognitoUserRepository: CognitoUserRepository,
     private val createNotificationUseCase: CreateNotificationUseCase,
     private val clock: Clock = Clock.systemUTC(),
+    private val sqsProducer: SQSProducer,
+    @Value($$"${app.aws.queues.ingestion-requests.customer-orders-batch}") private val batchQueueUrl: String
 ) : IngestCustomerOrdersUseCase {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -41,15 +45,21 @@ class IngestCustomerOrdersService(
     override fun ingest(command: IngestBatchCommand): IngestBatchResult {
         logger.info("Ingesting batch '{}' with {} customer order(s)", command.batchId, command.items.size)
 
-        val results = command.items.map { item -> ingestItem(item, Instant.now(clock)) }
+        sqsProducer.sendMessageBatch(batchQueueUrl, command.items)
+        //val results = command.items.map { item -> ingestItem(item, Instant.now(clock)) }
 
         logger.info(
-            "Batch '{}' processed: {} succeeded, {} failed",
+            "Ingested batch '{}' with {} customer order(s)",
             command.batchId,
-            results.count { it.outcome != IngestOutcome.FAILED },
-            results.count { it.outcome == IngestOutcome.FAILED },
+            command.items.size
         )
-        return IngestBatchResult(batchId = command.batchId, results = results)
+        return IngestBatchResult(batchId = command.batchId, results = command.items.map { item ->
+            IngestItemResult(
+                externalId = item.externalId,
+                outcome = IngestOutcome.QUEUED,
+                errorMessage = null
+            )
+        })
     }
 
     @Transactional

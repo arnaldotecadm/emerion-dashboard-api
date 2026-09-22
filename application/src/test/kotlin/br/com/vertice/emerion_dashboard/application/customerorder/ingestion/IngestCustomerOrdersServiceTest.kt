@@ -1,9 +1,9 @@
 package br.com.vertice.emerion_dashboard.application.customerorder.ingestion
 
+import br.com.vertice.emerion_dashboard.application.config.SQSProducer
 import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestBatchCommand
 import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestCustomerOrderCommand
 import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestCustomerOrderItemCommand
-import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestOutcome
 import br.com.vertice.emerion_dashboard.application.notification.creation.CreateNotificationUseCase
 import br.com.vertice.emerion_dashboard.application.notification.creation.model.CreateNotificationCommand
 import br.com.vertice.emerion_dashboard.domain.cognitouser.model.CognitoUser
@@ -11,6 +11,7 @@ import br.com.vertice.emerion_dashboard.domain.cognitouser.repository.CognitoUse
 import br.com.vertice.emerion_dashboard.domain.customerorder.model.CustomerOrder
 import br.com.vertice.emerion_dashboard.domain.customerorder.model.CustomerOrderItem
 import br.com.vertice.emerion_dashboard.domain.customerorder.repository.CustomerOrderRepository
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import br.com.vertice.emerion_dashboard.domain.notification.model.Notification
 import br.com.vertice.emerion_dashboard.domain.notification.model.NotificationCategory
 import io.mockk.every
@@ -31,11 +32,14 @@ class IngestCustomerOrdersServiceTest {
     private val customerOrderRepository = mockk<CustomerOrderRepository>()
     private val cognitoUserRepository = mockk<CognitoUserRepository>()
     private val createNotificationUseCase = mockk<CreateNotificationUseCase>()
+    private val sqsProducer = mockk<SQSProducer>(relaxed = true)
     private val service = IngestCustomerOrdersService(
         customerOrderRepository = customerOrderRepository,
         cognitoUserRepository = cognitoUserRepository,
         createNotificationUseCase = createNotificationUseCase,
         clock = fixedClock,
+        sqsProducer = sqsProducer,
+        ""
     )
 
     private fun itemCommand(produto: String) = IngestCustomerOrderItemCommand(
@@ -50,24 +54,25 @@ class IngestCustomerOrdersServiceTest {
         seqRe2 = 1,
     )
 
-    private fun orderCommand(externalId: String, itens: List<IngestCustomerOrderItemCommand>) = IngestCustomerOrderCommand(
-        externalId = externalId,
-        codigoEmpresa = 1,
-        codigoCliente = 100,
-        cpfCnpj = null,
-        numeroPedido = "NF-1",
-        dataPedido = LocalDate.parse("2025-06-01"),
-        statusPedido = "FATURADO",
-        totalPedidoComImpostos = BigDecimal("20.00"),
-        totalPedidoSemImpostos = BigDecimal("20.00"),
-        totalIpi = BigDecimal.ZERO,
-        totalIcms = BigDecimal.ZERO,
-        totalPis = BigDecimal.ZERO,
-        totalCofins = BigDecimal.ZERO,
-        totalSubstituicaoTributaria = BigDecimal.ZERO,
-        totalDescontoIncondicional = BigDecimal.ZERO,
-        itens = itens,
-    )
+    private fun orderCommand(externalId: String, itens: List<IngestCustomerOrderItemCommand>) =
+        IngestCustomerOrderCommand(
+            externalId = externalId,
+            codigoEmpresa = 1,
+            codigoCliente = 100,
+            cpfCnpj = null,
+            numeroPedido = "NF-1",
+            dataPedido = LocalDate.parse("2025-06-01"),
+            statusPedido = "FATURADO",
+            totalPedidoComImpostos = BigDecimal("20.00"),
+            totalPedidoSemImpostos = BigDecimal("20.00"),
+            totalIpi = BigDecimal.ZERO,
+            totalIcms = BigDecimal.ZERO,
+            totalPis = BigDecimal.ZERO,
+            totalCofins = BigDecimal.ZERO,
+            totalSubstituicaoTributaria = BigDecimal.ZERO,
+            totalDescontoIncondicional = BigDecimal.ZERO,
+            itens = itens,
+        )
 
     @Test
     fun `creates a new order and creates notifications for active users`() {
@@ -99,14 +104,7 @@ class IngestCustomerOrdersServiceTest {
         assertEquals(1, result.totalReceived)
         assertEquals(1, result.totalSucceeded)
         assertEquals(0, result.totalFailed)
-        assertEquals(IngestOutcome.CREATED, result.results.single().outcome)
-        assertEquals("NUM-1", savedSlot.captured.externalId)
-        assertEquals(1, savedSlot.captured.itens.size)
-        verify(exactly = 1) { customerOrderRepository.save(any()) }
-        verify(exactly = 2) {
-            createNotificationUseCase.create(match { it.userId == "active-1" || it.userId == "active-2" })
-        }
-        verify(exactly = 0) { createNotificationUseCase.create(match { it.userId == "inactive-1" }) }
+        assertEquals(IngestOutcome.QUEUED, result.results.single().outcome)
     }
 
     @Test
@@ -155,9 +153,7 @@ class IngestCustomerOrdersServiceTest {
             ),
         )
 
-        assertEquals(IngestOutcome.UPDATED, result.results.single().outcome)
-        verify(exactly = 1) { customerOrderRepository.save(match { it.id == 42L && it.itens.size == 2 && it.statusPedido == "FATURADO" }) }
-        verify(exactly = 0) { createNotificationUseCase.create(any()) }
+        assertEquals(IngestOutcome.QUEUED, result.results.single().outcome)
     }
 
     @Test
@@ -178,9 +174,6 @@ class IngestCustomerOrdersServiceTest {
         )
 
         assertEquals(2, result.totalReceived)
-        assertEquals(1, result.totalSucceeded)
-        assertEquals(1, result.totalFailed)
-        verify(exactly = 0) { createNotificationUseCase.create(any()) }
     }
 
     @Test

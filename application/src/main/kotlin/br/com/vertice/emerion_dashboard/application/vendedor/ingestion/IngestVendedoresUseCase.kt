@@ -1,8 +1,8 @@
 package br.com.vertice.emerion_dashboard.application.vendedor.ingestion
 
 import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestBatchCommand
-import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestBatchResult
-import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestItemResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestVendedorCommand
 
 /**

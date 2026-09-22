@@ -1,13 +1,13 @@
 package br.com.vertice.emerion_dashboard.infrastructure.rest.ipi.mapper
 
 import br.com.vertice.emerion_dashboard.application.ipi.ingestion.model.IngestIpiBatchCommand
-import br.com.vertice.emerion_dashboard.application.ipi.ingestion.model.IngestIpiBatchResult
 import br.com.vertice.emerion_dashboard.application.ipi.ingestion.model.IngestIpiCommand
-import br.com.vertice.emerion_dashboard.application.ipi.ingestion.model.IngestIpiItemResult
-import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IpiIngestionBatch
-import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IpiIngestionItem
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IngestionItemResult
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IngestionResult
+import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IpiIngestionBatch
+import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IpiIngestionItem
 
 object IpiIngestionRestMapper {
     fun toCommand(dto: IpiIngestionBatch) = IngestIpiBatchCommand(dto.batchId, dto.items.map(::toItemCommand))
@@ -36,7 +36,7 @@ object IpiIngestionRestMapper {
         incluiDescontoSuframaCofins = dto.incluiDescontoSuframaCofins,
     )
 
-    fun toResponse(result: IngestIpiBatchResult) = IngestionResult(
+    fun toResponse(result: IngestBatchResult) = IngestionResult(
         batchId = result.batchId,
         totalReceived = result.totalReceived,
         totalSucceeded = result.totalSucceeded,
@@ -44,7 +44,7 @@ object IpiIngestionRestMapper {
         results = result.results.map(::toItemResponse),
     )
 
-    fun toItemResponse(result: IngestIpiItemResult) = IngestionItemResult(
+    fun toItemResponse(result: IngestItemResult) = IngestionItemResult(
         externalId = result.externalId,
         outcome = IngestionItemResult.Outcome.valueOf(result.outcome.name),
         errorMessage = result.errorMessage,

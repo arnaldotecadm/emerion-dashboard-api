@@ -1,10 +1,10 @@
 package br.com.vertice.emerion_dashboard.infrastructure.rest.customerorder.mapper
 
 import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestBatchCommand
-import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestBatchResult
 import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestCustomerOrderCommand
 import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestCustomerOrderItemCommand
-import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestItemResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerOrderIngestionBatch
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerOrderIngestionItem
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerOrderItemIngestionItem

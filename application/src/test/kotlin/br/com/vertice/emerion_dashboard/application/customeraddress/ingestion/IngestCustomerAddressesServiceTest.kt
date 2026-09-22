@@ -3,10 +3,10 @@ package br.com.vertice.emerion_dashboard.application.customeraddress.ingestion
 import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestBatchCommand
 import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestCustomerAddressCommand
 import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestCustomerAddressDetailCommand
-import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestOutcome
 import br.com.vertice.emerion_dashboard.domain.customeraddress.model.CustomerAddress
 import br.com.vertice.emerion_dashboard.domain.customeraddress.model.CustomerAddressDetail
 import br.com.vertice.emerion_dashboard.domain.customeraddress.repository.CustomerAddressRepository
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot

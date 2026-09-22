@@ -1,9 +1,9 @@
 package br.com.vertice.emerion_dashboard.application.customercredit.ingestion
 
 import br.com.vertice.emerion_dashboard.application.customercredit.ingestion.model.IngestBatchCommand
-import br.com.vertice.emerion_dashboard.application.customercredit.ingestion.model.IngestBatchResult
 import br.com.vertice.emerion_dashboard.application.customercredit.ingestion.model.IngestCustomerCreditCommand
-import br.com.vertice.emerion_dashboard.application.customercredit.ingestion.model.IngestItemResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 
 /**
  * Inbound port (driving port) for ingesting customer credit ledger entries

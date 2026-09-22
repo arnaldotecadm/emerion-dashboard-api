@@ -1,9 +1,9 @@
 package br.com.vertice.emerion_dashboard.application.product.ingestion
 
 import br.com.vertice.emerion_dashboard.application.product.ingestion.model.IngestBatchCommand
-import br.com.vertice.emerion_dashboard.application.product.ingestion.model.IngestBatchResult
-import br.com.vertice.emerion_dashboard.application.product.ingestion.model.IngestItemResult
 import br.com.vertice.emerion_dashboard.application.product.ingestion.model.IngestProductCommand
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 
 /**
  * Inbound port (driving port) for ingesting product batches sent by

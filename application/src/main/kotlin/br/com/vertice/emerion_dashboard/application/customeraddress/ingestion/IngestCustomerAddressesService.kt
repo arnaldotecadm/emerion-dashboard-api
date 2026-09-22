@@ -1,14 +1,14 @@
 package br.com.vertice.emerion_dashboard.application.customeraddress.ingestion
 
 import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestBatchCommand
-import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestBatchResult
 import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestCustomerAddressCommand
 import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestCustomerAddressDetailCommand
-import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestItemResult
-import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.model.IngestOutcome
 import br.com.vertice.emerion_dashboard.domain.customeraddress.model.CustomerAddress
 import br.com.vertice.emerion_dashboard.domain.customeraddress.model.CustomerAddressDetail
 import br.com.vertice.emerion_dashboard.domain.customeraddress.repository.CustomerAddressRepository
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

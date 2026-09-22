@@ -28,7 +28,7 @@ interface CustomerOrderHeaderProjection {
     val totalPis: BigDecimal
     val totalCofins: BigDecimal
     val totalSubstituicaoTributaria: BigDecimal
-    val totalDescontoIncondicional: BigDecimal
+    val totalDescontoIncondicional: BigDecimal?
     val totalFrete: BigDecimal?
     val totalSeguro: BigDecimal?
     val totalOutrasDespesas: BigDecimal?

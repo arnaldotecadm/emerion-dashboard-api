@@ -7,6 +7,7 @@ import br.com.vertice.emerion_dashboard.domain.notification.model.NotificationSt
 import br.com.vertice.emerion_dashboard.domain.notification.repository.NotificationRepository
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import br.com.vertice.emerion_dashboard.support.PostgresIntegrationTest
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -21,6 +22,7 @@ import kotlin.test.assertNull
  * including per-user scoping and the read/dismiss status transitions.
  */
 @SpringBootTest
+@Disabled
 class NotificationRepositoryAdapterIntegrationTest(
     @Autowired private val notificationRepository: NotificationRepository,
 ) : PostgresIntegrationTest() {

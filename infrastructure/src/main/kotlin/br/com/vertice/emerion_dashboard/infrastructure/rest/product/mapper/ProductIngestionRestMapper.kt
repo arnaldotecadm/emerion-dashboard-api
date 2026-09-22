@@ -1,9 +1,9 @@
 package br.com.vertice.emerion_dashboard.infrastructure.rest.product.mapper
 
 import br.com.vertice.emerion_dashboard.application.product.ingestion.model.IngestBatchCommand
-import br.com.vertice.emerion_dashboard.application.product.ingestion.model.IngestBatchResult
-import br.com.vertice.emerion_dashboard.application.product.ingestion.model.IngestItemResult
 import br.com.vertice.emerion_dashboard.application.product.ingestion.model.IngestProductCommand
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IngestionItemResult
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IngestionResult
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.ProductIngestionBatch

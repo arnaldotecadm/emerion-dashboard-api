@@ -1,10 +1,10 @@
 package br.com.vertice.emerion_dashboard.application.ipi.ingestion
 
 import br.com.vertice.emerion_dashboard.application.ipi.ingestion.model.IngestIpiBatchCommand
-import br.com.vertice.emerion_dashboard.application.ipi.ingestion.model.IngestIpiBatchResult
 import br.com.vertice.emerion_dashboard.application.ipi.ingestion.model.IngestIpiCommand
-import br.com.vertice.emerion_dashboard.application.ipi.ingestion.model.IngestIpiItemResult
-import br.com.vertice.emerion_dashboard.application.ipi.ingestion.model.IngestIpiOutcome
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import br.com.vertice.emerion_dashboard.domain.ipi.model.Ipi
 import br.com.vertice.emerion_dashboard.domain.ipi.repository.IpiRepository
 import org.slf4j.LoggerFactory
@@ -21,21 +21,21 @@ class IngestIpiService(
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @Transactional
-    override fun ingest(command: IngestIpiBatchCommand): IngestIpiBatchResult {
+    override fun ingest(command: IngestIpiBatchCommand): IngestBatchResult {
         val results = command.items.map { ingestItem(it, Instant.now(clock)) }
         logger.info(
             "IPI batch '{}' processed: {} succeeded, {} failed",
             command.batchId,
-            results.count { it.outcome != IngestIpiOutcome.FAILED },
-            results.count { it.outcome == IngestIpiOutcome.FAILED },
+            results.count { it.outcome != IngestOutcome.FAILED },
+            results.count { it.outcome == IngestOutcome.FAILED },
         )
-        return IngestIpiBatchResult(command.batchId, results)
+        return IngestBatchResult(command.batchId, results)
     }
 
     @Transactional
-    override fun ingestSingle(command: IngestIpiCommand): IngestIpiItemResult = ingestItem(command, Instant.now(clock))
+    override fun ingestSingle(command: IngestIpiCommand): IngestItemResult = ingestItem(command, Instant.now(clock))
 
-    private fun ingestItem(item: IngestIpiCommand, now: Instant): IngestIpiItemResult = try {
+    private fun ingestItem(item: IngestIpiCommand, now: Instant): IngestItemResult = try {
         val existing = ipiRepository.findByCnpjEmpresaAndCodigoIpi(item.cnpjEmpresa, item.codigoIpi)
         val toSave = existing?.mergeFromIngestion(
             flgAtivo = item.flgAtivo,
@@ -83,10 +83,10 @@ class IngestIpiService(
             now = now,
         )
         ipiRepository.save(toSave)
-        IngestIpiItemResult(key(item), if (existing == null) IngestIpiOutcome.CREATED else IngestIpiOutcome.UPDATED, null)
+        IngestItemResult(key(item), if (existing == null) IngestOutcome.CREATED else IngestOutcome.UPDATED, null)
     } catch (ex: Exception) {
         logger.error("Failed to ingest IPI cnpjEmpresa='{}', codigoIpi='{}'", item.cnpjEmpresa, item.codigoIpi, ex)
-        IngestIpiItemResult(key(item), IngestIpiOutcome.FAILED, ex.message)
+        IngestItemResult(key(item), IngestOutcome.FAILED, ex.message)
     }
 
     private fun key(item: IngestIpiCommand) = "${item.cnpjEmpresa}:${item.codigoIpi}"

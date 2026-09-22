@@ -1,10 +1,10 @@
 package br.com.vertice.emerion_dashboard.infrastructure.rest.fincre.mapper
 
 import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreBatchCommand
-import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreBatchResult
 import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreCommand
-import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreItemResult
 import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreParcelaCommand
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.FincreIngestionBatch
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.FincreIngestionItem
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.FincreParcelaIngestionItem
@@ -49,7 +49,7 @@ object FincreIngestionRestMapper {
         flagPago = dto.flagPago,
     )
 
-    fun toResponse(result: IngestFincreBatchResult) = IngestionResult(
+    fun toResponse(result: IngestBatchResult) = IngestionResult(
         batchId = result.batchId,
         totalReceived = result.totalReceived,
         totalSucceeded = result.totalSucceeded,
@@ -57,7 +57,7 @@ object FincreIngestionRestMapper {
         results = result.results.map(::toItemResponse),
     )
 
-    fun toItemResponse(result: IngestFincreItemResult) = IngestionItemResult(
+    fun toItemResponse(result: IngestItemResult) = IngestionItemResult(
         externalId = result.externalId,
         outcome = IngestionItemResult.Outcome.valueOf(result.outcome.name),
         errorMessage = result.errorMessage,

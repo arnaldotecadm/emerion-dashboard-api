@@ -1,8 +1,8 @@
 package br.com.vertice.emerion_dashboard.infrastructure.rest.vendedor.mapper
 
 import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestBatchCommand
-import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestBatchResult
-import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestItemResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestVendedorCommand
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IngestionItemResult
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IngestionResult
@@ -30,7 +30,7 @@ object VendedorIngestionRestMapper {
             email = dto.email,
             cidade = dto.cidade,
             uf = dto.uf,
-            situacao = dto.situacao,
+            ativo = dto.situacao,
             saldo = dto.saldo,
             dataCadastro = dto.dataCadastro,
         )

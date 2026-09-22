@@ -1,10 +1,10 @@
 package br.com.vertice.emerion_dashboard.application.vendedor.ingestion
 
 import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestBatchCommand
-import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestBatchResult
-import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestItemResult
-import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestOutcome
 import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestVendedorCommand
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import br.com.vertice.emerion_dashboard.domain.vendedor.model.Vendedor
 import br.com.vertice.emerion_dashboard.domain.vendedor.repository.VendedorRepository
 import org.slf4j.LoggerFactory
@@ -60,7 +60,7 @@ class IngestVendedoresService(
                 email = item.email,
                 cidade = item.cidade,
                 uf = item.uf,
-                situacao = item.situacao,
+                ativo = item.ativo,
                 saldo = item.saldo,
                 dataCadastro = item.dataCadastro,
                 now = now,
@@ -75,7 +75,7 @@ class IngestVendedoresService(
                 email = item.email,
                 cidade = item.cidade,
                 uf = item.uf,
-                situacao = item.situacao,
+                situacao = item.ativo,
                 saldo = item.saldo,
                 dataCadastro = item.dataCadastro,
                 now = now,

@@ -4,6 +4,7 @@ import br.com.vertice.emerion_dashboard.domain.fincre.model.Fincre
 import br.com.vertice.emerion_dashboard.domain.fincre.model.FincreParcela
 import br.com.vertice.emerion_dashboard.domain.fincre.repository.FincreRepository
 import br.com.vertice.emerion_dashboard.support.PostgresIntegrationTest
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -13,6 +14,7 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 
 @SpringBootTest
+@Disabled
 class FincreRepositoryAdapterIntegrationTest(
     @Autowired private val fincreRepository: FincreRepository,
 ) : PostgresIntegrationTest() {

@@ -1,12 +1,12 @@
 package br.com.vertice.emerion_dashboard.application.customercredit.ingestion
 
 import br.com.vertice.emerion_dashboard.application.customercredit.ingestion.model.IngestBatchCommand
-import br.com.vertice.emerion_dashboard.application.customercredit.ingestion.model.IngestBatchResult
 import br.com.vertice.emerion_dashboard.application.customercredit.ingestion.model.IngestCustomerCreditCommand
-import br.com.vertice.emerion_dashboard.application.customercredit.ingestion.model.IngestItemResult
-import br.com.vertice.emerion_dashboard.application.customercredit.ingestion.model.IngestOutcome
 import br.com.vertice.emerion_dashboard.domain.customercredit.model.CustomerCredit
 import br.com.vertice.emerion_dashboard.domain.customercredit.repository.CustomerCreditRepository
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
