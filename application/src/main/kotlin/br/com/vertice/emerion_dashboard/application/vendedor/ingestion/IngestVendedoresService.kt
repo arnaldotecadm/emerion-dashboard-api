@@ -1,5 +1,6 @@
 package br.com.vertice.emerion_dashboard.application.vendedor.ingestion
 
+import br.com.vertice.emerion_dashboard.application.config.SQSProducer
 import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestBatchCommand
 import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestVendedorCommand
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
@@ -8,6 +9,7 @@ import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import br.com.vertice.emerion_dashboard.domain.vendedor.model.Vendedor
 import br.com.vertice.emerion_dashboard.domain.vendedor.repository.VendedorRepository
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
@@ -22,6 +24,8 @@ import java.time.Instant
 class IngestVendedoresService(
     private val vendedorRepository: VendedorRepository,
     private val clock: Clock = Clock.systemUTC(),
+    private val sqsProducer: SQSProducer,
+    @Value($$"${app.aws.queues.ingestion-requests.vendedor-batch}") private val batchQueueUrl: String
 ) : IngestVendedoresUseCase {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -30,15 +34,21 @@ class IngestVendedoresService(
     override fun ingest(command: IngestBatchCommand): IngestBatchResult {
         logger.info("Ingesting batch '{}' with {} vendedor(es)", command.batchId, command.items.size)
 
-        val results = command.items.map { item -> ingestItem(item, Instant.now(clock)) }
+        sqsProducer.sendMessageBatch(batchQueueUrl, command.items)
+        //val results = command.items.map { item -> ingestItem(item, Instant.now(clock)) }
 
         logger.info(
-            "Batch '{}' processed: {} succeeded, {} failed",
+            "Ingested batch '{}' with {} vendedor(es)",
             command.batchId,
-            results.count { it.outcome != IngestOutcome.FAILED },
-            results.count { it.outcome == IngestOutcome.FAILED },
+            command.items.size
         )
-        return IngestBatchResult(batchId = command.batchId, results = results)
+        return IngestBatchResult(batchId = command.batchId, results = command.items.map { item ->
+            IngestItemResult(
+                externalId = item.externalId,
+                outcome = IngestOutcome.QUEUED,
+                errorMessage = null
+            )
+        })
     }
 
     @Transactional

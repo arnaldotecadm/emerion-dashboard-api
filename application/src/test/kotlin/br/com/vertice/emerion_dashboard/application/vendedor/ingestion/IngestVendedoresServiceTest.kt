@@ -1,5 +1,6 @@
 package br.com.vertice.emerion_dashboard.application.vendedor.ingestion
 
+import br.com.vertice.emerion_dashboard.application.config.SQSProducer
 import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestBatchCommand
 import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.IngestVendedorCommand
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
@@ -21,7 +22,8 @@ class IngestVendedoresServiceTest {
 
     private val fixedClock = Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC)
     private val vendedorRepository = mockk<VendedorRepository>()
-    private val service = IngestVendedoresService(vendedorRepository, fixedClock)
+    private val sqsProducer = mockk<SQSProducer>(relaxed = true)
+    private val service = IngestVendedoresService(vendedorRepository, fixedClock, sqsProducer, "")
 
     private fun command(externalId: String, nome: String) = IngestVendedorCommand(
         externalId = externalId,
@@ -53,11 +55,6 @@ class IngestVendedoresServiceTest {
         )
 
         assertEquals(1, result.totalReceived)
-        assertEquals(1, result.totalSucceeded)
-        assertEquals(0, result.totalFailed)
-        assertEquals(IngestOutcome.CREATED, result.results.single().outcome)
-        assertEquals("FB-1", savedSlot.captured.externalId)
-        verify(exactly = 1) { vendedorRepository.save(any()) }
     }
 
     @Test
@@ -90,8 +87,7 @@ class IngestVendedoresServiceTest {
             ),
         )
 
-        assertEquals(IngestOutcome.UPDATED, result.results.single().outcome)
-        verify(exactly = 1) { vendedorRepository.save(match { it.id == 42L && it.nome == "New Name" }) }
+        assertEquals(IngestOutcome.QUEUED, result.results.single().outcome)
     }
 
     @Test
@@ -108,8 +104,6 @@ class IngestVendedoresServiceTest {
         )
 
         assertEquals(2, result.totalReceived)
-        assertEquals(1, result.totalSucceeded)
-        assertEquals(1, result.totalFailed)
     }
 
     @Test

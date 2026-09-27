@@ -19,7 +19,7 @@ import org.springframework.data.domain.PageRequest as SpringPageRequest
  * `CustomerCreditSpringDataRepository`.
  */
 @Component
-class CustomerCreditRepositoryAdapter(
+class  CustomerCreditRepositoryAdapter(
     private val springDataRepository: CustomerCreditSpringDataRepository,
     private val queryRepository: CustomerCreditQueryRepository,
 ) : CustomerCreditRepository {

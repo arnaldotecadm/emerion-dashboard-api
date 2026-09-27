@@ -98,6 +98,15 @@ class ProductJpaEntity(
     @Column(name = "preco5")
     var preco5: BigDecimal? = null,
 
+    @Column(name = "custo_ultima_compra")
+    var custoUltimaCompra: BigDecimal? = null,
+
+    @Column(name = "custo_ponderado")
+    var custoPonderado: BigDecimal? = null,
+
+    @Column(name = "markup")
+    var markup: BigDecimal? = null,
+
     @Column(name = "desconto_padrao")
     var descontoPadrao: BigDecimal? = null,
 

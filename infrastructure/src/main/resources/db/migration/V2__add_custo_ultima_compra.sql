@@ -1,0 +1,1 @@
+alter table emerion_dashboard.product add custo_ultima_compra NUMERIC(19, 4);
