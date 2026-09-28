@@ -36,7 +36,7 @@ class DashboardDataRepository(
         """.trimIndent()
         )
         return query.resultList.map { row ->
-            val resultArray = row as Array<Any>
+            val resultArray = row as Array<*>
             DashboardTopTrendsProjection(
                 identifier = resultArray[0].toString(),
                 name = resultArray[1].toString(),
@@ -69,7 +69,7 @@ class DashboardDataRepository(
         """.trimIndent()
         )
         return query.resultList.map { row ->
-            val resultArray = row as Array<Any>
+            val resultArray = row as Array<*>
             DashboardTopTrendsProjection(
                 identifier = resultArray[0].toString(),
                 name = resultArray[1].toString(),
@@ -90,7 +90,7 @@ class DashboardDataRepository(
             from emerion_dashboard.customer_order co 
         """.trimIndent()
         )
-        val resultArray = query.singleResult as Array<Any>
+        val resultArray = query.singleResult as Array<*>
         return DashboardTotaisProjection(
             quantidadePedidos = (resultArray[0] as Number).toInt(),
             totalFaturado = (resultArray[1] as BigDecimal),

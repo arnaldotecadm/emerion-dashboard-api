@@ -13,7 +13,7 @@ Use this whenever the request is "add a new resource/entity" (e.g.
   codebase.
 
 ## Step 0 — OpenAPI First
-Add to `infrastructure/src/main/resources/openapi/api.yaml` (see
+Add to `../../adapter/src/main/resources/openapi` (see
 `.github/instructions/openapi-contract.instructions.md`):
 ```yaml
 paths:

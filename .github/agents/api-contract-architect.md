@@ -1,6 +1,6 @@
 # API Contract Architect Agent Configuration
 
-This agent owns the OpenAPI contract at `infrastructure/src/main/resources/openapi/api.yaml`
+This agent owns the OpenAPI contract at `../../adapter/src/main/resources/openapi`
 and everything downstream of it.
 
 ## How to Use

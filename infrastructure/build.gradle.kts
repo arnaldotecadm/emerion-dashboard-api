@@ -13,22 +13,18 @@ plugins {
     id("org.jetbrains.kotlin.plugin.spring")
     id("org.jetbrains.kotlin.plugin.jpa")
     id("io.spring.dependency-management")
-    id("org.openapi.generator")
 }
-
-val openApiGeneratedDir = layout.buildDirectory.dir("generated/openapi")
-val openApiBasePackage = "br.com.vertice.emerion_dashboard.infrastructure.rest.generated"
 
 dependencies {
     implementation(project(":domain"))
     implementation(project(":application"))
+    implementation(project(":adapter"))
 
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
+
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    implementation(libs.springdoc.openapi.webmvc.ui)
     implementation("org.springframework.boot:spring-boot-starter-flyway")
     implementation("org.flywaydb:flyway-database-postgresql")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -50,42 +46,6 @@ dependencyManagement {
     imports {
         mavenBom("org.springframework.boot:spring-boot-dependencies:${libs.versions.springBoot.get()}")
     }
-}
-
-sourceSets {
-    main {
-        kotlin.srcDir(openApiGeneratedDir.map { it.dir("src/main/kotlin") })
-    }
-}
-
-openApiGenerate {
-    generatorName.set("kotlin-spring")
-    inputSpec.set("$projectDir/src/main/resources/openapi/api.yaml")
-    outputDir.set(openApiGeneratedDir.map { it.asFile.path })
-    apiPackage.set("$openApiBasePackage.api")
-    modelPackage.set("$openApiBasePackage.model")
-    invokerPackage.set("$openApiBasePackage.invoker")
-    configOptions.set(
-        mapOf(
-            "interfaceOnly" to "true",
-            "useSpringBoot3" to "true",
-            "useTags" to "true",
-            "enumPropertyNaming" to "UPPERCASE",
-            "serializationLibrary" to "jackson",
-            "documentationProvider" to "none",
-            "useBeanValidation" to "true",
-        )
-    )
-    globalProperties.set(
-        mapOf(
-            "apis" to "",
-            "models" to "",
-        )
-    )
-}
-
-tasks.named("compileKotlin") {
-    dependsOn("openApiGenerate")
 }
 
 kotlin {

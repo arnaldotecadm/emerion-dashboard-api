@@ -125,7 +125,7 @@ place and builds as a **4-module Gradle project**:
 - `application/build.gradle.kts` — Kotlin + `kotlin.plugin.spring`, depends
   on `:domain` only.
 - `infrastructure/build.gradle.kts` — owns the `openApiGenerate` task
-  (`infrastructure/src/main/resources/openapi/api.yaml` is the contract,
+  (`../adapter/src/main/resources/openapi` is the contract,
   also served live at `/openapi/api.yaml` + Swagger UI), Flyway migrations
   under `infrastructure/src/main/resources/db/migration/`, depends on
   `:domain` and `:application`.

@@ -2,11 +2,11 @@
 
 ## Description
 Governs how to evolve the API contract at
-`infrastructure/src/main/resources/openapi/api.yaml` and how generated code is consumed.
+`../../adapter/src/main/resources/openapi` and how generated code is consumed.
 Apply this whenever adding/changing an endpoint, request, or response shape.
 
 ## Single Source of Truth
-`infrastructure/src/main/resources/openapi/api.yaml` is:
+`../../adapter/src/main/resources/openapi` is:
 1. The **codegen input** — `infrastructure/build.gradle.kts`'s `openApiGenerate` task
    (generator `kotlin-spring`, `interfaceOnly=true`) reads it and produces
    Kotlin interfaces (`...Api`) and data classes (models) under

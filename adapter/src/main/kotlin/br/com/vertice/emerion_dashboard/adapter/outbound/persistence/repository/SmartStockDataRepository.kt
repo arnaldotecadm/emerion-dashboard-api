@@ -1,5 +1,6 @@
-package br.com.vertice.emerion_dashboard.infrastructure.persistence.repository
+package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.repository
 
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.StockRecommendationProjection
 import br.com.vertice.emerion_dashboard.domain.dashboard.StockRecommendation
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
@@ -12,7 +13,7 @@ class SmartStockDataRepository(
     private val entityManager: EntityManager
 ) {
 
-    fun getStockRecommendations(): List<StockRecommendation> {
+    fun getStockRecommendations(): List<StockRecommendationProjection> {
         val querySql = """
             select 
                 p.external_id as codigo,
@@ -32,7 +33,7 @@ class SmartStockDataRepository(
         val query = entityManager.createNativeQuery(querySql)
         return query.resultList.map { row ->
             val resultArray = row as Array<Any>
-            StockRecommendation(
+            StockRecommendationProjection(
                 codigo = resultArray[0].toString(),
                 descricao = resultArray[1].toString(),
                 origem = resultArray[2].toString(),

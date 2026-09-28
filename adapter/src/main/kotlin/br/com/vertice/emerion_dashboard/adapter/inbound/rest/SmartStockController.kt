@@ -1,4 +1,4 @@
-package br.com.vertice.emerion_dashboard.infrastructure.rest.dashboard
+package br.com.vertice.emerion_dashboard.adapter.inbound.rest
 
 import br.com.vertice.emerion_dashboard.application.dashboard.SmartStockService
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.api.SmartStockApi

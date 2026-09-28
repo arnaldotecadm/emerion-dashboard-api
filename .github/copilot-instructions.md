@@ -27,7 +27,7 @@ Responsibilities:
 - **Persistence**: Spring Data JPA (Hibernate), always behind a domain port
   interface — see Architecture below.
 - **API Contract**: **Contract-first OpenAPI**. The spec at
-  `infrastructure/src/main/resources/openapi/api.yaml` is the single source of truth.
+  `../adapter/src/main/resources/openapi` is the single source of truth.
   Kotlin request/response models and controller interfaces are **generated**
   by the `openapi-generator-gradle-plugin` (`openApiGenerate` Gradle task,
   wired as a dependency of `compileKotlin`) into
@@ -199,7 +199,7 @@ duplicates. A failure on one item is captured in the response's
 deliberate because `emerion-load-service` may batch hundreds of rows.
 
 ## OpenAPI Contract-First Workflow
-1. Edit `infrastructure/src/main/resources/openapi/api.yaml` (add paths/schemas).
+1. Edit `../adapter/src/main/resources/openapi` (add paths/schemas).
 2. Run `./gradlew openApiGenerate` (or just `compileKotlin`, which depends
    on it) to regenerate interfaces/models under
    `infrastructure/build/generated/openapi/.../infrastructure/rest/generated/`.
@@ -266,7 +266,7 @@ gotchas (e.g. reserved-word property renames like `size` → `propertySize`).
 ## Common Tasks
 
 ### Adding a new resource end-to-end (e.g. `Product`)
-1. `infrastructure/src/main/resources/openapi/api.yaml`: add ingestion path
+1. `../adapter/src/main/resources/openapi`: add ingestion path
    + query paths + schemas, run `./gradlew :infrastructure:openApiGenerate`.
 2. `domain/src/main/kotlin/.../domain/product/`: `model/Product.kt`,
    `repository/ProductRepository.kt` (port), `exception/ProductNotFoundException.kt`.
