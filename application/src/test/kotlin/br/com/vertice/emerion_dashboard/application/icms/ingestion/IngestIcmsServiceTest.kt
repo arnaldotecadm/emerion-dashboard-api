@@ -2,8 +2,8 @@ package br.com.vertice.emerion_dashboard.application.icms.ingestion
 
 import br.com.vertice.emerion_dashboard.application.icms.ingestion.model.IngestIcmsBatchCommand
 import br.com.vertice.emerion_dashboard.application.icms.ingestion.model.IngestIcmsCommand
-import br.com.vertice.emerion_dashboard.domain.icms.model.Icms
-import br.com.vertice.emerion_dashboard.domain.icms.repository.IcmsRepository
+import br.com.vertice.emerion_dashboard.domain.icms.Icms
+import br.com.vertice.emerion_dashboard.application.outbound.port.IcmsRepositoryPort
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import io.mockk.every
 import io.mockk.mockk
@@ -16,7 +16,7 @@ import java.time.ZoneOffset
 import kotlin.test.assertEquals
 
 class IngestIcmsServiceTest {
-    private val repository = mockk<IcmsRepository>()
+    private val repository = mockk<IcmsRepositoryPort>()
     private val service =
         IngestIcmsService(repository, Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC))
     private val item = IngestIcmsCommand(

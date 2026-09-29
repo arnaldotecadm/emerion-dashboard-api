@@ -3,9 +3,9 @@ package br.com.vertice.emerion_dashboard.application.fincre.ingestion
 import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreBatchCommand
 import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreCommand
 import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreParcelaCommand
-import br.com.vertice.emerion_dashboard.domain.fincre.model.Fincre
-import br.com.vertice.emerion_dashboard.domain.fincre.model.FincreParcela
-import br.com.vertice.emerion_dashboard.domain.fincre.repository.FincreRepository
+import br.com.vertice.emerion_dashboard.domain.fincre.Fincre
+import br.com.vertice.emerion_dashboard.domain.fincre.FincreParcela
+import br.com.vertice.emerion_dashboard.application.outbound.port.FincreRepositoryPort
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
@@ -17,13 +17,13 @@ import java.time.Instant
 
 @Service
 class IngestFincreService(
-    private val fincreRepository: FincreRepository,
+    private val fincreRepository: FincreRepositoryPort,
     private val clock: Clock = Clock.systemUTC(),
-) : IngestFincreUseCase {
+) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @Transactional
-    override fun ingest(command: IngestFincreBatchCommand): IngestBatchResult {
+    fun ingest(command: IngestFincreBatchCommand): IngestBatchResult {
         val results = command.items.map { ingestItem(it, Instant.now(clock)) }
         logger.info(
             "FINCRE batch '{}' processed: {} succeeded, {} failed",
@@ -35,7 +35,7 @@ class IngestFincreService(
     }
 
     @Transactional
-    override fun ingestSingle(command: IngestFincreCommand): IngestItemResult =
+    fun ingestSingle(command: IngestFincreCommand): IngestItemResult =
         ingestItem(command, Instant.now(clock))
 
     private fun ingestItem(item: IngestFincreCommand, now: Instant): IngestItemResult = try {

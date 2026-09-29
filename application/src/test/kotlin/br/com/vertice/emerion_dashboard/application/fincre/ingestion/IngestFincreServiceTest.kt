@@ -3,8 +3,8 @@ package br.com.vertice.emerion_dashboard.application.fincre.ingestion
 import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreBatchCommand
 import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreCommand
 import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreParcelaCommand
-import br.com.vertice.emerion_dashboard.domain.fincre.model.Fincre
-import br.com.vertice.emerion_dashboard.domain.fincre.repository.FincreRepository
+import br.com.vertice.emerion_dashboard.domain.fincre.Fincre
+import br.com.vertice.emerion_dashboard.application.outbound.port.FincreRepositoryPort
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import io.mockk.every
 import io.mockk.mockk
@@ -19,7 +19,7 @@ import java.time.ZoneOffset
 import kotlin.test.assertEquals
 
 class IngestFincreServiceTest {
-    private val repository = mockk<FincreRepository>()
+    private val repository = mockk<FincreRepositoryPort>()
     private val service = IngestFincreService(repository, Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC))
 
     private val item = IngestFincreCommand(
@@ -70,7 +70,7 @@ class IngestFincreServiceTest {
             cnpjEmpresa = item.cnpjEmpresa,
             documento = item.documento,
             parcelas = item.parcelas.map {
-                br.com.vertice.emerion_dashboard.domain.fincre.model.FincreParcela(numeroParcela = it.numeroParcela)
+                br.com.vertice.emerion_dashboard.domain.fincre.FincreParcela(numeroParcela = it.numeroParcela)
             },
             now = Instant.parse("2025-01-01T00:00:00Z"),
         ).copy(id = 42L)

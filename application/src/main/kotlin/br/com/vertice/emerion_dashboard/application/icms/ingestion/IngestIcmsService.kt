@@ -2,8 +2,8 @@ package br.com.vertice.emerion_dashboard.application.icms.ingestion
 
 import br.com.vertice.emerion_dashboard.application.icms.ingestion.model.IngestIcmsBatchCommand
 import br.com.vertice.emerion_dashboard.application.icms.ingestion.model.IngestIcmsCommand
-import br.com.vertice.emerion_dashboard.domain.icms.model.Icms
-import br.com.vertice.emerion_dashboard.domain.icms.repository.IcmsRepository
+import br.com.vertice.emerion_dashboard.domain.icms.Icms
+import br.com.vertice.emerion_dashboard.application.outbound.port.IcmsRepositoryPort
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
@@ -15,13 +15,13 @@ import java.time.Instant
 
 @Service
 class IngestIcmsService(
-    private val icmsRepository: IcmsRepository,
+    private val icmsRepository: IcmsRepositoryPort,
     private val clock: Clock = Clock.systemUTC(),
-) : IngestIcmsUseCase {
+) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @Transactional
-    override fun ingest(command: IngestIcmsBatchCommand): IngestBatchResult {
+    fun ingest(command: IngestIcmsBatchCommand): IngestBatchResult {
         val results = command.items.map { ingestItem(it, Instant.now(clock)) }
         logger.info(
             "ICMS batch '{}' processed: {} succeeded, {} failed", command.batchId,
@@ -30,7 +30,7 @@ class IngestIcmsService(
     }
 
     @Transactional
-    override fun ingestSingle(command: IngestIcmsCommand) = ingestItem(command, Instant.now(clock))
+    fun ingestSingle(command: IngestIcmsCommand) = ingestItem(command, Instant.now(clock))
 
     private fun ingestItem(item: IngestIcmsCommand, now: Instant): IngestItemResult = try {
         val existing = icmsRepository.findByCnpjEmpresaAndCodigoIcms(item.cnpjEmpresa, item.codigoIcms)

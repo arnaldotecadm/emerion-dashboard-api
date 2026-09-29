@@ -3,8 +3,9 @@
 Apply when adding or changing an endpoint called by
 `emerion-load-service`. The load service owns Firebird extraction and
 transformation; this API accepts clean JSON and persists it to PostgreSQL.
-New ingestion controllers belong in `:adapter`; existing Customer
-ingestion REST code in `:infrastructure` is legacy.
+New ingestion controllers belong in `:adapter`; Fincre, ICMS, and IPI have
+been migrated there as reference flows. Customer's and Vendedor's ingestion
+REST code still lives in `:infrastructure` as legacy, pending migration.
 
 ## Contract and controller
 
@@ -12,17 +13,25 @@ ingestion REST code in `:infrastructure` is legacy.
   `adapter/src/main/resources/openapi/api.yaml`; follow
   `openapi-contract.instructions.md`.
 - Implement the generated interface in
-  `adapter/inbound/rest/<Resource>IngestionController.kt`.
+  `adapter/inbound/rest/<Resource>IngestionController.kt`, injecting the
+  concrete `Ingest<Resource>Service` directly — do not add an
+  `Ingest<Resource>UseCase` interface for a single controller/single-adapter
+  flow; that indirection only earns its keep with multiple driving adapters
+  or a genuinely distinct ingestion workflow (see
+  `hexagonal-architecture.instructions.md`).
 - Keep controllers thin: translate request to application input, call the
-  ingestion service/use case, translate the result. Put reusable or
-  non-trivial DTO conversions in a stateless REST mapper under
-  `adapter/inbound/rest/mapper/`.
+  ingestion service, translate the result. Put DTO conversions in a
+  `<Resource>IngestionRestMapper` object in the centralized `adapter/mapper/`
+  package, using extension functions (`fun <Dto>.toCommand(): <Command>`,
+  `fun IngestBatchResult.toResponse(): IngestionResult`) rather than
+  standalone functions.
 
 ## Application behavior
 
-- Group ingestion behavior in `application/<resource>/ingestion/`.
-  Use one interface for related ingestion operations when an inbound port
-  is useful; keep command/result models in the same feature package.
+- Group ingestion behavior in `application/<resource>/ingestion/` as a
+  single `Ingest<Resource>Service` `@Service` — no separate use-case
+  interface unless a second driving adapter needs it. Keep command/result
+  models in the same feature package.
 - Upsert by `externalId` (or the resource's natural key) so retries do not
   create duplicate rows. Keep the persistence abstraction as an
   `application/outbound/port/<Resource>RepositoryPort`.

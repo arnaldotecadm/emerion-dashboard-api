@@ -5,8 +5,8 @@ import br.com.vertice.emerion_dashboard.application.ipi.ingestion.model.IngestIp
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
-import br.com.vertice.emerion_dashboard.domain.ipi.model.Ipi
-import br.com.vertice.emerion_dashboard.domain.ipi.repository.IpiRepository
+import br.com.vertice.emerion_dashboard.domain.ipi.Ipi
+import br.com.vertice.emerion_dashboard.application.outbound.port.IpiRepositoryPort
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -15,13 +15,13 @@ import java.time.Instant
 
 @Service
 class IngestIpiService(
-    private val ipiRepository: IpiRepository,
+    private val ipiRepository: IpiRepositoryPort,
     private val clock: Clock = Clock.systemUTC(),
-) : IngestIpiUseCase {
+) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @Transactional
-    override fun ingest(command: IngestIpiBatchCommand): IngestBatchResult {
+    fun ingest(command: IngestIpiBatchCommand): IngestBatchResult {
         val results = command.items.map { ingestItem(it, Instant.now(clock)) }
         logger.info(
             "IPI batch '{}' processed: {} succeeded, {} failed",
@@ -33,7 +33,7 @@ class IngestIpiService(
     }
 
     @Transactional
-    override fun ingestSingle(command: IngestIpiCommand): IngestItemResult = ingestItem(command, Instant.now(clock))
+    fun ingestSingle(command: IngestIpiCommand): IngestItemResult = ingestItem(command, Instant.now(clock))
 
     private fun ingestItem(item: IngestIpiCommand, now: Instant): IngestItemResult = try {
         val existing = ipiRepository.findByCnpjEmpresaAndCodigoIpi(item.cnpjEmpresa, item.codigoIpi)

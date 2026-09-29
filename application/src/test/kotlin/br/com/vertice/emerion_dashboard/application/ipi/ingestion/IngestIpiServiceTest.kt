@@ -3,8 +3,8 @@ package br.com.vertice.emerion_dashboard.application.ipi.ingestion
 import br.com.vertice.emerion_dashboard.application.ipi.ingestion.model.IngestIpiBatchCommand
 import br.com.vertice.emerion_dashboard.application.ipi.ingestion.model.IngestIpiCommand
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
-import br.com.vertice.emerion_dashboard.domain.ipi.model.Ipi
-import br.com.vertice.emerion_dashboard.domain.ipi.repository.IpiRepository
+import br.com.vertice.emerion_dashboard.domain.ipi.Ipi
+import br.com.vertice.emerion_dashboard.application.outbound.port.IpiRepositoryPort
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -17,7 +17,7 @@ import java.time.ZoneOffset
 import kotlin.test.assertEquals
 
 class IngestIpiServiceTest {
-    private val repository = mockk<IpiRepository>()
+    private val repository = mockk<IpiRepositoryPort>()
     private val service =
         IngestIpiService(repository, Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC))
     private val item = IngestIpiCommand(
