@@ -1,4 +1,4 @@
-package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.mapper
+package br.com.vertice.emerion_dashboard.adapter.mapper
 
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.StockRecommendationProjection
 import br.com.vertice.emerion_dashboard.domain.dashboard.StockRecommendation

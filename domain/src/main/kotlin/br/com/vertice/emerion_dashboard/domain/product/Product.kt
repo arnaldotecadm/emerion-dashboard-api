@@ -1,4 +1,4 @@
-package br.com.vertice.emerion_dashboard.domain.product.model
+package br.com.vertice.emerion_dashboard.domain.product
 
 import java.math.BigDecimal
 import java.time.Instant

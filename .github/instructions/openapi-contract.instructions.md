@@ -37,11 +37,13 @@ depends on it) after editing the YAML.
    `adapter/build/generated/openapi/.../api/` and `.../model/` before writing the
    controller — the exact Kotlin types/nullability matter.
 4. Implement the generated `...Api` interface in a controller under
-   `adapter/src/main/kotlin/.../adapter/inbound/rest/`. For simple query
-   endpoints, inject the concrete application service and map response DTOs
-   in the controller, following `CustomerController` and
-   `SmartStockController`. For ingestion, use a REST mapper (`object`) when
-   translating request/result models; keep that mapper in the adapter module.
+   `adapter/src/main/kotlin/.../adapter/inbound/rest/`. Inject the concrete
+   application service and map the domain model to the response DTO via a
+   `<Resource>RestMapper` object's extension function in the centralized
+   `adapter/mapper/` package, following `CustomerController` /
+   `CustomerRestMapper`. For ingestion, use the same `object` + extension
+   function style for request/result mapping; keep those mappers in
+   `adapter/mapper/` too.
 
 ## Known Generator Gotchas (kotlin-spring, openapi-generator 7.9.0)
 - **Reserved-word property renaming**: a schema property literally named

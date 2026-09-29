@@ -1,29 +1,29 @@
-package br.com.vertice.emerion_dashboard.application.product.query
+package br.com.vertice.emerion_dashboard.application.product
 
-import br.com.vertice.emerion_dashboard.application.product.query.model.ListProductsQuery
+import br.com.vertice.emerion_dashboard.application.outbound.port.ProductRepositoryPort
+import br.com.vertice.emerion_dashboard.domain.product.ListProductsQuery
+import br.com.vertice.emerion_dashboard.domain.product.Product
 import br.com.vertice.emerion_dashboard.domain.product.exception.ProductNotFoundException
-import br.com.vertice.emerion_dashboard.domain.product.model.Product
-import br.com.vertice.emerion_dashboard.domain.product.repository.ProductRepository
 import br.com.vertice.emerion_dashboard.domain.shared.Page
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class ProductQueryService(
-    private val productRepository: ProductRepository,
-) : ProductQueryUseCase {
+class ProductService(
+    private val productRepository: ProductRepositoryPort,
+) {
 
     @Transactional(readOnly = true)
-    override fun getById(id: Long): Product =
+    fun getById(id: Long): Product =
         productRepository.findById(id) ?: throw ProductNotFoundException(id)
 
     @Transactional(readOnly = true)
-    override fun getByExternalId(externalId: String): Product =
+    fun getByExternalId(externalId: String): Product =
         productRepository.findByExternalId(externalId) ?: throw ProductNotFoundException(externalId)
 
     @Transactional(readOnly = true)
-    override fun list(query: ListProductsQuery): Page<Product> =
+    fun list(query: ListProductsQuery): Page<Product> =
         productRepository.findAll(
             pageRequest = PageRequest(page = query.page, size = query.size),
             nomeContains = query.nomeContains,

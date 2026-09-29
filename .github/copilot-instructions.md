@@ -25,16 +25,22 @@ The active lightweight pattern is demonstrated by Customer and SmartStock:
   domain-owned. Keep outbound ports under `application/outbound/port/`, named
   `<Resource>RepositoryPort`; use domain types only.
 - Put new REST adapters in `adapter/inbound/rest/`. For a simple endpoint,
-  inject the application service and do straightforward generated-DTO
-  mapping in the controller. Extract an inbound use-case interface or REST
-  mapper only when it provides a useful seam (complex/reused mapping,
-  multiple adapters, or distinct ingestion behavior).
+  inject the application service and map the domain model to the generated
+  response DTO via a `<Resource>RestMapper` extension function
+  (`fun Customer.toResponse(): CustomerResponse`) in the centralized
+  `adapter/mapper/` package. Extract an inbound use-case interface only when
+  it provides a useful seam (multiple adapters, distinct ingestion
+  behavior).
 - Group persistence files by technical type, not resource:
   `adapter/outbound/persistence/entity/`,
-  `projection/`, `repository/`, `mapper/`, and `port/`.
+  `projection/`, `repository/`, and `port/`.
   Use one Spring Data `<Resource>Repository` per entity for reads and writes;
   it may return projections for native read queries. Implement the
   application port as `<Resource>RepositoryPortAdapter`.
+- All mappers (persistence and REST) live together in a single centralized
+  `adapter/mapper/` package as pure Kotlin `object`s with extension
+  functions — not split by layer or resource, and never private
+  controller/adapter methods.
 - Keep persistence/API/framework types out of domain and application ports.
   Controllers and adapters translate/delegate; application services own
   orchestration and business rules.

@@ -1,21 +1,16 @@
-package br.com.vertice.emerion_dashboard.infrastructure.persistence.product.repository
+package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.repository
 
-import br.com.vertice.emerion_dashboard.infrastructure.persistence.product.model.ProductJpaEntity
-import br.com.vertice.emerion_dashboard.infrastructure.persistence.product.projection.ProductProjection
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.entity.ProductJpaEntity
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.ProductProjection
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
-import org.springframework.data.repository.Repository
 import org.springframework.data.repository.query.Param
 
-/**
- * Read-only side of product persistence: native SQL mapped straight to
- * `ProductProjection` (mirrors emerion-load-service's
- * repository/<x>QueryRepository native-query + projection pattern), kept
- * separate from `ProductSpringDataRepository` (JPA entity, writes/upserts
- * only).
- */
-interface ProductQueryRepository : Repository<ProductJpaEntity, Long> {
+interface ProductRepository : JpaRepository<ProductJpaEntity, Long> {
+
+    fun findByExternalId(externalId: String): ProductJpaEntity?
 
     @Query(
         nativeQuery = true,

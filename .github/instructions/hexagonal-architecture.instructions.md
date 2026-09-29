@@ -38,13 +38,16 @@ generated API interface
 - Group services and their resource-specific input models under
   `application/<resource>/`. Keep ingestion workflows under
   `application/<resource>/ingestion/` when their batch behavior warrants it.
-- For a simple query endpoint, the REST controller may inject the concrete
-  application service and map generated response DTOs locally, as
-  `CustomerController` and `SmartStockController` do. Do not pass generated
-  DTOs into application code or put business rules in controllers.
-- Add an inbound use-case interface or a separate REST mapper only when it
-  creates a useful boundary, such as multiple driving adapters, complex or
-  reused mapping, or a distinct ingestion workflow.
+- For a simple query endpoint, the REST controller injects the concrete
+  application service and maps the domain model to the generated response
+  DTO via a `<Resource>RestMapper` object in the centralized `adapter/mapper/`
+  package (see below), as `CustomerController`/`CustomerRestMapper` do.
+  Prefer an extension function (`fun Customer.toResponse(): CustomerResponse`)
+  over a standalone/private function so call sites read as
+  `customer.toResponse()`. Do not pass generated DTOs into application code
+  or put business rules in controllers.
+- Add an inbound use-case interface only when it creates a useful boundary,
+  such as multiple driving adapters or a distinct ingestion workflow.
 - Application services depend on ports, never adapter implementations.
   They own business orchestration and transaction boundaries.
 
@@ -57,7 +60,6 @@ adapter/outbound/persistence/
   entity/      # all JPA entities
   projection/  # all native-query projections
   repository/ # one combined Spring Data repository per entity
-  mapper/      # persistence mappers
   port/        # <Resource>RepositoryPortAdapter implementations
 ```
 
@@ -65,8 +67,16 @@ The combined `<Resource>Repository` owns the JPA CRUD/upsert operations and
 native projection queries for its entity. The port adapter translates
 between repository/JPA/projection types and application/domain types. Keep
 JPA, Spring Data pagination, and generated DTO types inside `:adapter`.
-Persistence mappers are pure Kotlin `object`s; REST mappers are optional
-when simple controller-local mapping is sufficient.
+
+All mappers — persistence and REST alike — live together in a single
+centralized `adapter/mapper/` package, not split by technical layer or
+resource. Each mapper is a pure Kotlin `object` exposing extension
+functions (`fun <Type>.toX(): Y`), never private controller methods:
+
+```text
+adapter/mapper/<Resource>PersistenceMapper.kt  # entity/projection <-> domain
+adapter/mapper/<Resource>RestMapper.kt         # domain -> generated response DTO
+```
 
 ## Contract, schema, and tests
 

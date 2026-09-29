@@ -1,4 +1,4 @@
-package br.com.vertice.emerion_dashboard.infrastructure.persistence.product.model
+package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -11,9 +11,8 @@ import java.math.BigDecimal
 import java.time.Instant
 
 /**
- * JPA entity for the `product` table. Lives entirely in the infrastructure
- * layer: the domain layer never sees this class, only
- * `domain.product.model.Product` via `ProductPersistenceMapper`.
+ * JPA entity for the `product` table. The application layer only sees the
+ * domain `Product` model via `ProductPersistenceMapper`.
  */
 @Entity
 @Table(

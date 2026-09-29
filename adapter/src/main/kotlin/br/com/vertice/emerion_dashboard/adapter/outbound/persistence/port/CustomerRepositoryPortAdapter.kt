@@ -1,7 +1,7 @@
 package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.port
 
-import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.mapper.CustomerPersistenceMapper.toDomain
-import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.mapper.CustomerPersistenceMapper.toEntity
+import br.com.vertice.emerion_dashboard.adapter.mapper.CustomerPersistenceMapper.toDomain
+import br.com.vertice.emerion_dashboard.adapter.mapper.CustomerPersistenceMapper.toEntity
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.repository.CustomerRepository
 import br.com.vertice.emerion_dashboard.application.outbound.port.CustomerRepositoryPort
 import br.com.vertice.emerion_dashboard.domain.customer.Customer

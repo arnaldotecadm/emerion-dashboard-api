@@ -8,8 +8,8 @@ adapter/outbound/persistence/
   entity/<Resource>JpaEntity.kt
   projection/<Resource>Projection.kt
   repository/<Resource>Repository.kt
-  mapper/<Resource>PersistenceMapper.kt
   port/<Resource>RepositoryPortAdapter.kt
+adapter/mapper/<Resource>PersistenceMapper.kt   # centralized, alongside REST mappers
 ```
 
 ## Entity
@@ -47,10 +47,10 @@ PostgreSQL supports pageable native queries directly; no custom
 
 - Put read projections in `projection/` as read-only interfaces with a
   getter for each selected column.
-- Put persistence conversion in a pure `object` under `mapper/`, with
-  overloads to map entity and projection results to domain types and to map
-  domain types to entities. Pass the existing entity when saving so an
-  update preserves its generated id.
+- Put persistence conversion in a pure `object` under the centralized
+  `adapter/mapper/` package, with overloads to map entity and projection
+  results to domain types and to map domain types to entities. Pass the
+  existing entity when saving so an update preserves its generated id.
 - Put `<Resource>RepositoryPortAdapter` in `port/`. It implements the
   application port and translates/delegates; it owns no business rules and
   does not expose JPA, projection, or Spring pagination types.

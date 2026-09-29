@@ -1,11 +1,13 @@
-package br.com.vertice.emerion_dashboard.infrastructure.persistence.product.projection
+package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection
 
 import java.math.BigDecimal
 import java.time.Instant
 
 /**
  * Read-side projection for `product`, populated straight from a native SQL
- * result set (see `ProductQueryRepository`) instead of a JPA entity.
+ * result set (see `ProductRepository`) instead of a JPA entity. Kept
+ * separate from `ProductJpaEntity` (used for writes/upserts only) so the
+ * query path never pays for Hibernate's entity/session machinery.
  */
 interface ProductProjection {
     val id: Long
