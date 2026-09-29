@@ -33,7 +33,8 @@ Use cognito-notification-skill.md.
 Scope: <exact files>.
 Change: <one behavior delta>.
 Constraints:
-- Keep ingestion endpoints public unless explicitly asked.
+- Keep ingestion endpoints behind the existing `X-API-Key` filter unless
+  explicitly asked to change authentication.
 - Keep admin endpoints ROLE_ADMIN.
 - Use targeted tests only.
 Validation:

@@ -2,7 +2,6 @@ package br.com.vertice.emerion_dashboard.infrastructure.rest.vendedor.controller
 
 import br.com.vertice.emerion_dashboard.application.vendedor.query.VendedorQueryUseCase
 import br.com.vertice.emerion_dashboard.application.vendedor.query.model.ListVendedoresQuery
-import br.com.vertice.emerion_dashboard.infrastructure.rest.customer.mapper.CustomerQueryRestMapper
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.api.VendedoresApi
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.VendedorPage
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.VendedorResponse

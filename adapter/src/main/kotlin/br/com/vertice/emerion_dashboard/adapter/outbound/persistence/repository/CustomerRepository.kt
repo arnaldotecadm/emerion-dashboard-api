@@ -1,23 +1,16 @@
-package br.com.vertice.emerion_dashboard.infrastructure.persistence.customer.repository
+package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.repository
 
-import br.com.vertice.emerion_dashboard.infrastructure.persistence.customer.model.CustomerJpaEntity
-import br.com.vertice.emerion_dashboard.infrastructure.persistence.customer.projection.CustomerProjection
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.entity.CustomerJpaEntity
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.CustomerProjection
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
-import org.springframework.data.repository.Repository
 import org.springframework.data.repository.query.Param
 
-/**
- * Read-only side of customer persistence: native SQL mapped straight to
- * `CustomerProjection` (mirrors emerion-load-service's
- * repository/<x>QueryRepository native-query + projection pattern), kept
- * separate from `CustomerSpringDataRepository` (JPA entity, writes/upserts
- * only). Postgres supports `Pageable`-driven native queries directly, so
- * (unlike load-service's Firebird `JdbcTemplate` workaround) a plain
- * Spring Data `@Query(nativeQuery = true)` is enough here.
- */
-interface CustomerQueryRepository : Repository<CustomerJpaEntity, Long> {
+interface CustomerRepository : JpaRepository<CustomerJpaEntity, Long> {
+
+    fun findByExternalId(externalId: String): CustomerJpaEntity?
 
     @Query(
         nativeQuery = true,

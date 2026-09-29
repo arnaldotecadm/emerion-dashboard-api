@@ -1,4 +1,4 @@
-package br.com.vertice.emerion_dashboard.application.customer.query.model
+package br.com.vertice.emerion_dashboard.domain.customer
 
 /** Input query for listing/filtering customers (paginated), consumed by the REST query adapter. */
 data class ListCustomersQuery(

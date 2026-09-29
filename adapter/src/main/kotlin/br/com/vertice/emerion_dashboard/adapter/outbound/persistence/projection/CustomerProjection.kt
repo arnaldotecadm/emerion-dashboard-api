@@ -1,4 +1,4 @@
-package br.com.vertice.emerion_dashboard.infrastructure.persistence.customer.projection
+package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection
 
 import java.math.BigDecimal
 import java.time.Instant
@@ -6,7 +6,7 @@ import java.time.LocalDate
 
 /**
  * Read-side projection for `customer`, populated straight from a native SQL
- * result set (see `CustomerQueryRepository`) instead of a JPA entity. Kept
+ * result set (see `CustomerRepository`) instead of a JPA entity. Kept
  * separate from `CustomerJpaEntity` (used for writes/upserts only) so the
  * query path never pays for Hibernate's entity/session machinery.
  */

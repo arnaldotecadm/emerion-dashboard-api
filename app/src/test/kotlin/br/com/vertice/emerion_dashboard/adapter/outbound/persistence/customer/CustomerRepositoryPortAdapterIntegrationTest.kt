@@ -1,7 +1,7 @@
-package br.com.vertice.emerion_dashboard.infrastructure.persistence.customer
+package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.customer
 
-import br.com.vertice.emerion_dashboard.domain.customer.model.Customer
-import br.com.vertice.emerion_dashboard.domain.customer.repository.CustomerRepository
+import br.com.vertice.emerion_dashboard.application.outbound.port.CustomerRepositoryPort
+import br.com.vertice.emerion_dashboard.domain.customer.Customer
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import br.com.vertice.emerion_dashboard.support.PostgresIntegrationTest
 import org.junit.jupiter.api.Disabled
@@ -12,14 +12,14 @@ import java.time.Instant
 import kotlin.test.assertEquals
 
 /**
- * Exercises `CustomerRepositoryAdapter` against a real Postgres instance,
+ * Exercises `CustomerRepositoryPortAdapter` against a real Postgres instance,
  * covering both the write path (JPA-entity-backed upsert via `save`) and the
- * read path (native-query + projection via `CustomerQueryRepository`).
+ * read path (native-query + projection via `CustomerRepository`).
  */
 @SpringBootTest
 @Disabled
-class CustomerRepositoryAdapterIntegrationTest(
-    @Autowired private val customerRepository: CustomerRepository,
+class CustomerRepositoryPortAdapterIntegrationTest(
+    @Autowired private val customerRepository: CustomerRepositoryPort,
 ) : PostgresIntegrationTest() {
 
     @Test

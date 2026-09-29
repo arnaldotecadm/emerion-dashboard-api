@@ -7,17 +7,17 @@ Apply this whenever adding/changing an endpoint, request, or response shape.
 
 ## Single Source of Truth
 `../../adapter/src/main/resources/openapi` is:
-1. The **codegen input** — `infrastructure/build.gradle.kts`'s `openApiGenerate` task
+1. The **codegen input** — `adapter/build.gradle.kts`'s `openApiGenerate` task
    (generator `kotlin-spring`, `interfaceOnly=true`) reads it and produces
    Kotlin interfaces (`...Api`) and data classes (models) under
-   `infrastructure/build/generated/openapi/src/main/kotlin/br/com/vertice/emerion_dashboard/infrastructure/rest/generated/`.
+   `adapter/build/generated/openapi/src/main/kotlin/br/com/vertice/emerion_dashboard/infrastructure/rest/generated/`.
 2. The **runtime-served spec** — it's also a static classpath resource, so
    it's reachable at `/openapi/api.yaml` at runtime, and Swagger UI is
    configured (`springdoc.swagger-ui.url`) to render that exact file. There
    is no separate annotation-driven spec (`springdoc.api-docs.enabled=false`).
 
-**Never hand-edit anything under `infrastructure/build/generated/openapi/...`.**
-Regenerate with `./gradlew :infrastructure:openApiGenerate` (or just `:infrastructure:compileKotlin`, which
+**Never hand-edit anything under `adapter/build/generated/openapi/...`.**
+Regenerate with `./gradlew :adapter:openApiGenerate` (or just `:adapter:compileKotlin`, which
 depends on it) after editing the YAML.
 
 ## Adding a New Endpoint
@@ -33,13 +33,15 @@ depends on it) after editing the YAML.
    - Errors: reuse the existing `ErrorResponse` schema (`error.code`,
      `error.message`, `error.details`, `timestamp`) — don't invent a new
      error shape per endpoint.
-3. Run `./gradlew :infrastructure:openApiGenerate` and inspect the generated file under
-   `infrastructure/build/generated/openapi/.../api/` and `.../model/` before writing the
+3. Run `./gradlew :adapter:openApiGenerate` and inspect the generated file under
+   `adapter/build/generated/openapi/.../api/` and `.../model/` before writing the
    controller — the exact Kotlin types/nullability matter.
-4. Implement the generated `...Api` interface in a new or existing
-   controller (`infrastructure/rest/<resource>/controller/`). Add a REST
-   mapper (`object`) in `infrastructure/rest/<resource>/mapper/` to
-   translate to/from the application layer.
+4. Implement the generated `...Api` interface in a controller under
+   `adapter/src/main/kotlin/.../adapter/inbound/rest/`. For simple query
+   endpoints, inject the concrete application service and map response DTOs
+   in the controller, following `CustomerController` and
+   `SmartStockController`. For ingestion, use a REST mapper (`object`) when
+   translating request/result models; keep that mapper in the adapter module.
 
 ## Known Generator Gotchas (kotlin-spring, openapi-generator 7.9.0)
 - **Reserved-word property renaming**: a schema property literally named
@@ -59,10 +61,10 @@ depends on it) after editing the YAML.
 - **`invokerPackage`** is ignored by the `kotlin-spring` generator — use
   `packageName` if you ever need to change it (not currently used, see
   `build.gradle.kts`).
-- Controller interfaces are generated with `@RestController @Validated`
-  already on the interface — do **not** re-add `@RestController` behavior
-  conflicts, just implement the interface plainly (see
-  `CustomerIngestionController`).
+- Implement the generated interface in a Spring REST controller, following
+  the existing `@RestController` implementations. Inspect generated
+  annotations rather than assuming the interface supplies all controller
+  behavior.
 
 ## Contract Design Conventions
 - Base path is `/api/v1` via `server.servlet.context-path` — do **not**

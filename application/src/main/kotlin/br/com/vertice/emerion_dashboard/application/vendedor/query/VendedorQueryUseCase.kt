@@ -1,7 +1,6 @@
 package br.com.vertice.emerion_dashboard.application.vendedor.query
 
 import br.com.vertice.emerion_dashboard.application.vendedor.query.model.ListVendedoresQuery
-import br.com.vertice.emerion_dashboard.domain.customer.model.Customer
 import br.com.vertice.emerion_dashboard.domain.shared.Page
 import br.com.vertice.emerion_dashboard.domain.vendedor.model.Vendedor
 

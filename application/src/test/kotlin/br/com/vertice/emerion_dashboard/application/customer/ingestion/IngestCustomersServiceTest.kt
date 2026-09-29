@@ -4,8 +4,8 @@ import br.com.vertice.emerion_dashboard.application.config.SQSProducer
 import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestBatchCommand
 import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestCustomerCommand
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
-import br.com.vertice.emerion_dashboard.domain.customer.model.Customer
-import br.com.vertice.emerion_dashboard.domain.customer.repository.CustomerRepository
+import br.com.vertice.emerion_dashboard.domain.customer.Customer
+import br.com.vertice.emerion_dashboard.application.outbound.port.CustomerRepositoryPort
 import br.com.vertice.emerion_dashboard.domain.customeraddress.repository.CustomerAddressRepository
 import io.mockk.every
 import io.mockk.mockk
@@ -20,7 +20,7 @@ import kotlin.test.assertEquals
 class IngestCustomersServiceTest {
 
     private val fixedClock = Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC)
-    private val customerRepository = mockk<CustomerRepository>()
+    private val customerRepository = mockk<CustomerRepositoryPort>()
     private val customerAddressRepository = mockk<CustomerAddressRepository>()
     private val sqsProducer = mockk<SQSProducer>(relaxed = true)
     private val service = IngestCustomersService(customerRepository, customerAddressRepository, fixedClock, sqsProducer, "")

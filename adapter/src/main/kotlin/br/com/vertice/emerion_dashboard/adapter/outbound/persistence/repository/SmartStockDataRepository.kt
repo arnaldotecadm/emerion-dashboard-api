@@ -32,7 +32,7 @@ class SmartStockDataRepository(
 
         val query = entityManager.createNativeQuery(querySql)
         return query.resultList.map { row ->
-            val resultArray = row as Array<Any>
+            val resultArray = row as Array<*>
             StockRecommendationProjection(
                 codigo = resultArray[0].toString(),
                 descricao = resultArray[1].toString(),

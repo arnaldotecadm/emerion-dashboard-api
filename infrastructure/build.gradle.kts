@@ -1,12 +1,7 @@
-// Infrastructure layer: all adapters (REST controllers implementing the
-// generated OpenAPI interfaces, JPA persistence, CORS/config). Depends on
-// `domain` and `application`. This is the only module allowed to depend on
-// Spring Web/Data JPA/generated OpenAPI code.
-//
-// Also owns the contract-first OpenAPI codegen: the hand-written spec at
-// src/main/resources/openapi/api.yaml is the codegen input AND is served at
-// runtime as a static resource (see infrastructure/.../config and
-// app/src/main/resources/application.properties for springdoc wiring).
+// Legacy adapters and app-wide infrastructure (security, CORS/config, Flyway).
+// New REST and persistence adapters, plus OpenAPI codegen, live in :adapter.
+// The OpenAPI spec is served at runtime from :adapter's classpath
+// (see infrastructure/.../config and app/.../application.properties).
 
 plugins {
     id("org.jetbrains.kotlin.jvm")

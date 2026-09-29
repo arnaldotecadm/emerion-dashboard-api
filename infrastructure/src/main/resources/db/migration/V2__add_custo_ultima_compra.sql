@@ -1,1 +1,1 @@
-alter table emerion_dashboard.product add custo_ultima_compra NUMERIC(19, 4);
+alter table product add custo_ultima_compra NUMERIC(19, 4);

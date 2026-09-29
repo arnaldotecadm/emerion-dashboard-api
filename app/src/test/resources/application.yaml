@@ -9,16 +9,20 @@ app:
     allowed-origins: http://localhost:5173
   aws:
     region: eu-north-1
+    account-id: account-id
     queues:
       ingestion-requests:
-        products: https://sqs.${app.aws.region}.amazonaws.com/${AWS_ACCOUNT_ID}/emerion-dashboard-products
-        products-batch: https://sqs.${app.aws.region}.amazonaws.com/${AWS_ACCOUNT_ID}/emerion-dashboard-products-batch
+        products: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-products
+        products-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-products-batch
 
-        customer-orders: https://sqs.${app.aws.region}.amazonaws.com/${AWS_ACCOUNT_ID}/emerion-dashboard-customer-orders
-        customer-orders-batch: https://sqs.${app.aws.region}.amazonaws.com/${AWS_ACCOUNT_ID}/emerion-dashboard-customer-orders-batch
+        customer-orders: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-customer-orders
+        customer-orders-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-customer-orders-batch
 
-        customer: https://sqs.${app.aws.region}.amazonaws.com/${AWS_ACCOUNT_ID}/emerion-dashboard-customer
-        customer-batch: https://sqs.${app.aws.region}.amazonaws.com/${AWS_ACCOUNT_ID}/emerion-dashboard-customer-batch
+        customer: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-customer
+        customer-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-customer-batch
+
+        vendedor: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-vendedor
+        vendedor-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-vendedor-batch
   security:
     cognito:
       issuer-uri: https://cognito-idp.eu-north-1.amazonaws.com/user-pool-id

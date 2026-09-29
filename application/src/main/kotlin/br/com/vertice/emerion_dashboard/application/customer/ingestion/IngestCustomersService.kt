@@ -4,8 +4,8 @@ import br.com.vertice.emerion_dashboard.application.config.SQSProducer
 import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestBatchCommand
 import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestCustomerCommand
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
-import br.com.vertice.emerion_dashboard.domain.customer.model.Customer
-import br.com.vertice.emerion_dashboard.domain.customer.repository.CustomerRepository
+import br.com.vertice.emerion_dashboard.domain.customer.Customer
+import br.com.vertice.emerion_dashboard.application.outbound.port.CustomerRepositoryPort
 import br.com.vertice.emerion_dashboard.domain.customeraddress.model.CustomerAddress
 import br.com.vertice.emerion_dashboard.domain.customeraddress.model.CustomerAddressDetail
 import br.com.vertice.emerion_dashboard.domain.customeraddress.repository.CustomerAddressRepository
@@ -25,7 +25,7 @@ import java.time.Instant
  */
 @Service
 class IngestCustomersService(
-    private val customerRepository: CustomerRepository,
+    private val customerRepository: CustomerRepositoryPort,
     private val customerAddressRepository: CustomerAddressRepository,
     private val clock: Clock = Clock.systemUTC(),
     private val sqsProducer: SQSProducer,

@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "2.3.21"
     kotlin("plugin.spring")
+    id("org.jetbrains.kotlin.plugin.jpa")
     id(libs.plugins.openapi.generator.get().pluginId)
     id(libs.plugins.spring.dependency.management.get().pluginId)
 }

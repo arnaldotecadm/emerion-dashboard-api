@@ -1,159 +1,64 @@
-# Persistence (Spring Data JPA) Instructions
+# Persistence (Spring Data JPA)
 
-## Description
-Governs how the `infrastructure/src/main/kotlin/.../infrastructure/persistence/<resource>/`
-adapter (in the `:infrastructure` Gradle module) is built on top of
-PostgreSQL + Spring Data JPA, behind the domain's outbound port (defined in
-the `:domain` module).
+New persistence adapters belong in `:adapter` and implement outbound ports
+declared in `:application`. Group files by technical role, not by resource:
 
-## Reads vs. Writes Are Split (mirrors emerion-load-service's repository layer)
-Persistence for a resource is split into two independent paths, matching
-the pattern used by `emerion-load-service`'s `repository/<x>Repository` +
-`repository/<x>QueryRepository` + `repository/projection/` split (native
-queries mapped to projections, which are then mapped to domain
-models/DTOs):
-- **Writes/upserts** (ingestion): a JPA `@Entity` + `JpaRepository` +
-  `PersistenceMapper` (`toEntity`/`toDomain(entity)`), exactly as described
-  below. This is the *only* place `@Entity` is used.
-- **Reads** (query endpoints, i.e. anything backing a `<Resource>QueryUseCase`):
-  a native SQL `@Query(nativeQuery = true)` returning a read-only
-  **projection** interface, mapped to the domain model via an overload on
-  the same `PersistenceMapper` (`toDomain(projection)`). No `@Entity`,
-  JPQL, or Hibernate session machinery involved on the read path — see the
-  `Customer` resource (`CustomerQueryRepository`, `CustomerProjection`,
-  `CustomerPersistenceMapper.toDomain(CustomerProjection)`) as the
-  reference implementation.
-- Never use a JPQL `@Query` (`SELECT c FROM XJpaEntity c WHERE ...`) for a
-  read/query-side method — write it as a native SQL query against a
-  projection instead. JPQL/entity-backed reads are reserved for the
-  write-path lookups needed to preserve a surrogate key across an upsert
-  (`findById`/`findByExternalId` used inside `save`).
-- Unlike `emerion-load-service`'s Firebird-backed `JdbcTemplate` pagination
-  workaround (`FirebirdPagination`, manual `RowMapper`, projection `Impl`
-  classes), Postgres natively supports `Pageable`-driven native queries via
-  Spring Data JPA (`@Query(nativeQuery = true, countQuery = "...")`
-  returning `Page<XProjection>`) — no `JdbcTemplate`/`Impl` class is needed
-  here, a plain interface projection (dynamic proxy) is enough.
-
-## The Files, Every Time
-(all under `infrastructure/src/main/kotlin/.../infrastructure/persistence/<resource>/`,
-except the entity, which lives in a dedicated `model/` subpackage (data);
-the Spring Data repository and native-query read repository, which live in
-a dedicated `repository/` subpackage; the projection interfaces, which live
-in a dedicated `projection/` subpackage; the adapter, which lives in a
-dedicated `adapter/` subpackage; and the mapper, which lives in a dedicated
-`mapper/` subpackage)
+```text
+adapter/outbound/persistence/
+  entity/<Resource>JpaEntity.kt
+  projection/<Resource>Projection.kt
+  repository/<Resource>Repository.kt
+  mapper/<Resource>PersistenceMapper.kt
+  port/<Resource>RepositoryPortAdapter.kt
 ```
-model/<Resource>JpaEntity.kt                  # @Entity, mutable var properties, JPA annotations only — write path only
-projection/<Resource>Projection.kt            # interface, read-only projection populated from a native query
-repository/<Resource>SpringDataRepository.kt  # interface : JpaRepository<XJpaEntity, Long> — write path only (save/upsert lookups)
-repository/<Resource>QueryRepository.kt       # interface : Repository<XJpaEntity, Long>, @Query(nativeQuery = true) returning XProjection — read path only
-adapter/<Resource>RepositoryAdapter.kt        # @Component, implements domain.<x>.<Resource>Repository, delegates reads to QueryRepository and writes to SpringDataRepository
-mapper/<Resource>PersistenceMapper.kt         # object, toDomain(entity)/toDomain(projection)/toEntity(), no Spring annotations
-```
-Only add a `<Resource>QueryRepository`/`projection/` once the resource
-actually has a query use case (i.e. a `<Resource>QueryUseCase`/`Service`) —
-resources that are ingestion-only so far (no React-facing query endpoint
-yet) don't need one.
 
-## JPA Entity Conventions
-- One `@Entity` class per resource in `infrastructure/persistence/<resource>/model/`
-  — separated from the repository/adapter (behavior) since it's a pure data
-  holder, mirroring the `model/` convention used in the `domain` and
-  `application` modules. It is **never** referenced outside that package
-  except by its adapter and mapper.
-- Use `var` properties with default values (see `CustomerJpaEntity`) — this
-  gives JPA's default constructor requirement "for free" without extra
-  boilerplate, combined with the `kotlin("plugin.jpa")` Gradle plugin (adds
-  a synthetic no-arg constructor for `@Entity`/`@MappedSuperclass`/
-  `@Embeddable` classes — already configured in `infrastructure/build.gradle.kts`,
-  don't remove it).
-- `@Id @GeneratedValue(strategy = GenerationType.IDENTITY)` for surrogate
-  keys — Postgres `GENERATED BY DEFAULT AS IDENTITY`, matching the Flyway
-  migration.
-- If the resource has a legacy-system correlation key (like `externalId`
-  from Firebird), give it a `@UniqueConstraint` — that's what ingestion
-  upserts key off of.
-- Enums: map with `@Enumerated(EnumType.STRING)` and a JPA-local enum type
-  (`<Resource>StatusJpa`, see `CustomerStatusJpa`) — **don't reuse the
-  domain enum on the entity**. This keeps a schema rename of the domain enum
-  from silently breaking already-persisted string values, and vice versa.
-- `Instant` for all timestamp columns, Postgres `TIMESTAMPTZ`.
+## Entity
 
-## Spring Data Repository Conventions (write path)
-- Extend `JpaRepository<XJpaEntity, Long>`.
-- Only what `save`'s upsert-lookup needs: `findById` (inherited) and a
-  derived lookup by the natural/external key (`findByExternalId`).
-- Do **not** add filtered/paginated listing or JPQL `@Query` methods here —
-  those belong on the read-side `<Resource>QueryRepository` as native
-  queries (see above).
+- Keep JPA entities in `entity/`; use `var` properties with defaults and
+  Kotlin's JPA plugin (configured in `adapter/build.gradle.kts`).
+- Use `@Id @GeneratedValue(IDENTITY)` with PostgreSQL identity columns.
+- For ingested resources, enforce uniqueness on the external/natural key
+  used for upserts.
+- Use `Instant` for `TIMESTAMPTZ`. Keep entity-local enum types with
+  `@Enumerated(EnumType.STRING)` rather than persisting domain enum classes.
 
-## Query Repository Conventions (read path)
-- Extend `org.springframework.data.repository.Repository<XJpaEntity, Long>`
-  (the base marker interface — not `JpaRepository`, since this side never
-  writes) so Spring Data still proxies it, without inheriting JPA CRUD
-  methods that would encourage entity-backed reads.
-- Every method is a `@Query(nativeQuery = true, ...)` returning a
-  projection interface (`XProjection`) or `Page<XProjection>` — never
-  `List<XJpaEntity>`/`XJpaEntity`.
-- Single-row lookups: alias every selected column to the projection's
-  property name (e.g. `nome_fantasia AS nomeFantasia`) — see
-  `CustomerQueryRepository.findProjectionById`.
-- Filtered/paginated listing: one `@Query` + matching `countQuery`, both
-  native SQL, with `:param IS NULL OR ...` per optional filter (see
-  `CustomerQueryRepository.search`) — avoids Specification/Criteria API
-  boilerplate for a handful of filters. If a resource grows past ~4
-  optional filters, switch to a Postgres full-text/`WHERE`-builder helper
-  rather than one giant native `@Query` string.
-- Return Spring Data's `org.springframework.data.domain.Page`/`Pageable`
-  **only inside this file** — the adapter converts to/from
-  `domain.shared.Page`/`PageRequest` immediately, nothing above the adapter
-  ever sees Spring Data pagination types.
+## One repository per entity
 
-## Projection Conventions
-- One read-only `interface XProjection` per resource in
-  `infrastructure/persistence/<resource>/projection/`, with a `val` getter
-  per selected/aliased column — Spring Data JPA creates the proxy
-  implementation automatically from the native query's column aliases, no
-  hand-written `Impl` class is needed (unlike `emerion-load-service`'s
-  Firebird `JdbcTemplate`-based repositories, which need a concrete `Impl`
-  because they build the `RowMapper` by hand).
-- Field types/nullability mirror the domain model, not the raw SQL column
-  type (e.g. `bloqueado: Boolean` for a real Postgres boolean column — no
-  int/flag conversion needed here, unlike Firebird's `'*'`-flag columns in
-  `emerion-load-service`).
+Define one `<Resource>Repository : JpaRepository<...>` in `repository/`.
+Keep the entity's derived lookups, upsert/CRUD operations, and native
+projection-based read queries together in this interface. Do not create
+separate read and write repository interfaces for the same entity.
 
-## Repository Adapter Conventions
-- `@Component`, implements the domain port (`domain.<x>.<Resource>Repository`).
-- Constructor-inject **both** `<Resource>SpringDataRepository` (writes) and
-  `<Resource>QueryRepository` (reads) once the resource has a query side —
-  see `CustomerRepositoryAdapter`.
-- Reads (`findById`, `findAll`/`search`, etc. — anything called from a
-  `<Resource>QueryUseCase`) delegate to `<Resource>QueryRepository` and map
-  through `PersistenceMapper.toDomain(projection)`.
-- Upsert logic (`save`): look up the existing entity by id (if present) or
-  by the natural/external key **via `<Resource>SpringDataRepository`**, pass
-  it into the mapper as the `existing` parameter so the generated `id` is
-  preserved across updates — see `CustomerRepositoryAdapter.save` (in
-  `persistence/customer/adapter/`) / `CustomerPersistenceMapper.toEntity`.
-- Never leak `XJpaEntity`, `XProjection`, or Spring Data
-  `Page`/`Pageable`/`Pageable` out of this class's public methods.
+- Use inherited `findById` and derived natural-key lookups to preserve the
+  existing row identity on upsert.
+- Use native `@Query` methods for filtered/paginated reads, returning
+  projection interfaces or `Page<Projection>`—not JPA entities.
+- Give native selected columns aliases matching projection getter names.
+  Provide a matching `countQuery` for paginated queries.
+- Use `:param IS NULL OR ...` for a modest number of optional filters;
+  switch to a query builder/full-text approach if filter complexity grows.
+- Spring `Page`/`Pageable` stay within `:adapter`; translate to/from
+  `domain.shared.Page`/`PageRequest` at the port adapter boundary.
 
-## Persistence Mapper Conventions
-- Plain `object`, not a Spring bean.
-- `toDomain(entity)` (write path) and `toDomain(projection)` (read path) as
-  overloads, plus `toEntity(domain, existing)` — the `existing` parameter
-  lets the mapper preserve the surrogate key on update instead of
-  generating a duplicate row.
-- Keep enum conversions as small exhaustive `when` blocks (compiler-checked
-  — adding a new enum value anywhere will fail to compile until every
-  mapper is updated).
+PostgreSQL supports pageable native queries directly; no custom
+`JdbcTemplate`/implementation class is needed for projections.
+
+## Projection, mapper, and port adapter
+
+- Put read projections in `projection/` as read-only interfaces with a
+  getter for each selected column.
+- Put persistence conversion in a pure `object` under `mapper/`, with
+  overloads to map entity and projection results to domain types and to map
+  domain types to entities. Pass the existing entity when saving so an
+  update preserves its generated id.
+- Put `<Resource>RepositoryPortAdapter` in `port/`. It implements the
+  application port and translates/delegates; it owns no business rules and
+  does not expose JPA, projection, or Spring pagination types.
 
 ## Testing
-- Unit-test mappers directly (pure functions, no Spring context needed).
-- Integration-test the adapter (`XRepositoryAdapter`) against a real
-  Postgres via Testcontainers by extending
-  `support.PostgresIntegrationTest` — this exercises both the write-path
-  entity/JPQL-free upsert and the read-path native query/projection
-  against the actual Flyway-created schema together. See
-  `CustomerRepositoryAdapterIntegrationTest` as the reference example.
+
+Test pure persistence mappers with plain JUnit assertions. Test repository
+and adapter behavior against PostgreSQL in `:app` using
+`support.PostgresIntegrationTest`; this validates native projections,
+upserts, and Flyway-created schema together. See Customer for the current
+reference implementation.
