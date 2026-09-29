@@ -1,6 +1,6 @@
 package br.com.vertice.emerion_dashboard.application.dashboard
 
-import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardRepository
+import br.com.vertice.emerion_dashboard.application.outbound.port.DashboardRepositoryPort
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardTopTrends
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -8,7 +8,7 @@ import java.math.RoundingMode
 
 @Service
 class DashboardSummaryService(
-    private val repository: DashboardRepository
+    private val repository: DashboardRepositoryPort
 ) : DashboardSummary {
     override fun getDashboardTopTrends(orderBy: String): DashboardTopTrends {
         val totais = repository.getDashboardTotais()

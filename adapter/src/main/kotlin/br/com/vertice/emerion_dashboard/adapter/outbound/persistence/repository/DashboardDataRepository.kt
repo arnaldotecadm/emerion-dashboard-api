@@ -1,7 +1,7 @@
-package br.com.vertice.emerion_dashboard.infrastructure.persistence.repository
+package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.repository
 
-import br.com.vertice.emerion_dashboard.infrastructure.persistence.projection.DashboardTopTrendsProjection
-import br.com.vertice.emerion_dashboard.infrastructure.persistence.projection.DashboardTotaisProjection
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardTopTrendsProjection
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardTotaisProjection
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
 import org.springframework.stereotype.Repository

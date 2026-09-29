@@ -1,4 +1,4 @@
-package br.com.vertice.emerion_dashboard.infrastructure.persistence.projection
+package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection
 
 import java.math.BigDecimal
 

@@ -1,15 +1,16 @@
-package br.com.vertice.emerion_dashboard.infrastructure.persistence.repository
+package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.port
 
-import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardRepository
+import br.com.vertice.emerion_dashboard.adapter.mapper.DashboardMapper.toModel
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.repository.DashboardDataRepository
+import br.com.vertice.emerion_dashboard.application.outbound.port.DashboardRepositoryPort
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardTotais
 import br.com.vertice.emerion_dashboard.domain.dashboard.TopTrends
-import br.com.vertice.emerion_dashboard.infrastructure.persistence.mapper.DashboardMapper.toModel
 import org.springframework.stereotype.Component
 
 @Component
-class DashboardRepositoryAdapter(
+class DashboardRepositoryPortAdapter(
     private val dashboardDataRepository: DashboardDataRepository
-) : DashboardRepository {
+) : DashboardRepositoryPort {
     override fun getDashboardCustomerTopTrends(orderBy: String): List<TopTrends> {
         return dashboardDataRepository.getDashboardCustomerTopTrends(orderBy).map { it.toModel() }
     }

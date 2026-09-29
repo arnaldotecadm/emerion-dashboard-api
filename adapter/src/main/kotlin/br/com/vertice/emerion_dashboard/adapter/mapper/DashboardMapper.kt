@@ -1,23 +1,14 @@
-package br.com.vertice.emerion_dashboard.infrastructure.persistence.mapper
+package br.com.vertice.emerion_dashboard.adapter.mapper
 
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardTopTrendsProjection
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardTotaisProjection
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardTopTrends
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardTotais
 import br.com.vertice.emerion_dashboard.domain.dashboard.TopTrends
-import br.com.vertice.emerion_dashboard.infrastructure.persistence.projection.DashboardTopTrendsProjection
-import br.com.vertice.emerion_dashboard.infrastructure.persistence.projection.DashboardTotaisProjection
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardTopTrendsDTO
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardTopTrendsResponse
 
 object DashboardMapper {
-
-    fun DashboardTopTrendsProjection.toModel(): TopTrends {
-        return TopTrends(
-            identifier = this.identifier.toInt(),
-            name = this.name,
-            amountSales = this.amountSales,
-            totalSales = this.totalSales
-        )
-    }
 
     fun DashboardTopTrends.toResponse(): DashboardTopTrendsResponse {
         return DashboardTopTrendsResponse(
@@ -29,6 +20,15 @@ object DashboardMapper {
     fun TopTrends.toResponse(): DashboardTopTrendsDTO {
         return DashboardTopTrendsDTO(
             identifier = this.identifier,
+            name = this.name,
+            amountSales = this.amountSales,
+            totalSales = this.totalSales
+        )
+    }
+
+    fun DashboardTopTrendsProjection.toModel(): TopTrends {
+        return TopTrends(
+            identifier = this.identifier.toInt(),
             name = this.name,
             amountSales = this.amountSales,
             totalSales = this.totalSales

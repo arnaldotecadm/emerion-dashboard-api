@@ -1,7 +1,7 @@
-package br.com.vertice.emerion_dashboard.infrastructure.rest.dashboard
+package br.com.vertice.emerion_dashboard.adapter.inbound.rest
 
+import br.com.vertice.emerion_dashboard.adapter.mapper.DashboardMapper.toResponse
 import br.com.vertice.emerion_dashboard.application.dashboard.DashboardSummaryService
-import br.com.vertice.emerion_dashboard.infrastructure.persistence.mapper.DashboardMapper.toResponse
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.api.DashboardApi
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardTopTrendsResponse
 import org.springframework.http.ResponseEntity
