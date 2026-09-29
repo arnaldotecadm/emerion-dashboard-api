@@ -1,4 +1,4 @@
-package br.com.vertice.emerion_dashboard.infrastructure.persistence.vendedor.model
+package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -12,9 +12,8 @@ import java.time.Instant
 import java.time.LocalDate
 
 /**
- * JPA entity for the `vendedor` table. Lives entirely in the infrastructure
- * layer: the domain layer never sees this class, only
- * `domain.vendedor.model.Vendedor` via `VendedorPersistenceMapper`.
+ * JPA entity for the `vendedor` table. The application layer only sees the
+ * domain `Vendedor` model via `VendedorPersistenceMapper`.
  */
 @Entity
 @Table(

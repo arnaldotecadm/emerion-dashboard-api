@@ -1,4 +1,4 @@
-package br.com.vertice.emerion_dashboard.infrastructure.persistence.vendedor.projection
+package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection
 
 import java.math.BigDecimal
 import java.time.Instant
@@ -6,7 +6,9 @@ import java.time.LocalDate
 
 /**
  * Read-side projection for `vendedor`, populated straight from a native SQL
- * result set (see `VendedorQueryRepository`) instead of a JPA entity.
+ * result set (see `VendedorRepository`) instead of a JPA entity. Kept
+ * separate from `VendedorJpaEntity` (used for writes/upserts only) so the
+ * query path never pays for Hibernate's entity/session machinery.
  */
 interface VendedorProjection {
     val id: Long

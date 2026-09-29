@@ -6,8 +6,8 @@ import br.com.vertice.emerion_dashboard.application.vendedor.ingestion.model.Ing
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
-import br.com.vertice.emerion_dashboard.domain.vendedor.model.Vendedor
-import br.com.vertice.emerion_dashboard.domain.vendedor.repository.VendedorRepository
+import br.com.vertice.emerion_dashboard.domain.vendedor.Vendedor
+import br.com.vertice.emerion_dashboard.application.outbound.port.VendedorRepositoryPort
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -22,7 +22,7 @@ import java.time.Instant
  */
 @Service
 class IngestVendedoresService(
-    private val vendedorRepository: VendedorRepository,
+    private val vendedorRepository: VendedorRepositoryPort,
     private val clock: Clock = Clock.systemUTC(),
     private val sqsProducer: SQSProducer,
     @Value($$"${app.aws.queues.ingestion-requests.vendedor-batch}") private val batchQueueUrl: String

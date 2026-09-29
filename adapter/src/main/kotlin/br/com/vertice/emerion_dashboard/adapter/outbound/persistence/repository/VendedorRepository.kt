@@ -1,21 +1,16 @@
-package br.com.vertice.emerion_dashboard.infrastructure.persistence.vendedor.repository
+package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.repository
 
-import br.com.vertice.emerion_dashboard.infrastructure.persistence.vendedor.model.VendedorJpaEntity
-import br.com.vertice.emerion_dashboard.infrastructure.persistence.vendedor.projection.VendedorProjection
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.entity.VendedorJpaEntity
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.VendedorProjection
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
-import org.springframework.data.repository.Repository
 import org.springframework.data.repository.query.Param
 
-/**
- * Read-only side of vendedor persistence: native SQL mapped straight to
- * `VendedorProjection` (mirrors emerion-load-service's
- * repository/<x>QueryRepository native-query + projection pattern), kept
- * separate from `VendedorSpringDataRepository` (JPA entity, writes/upserts
- * only).
- */
-interface VendedorQueryRepository : Repository<VendedorJpaEntity, Long> {
+interface VendedorRepository : JpaRepository<VendedorJpaEntity, Long> {
+
+    fun findByExternalId(externalId: String): VendedorJpaEntity?
 
     @Query(
         nativeQuery = true,

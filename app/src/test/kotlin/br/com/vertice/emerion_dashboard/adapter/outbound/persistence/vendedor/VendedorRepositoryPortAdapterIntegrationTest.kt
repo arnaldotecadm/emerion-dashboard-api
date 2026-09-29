@@ -1,8 +1,8 @@
-package br.com.vertice.emerion_dashboard.infrastructure.persistence.vendedor
+package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.vendedor
 
+import br.com.vertice.emerion_dashboard.application.outbound.port.VendedorRepositoryPort
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
-import br.com.vertice.emerion_dashboard.domain.vendedor.model.Vendedor
-import br.com.vertice.emerion_dashboard.domain.vendedor.repository.VendedorRepository
+import br.com.vertice.emerion_dashboard.domain.vendedor.Vendedor
 import br.com.vertice.emerion_dashboard.support.PostgresIntegrationTest
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -14,14 +14,14 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 
 /**
- * Exercises `VendedorRepositoryAdapter` against a real Postgres instance,
+ * Exercises `VendedorRepositoryPortAdapter` against a real Postgres instance,
  * covering both the write path (JPA-entity-backed upsert via `save`) and the
- * read path (native-query + projection via `VendedorQueryRepository`).
+ * read path (native-query + projection via `VendedorRepository`).
  */
 @SpringBootTest
 @Disabled
-class VendedorRepositoryAdapterIntegrationTest(
-    @Autowired private val vendedorRepository: VendedorRepository,
+class VendedorRepositoryPortAdapterIntegrationTest(
+    @Autowired private val vendedorRepository: VendedorRepositoryPort,
 ) : PostgresIntegrationTest() {
 
     @Test
