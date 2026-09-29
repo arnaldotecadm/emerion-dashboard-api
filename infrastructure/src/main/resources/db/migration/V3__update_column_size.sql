@@ -1,1 +1,1 @@
-ALTER TABLE product ALTER COLUMN origem_produto TYPE VARCHAR(200);
+ALTER TABLE emerion_dashboard.product ALTER COLUMN origem_produto TYPE VARCHAR(200);
