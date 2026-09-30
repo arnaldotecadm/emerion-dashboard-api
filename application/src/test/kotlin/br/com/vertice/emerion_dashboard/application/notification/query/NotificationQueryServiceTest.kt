@@ -1,7 +1,7 @@
 package br.com.vertice.emerion_dashboard.application.notification.query
 
 import br.com.vertice.emerion_dashboard.application.notification.query.model.ListNotificationsQuery
-import br.com.vertice.emerion_dashboard.domain.notification.exception.NotificationNotFoundException
+import br.com.vertice.emerion_dashboard.domain.exception.NotificationNotFoundException
 import br.com.vertice.emerion_dashboard.domain.notification.model.Notification
 import br.com.vertice.emerion_dashboard.domain.notification.model.NotificationCategory
 import br.com.vertice.emerion_dashboard.domain.notification.model.NotificationPriority

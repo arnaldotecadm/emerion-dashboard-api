@@ -1,4 +1,4 @@
-package br.com.vertice.emerion_dashboard.domain.vendedor.exception
+package br.com.vertice.emerion_dashboard.domain.exception
 
 class VendedorNotFoundException : RuntimeException{
     constructor(id: Long) : super("Vendedor with id $id not found")

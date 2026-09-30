@@ -15,7 +15,7 @@ interface VendedorRepositoryPort {
     fun findAll(
         pageRequest: PageRequest,
         nomeContains: String?,
-        situacao: String?,
+        ativo: String?,
         cnpjEmpresa: String?,
     ): Page<Vendedor>
 

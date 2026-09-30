@@ -1,7 +1,7 @@
 package br.com.vertice.emerion_dashboard.application.liberacao.query
 
 import br.com.vertice.emerion_dashboard.application.liberacao.query.model.ListLiberacoesQuery
-import br.com.vertice.emerion_dashboard.domain.liberacao.exception.LiberacaoNotFoundException
+import br.com.vertice.emerion_dashboard.domain.exception.LiberacaoNotFoundException
 import br.com.vertice.emerion_dashboard.domain.liberacao.model.Liberacao
 import br.com.vertice.emerion_dashboard.domain.liberacao.repository.LiberacaoRepository
 import br.com.vertice.emerion_dashboard.domain.shared.Page

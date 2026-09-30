@@ -5,6 +5,6 @@ data class ListVendedoresQuery(
     val page: Int,
     val size: Int,
     val nomeContains: String?,
-    val situacao: String?,
+    val ativo: String?,
     val cnpjEmpresa: String?,
 )

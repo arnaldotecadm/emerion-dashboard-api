@@ -24,13 +24,13 @@ class VendedorRepositoryPortAdapter(
     override fun findAll(
         pageRequest: PageRequest,
         nomeContains: String?,
-        situacao: String?,
+        ativo: String?,
         cnpjEmpresa: String?,
     ): Page<Vendedor> {
         val springPageable = SpringPageRequest.of(pageRequest.page, pageRequest.size)
         val result = vendedorRepository.search(
             nomeContains?.takeIf { it.isNotBlank() },
-            situacao?.takeIf { it.isNotBlank() },
+            ativo?.takeIf { it.isNotBlank() }?.uppercase(),
             cnpjEmpresa?.takeIf { it.isNotBlank() },
             springPageable,
         )

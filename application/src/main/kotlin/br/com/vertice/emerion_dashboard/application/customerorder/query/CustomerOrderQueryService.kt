@@ -1,7 +1,7 @@
 package br.com.vertice.emerion_dashboard.application.customerorder.query
 
 import br.com.vertice.emerion_dashboard.application.customerorder.query.model.ListCustomerOrdersQuery
-import br.com.vertice.emerion_dashboard.domain.customerorder.exception.CustomerOrderNotFoundException
+import br.com.vertice.emerion_dashboard.domain.exception.CustomerOrderNotFoundException
 import br.com.vertice.emerion_dashboard.domain.customerorder.model.CustomerOrder
 import br.com.vertice.emerion_dashboard.domain.customerorder.repository.CustomerOrderRepository
 import br.com.vertice.emerion_dashboard.domain.shared.Page

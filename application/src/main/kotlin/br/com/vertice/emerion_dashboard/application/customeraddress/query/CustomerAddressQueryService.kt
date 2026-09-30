@@ -1,7 +1,7 @@
 package br.com.vertice.emerion_dashboard.application.customeraddress.query
 
 import br.com.vertice.emerion_dashboard.application.customeraddress.query.model.ListCustomerAddressesQuery
-import br.com.vertice.emerion_dashboard.domain.customeraddress.exception.CustomerAddressNotFoundException
+import br.com.vertice.emerion_dashboard.domain.exception.CustomerAddressNotFoundException
 import br.com.vertice.emerion_dashboard.domain.customeraddress.model.CustomerAddress
 import br.com.vertice.emerion_dashboard.domain.customeraddress.repository.CustomerAddressRepository
 import br.com.vertice.emerion_dashboard.domain.shared.Page

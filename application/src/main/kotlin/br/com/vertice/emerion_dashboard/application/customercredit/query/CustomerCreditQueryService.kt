@@ -1,7 +1,7 @@
 package br.com.vertice.emerion_dashboard.application.customercredit.query
 
 import br.com.vertice.emerion_dashboard.application.customercredit.query.model.ListCustomerCreditsQuery
-import br.com.vertice.emerion_dashboard.domain.customercredit.exception.CustomerCreditNotFoundException
+import br.com.vertice.emerion_dashboard.domain.exception.CustomerCreditNotFoundException
 import br.com.vertice.emerion_dashboard.domain.customercredit.model.CustomerCredit
 import br.com.vertice.emerion_dashboard.domain.customercredit.repository.CustomerCreditRepository
 import br.com.vertice.emerion_dashboard.domain.shared.Page

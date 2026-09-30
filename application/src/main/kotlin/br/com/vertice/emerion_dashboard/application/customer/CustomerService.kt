@@ -1,7 +1,7 @@
 package br.com.vertice.emerion_dashboard.application.customer
 
 import br.com.vertice.emerion_dashboard.domain.customer.ListCustomersQuery
-import br.com.vertice.emerion_dashboard.domain.customer.exception.CustomerNotFoundException
+import br.com.vertice.emerion_dashboard.domain.exception.CustomerNotFoundException
 import br.com.vertice.emerion_dashboard.domain.customer.Customer
 import br.com.vertice.emerion_dashboard.application.outbound.port.CustomerRepositoryPort
 import br.com.vertice.emerion_dashboard.domain.shared.Page

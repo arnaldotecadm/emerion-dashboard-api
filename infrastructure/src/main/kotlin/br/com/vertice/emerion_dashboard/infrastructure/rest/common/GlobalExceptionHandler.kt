@@ -1,13 +1,13 @@
 package br.com.vertice.emerion_dashboard.infrastructure.rest.common
 
-import br.com.vertice.emerion_dashboard.domain.customer.exception.CustomerNotFoundException
-import br.com.vertice.emerion_dashboard.domain.customeraddress.exception.CustomerAddressNotFoundException
-import br.com.vertice.emerion_dashboard.domain.customercredit.exception.CustomerCreditNotFoundException
-import br.com.vertice.emerion_dashboard.domain.customerorder.exception.CustomerOrderNotFoundException
-import br.com.vertice.emerion_dashboard.domain.liberacao.exception.LiberacaoNotFoundException
-import br.com.vertice.emerion_dashboard.domain.notification.exception.NotificationNotFoundException
-import br.com.vertice.emerion_dashboard.domain.product.exception.ProductNotFoundException
-import br.com.vertice.emerion_dashboard.domain.vendedor.exception.VendedorNotFoundException
+import br.com.vertice.emerion_dashboard.domain.exception.CustomerNotFoundException
+import br.com.vertice.emerion_dashboard.domain.exception.CustomerAddressNotFoundException
+import br.com.vertice.emerion_dashboard.domain.exception.CustomerCreditNotFoundException
+import br.com.vertice.emerion_dashboard.domain.exception.CustomerOrderNotFoundException
+import br.com.vertice.emerion_dashboard.domain.exception.LiberacaoNotFoundException
+import br.com.vertice.emerion_dashboard.domain.exception.NotificationNotFoundException
+import br.com.vertice.emerion_dashboard.domain.exception.ProductNotFoundException
+import br.com.vertice.emerion_dashboard.domain.exception.VendedorNotFoundException
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.ErrorResponse
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.ErrorResponseError
 import org.slf4j.LoggerFactory

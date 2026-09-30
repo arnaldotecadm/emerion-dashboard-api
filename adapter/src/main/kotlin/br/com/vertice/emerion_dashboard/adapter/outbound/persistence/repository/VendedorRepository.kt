@@ -60,14 +60,14 @@ interface VendedorRepository : JpaRepository<VendedorJpaEntity, Long> {
                 updated_at AS updatedAt
             FROM vendedor
             WHERE (:nomeContains IS NULL OR LOWER(nome) LIKE LOWER(CONCAT('%', CAST(:nomeContains AS text), '%')))
-              AND (:ativo IS NULL OR ativo = :ativo)
+              AND (:ativo IS NULL OR upper(ativo) = :ativo)
               AND (:cnpjEmpresa IS NULL OR cnpj_empresa = :cnpjEmpresa)
         """,
         countQuery = """
             SELECT count(*)
             FROM vendedor
             WHERE (:nomeContains IS NULL OR LOWER(nome) LIKE LOWER(CONCAT('%', CAST(:nomeContains AS text), '%')))
-              AND (:ativo IS NULL OR ativo = :ativo)
+              AND (:ativo IS NULL OR upper(ativo) = :ativo)
               AND (:cnpjEmpresa IS NULL OR cnpj_empresa = :cnpjEmpresa)
         """,
     )

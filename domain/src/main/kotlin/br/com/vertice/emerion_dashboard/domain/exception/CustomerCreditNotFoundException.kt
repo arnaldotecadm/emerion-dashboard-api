@@ -1,3 +1,3 @@
-package br.com.vertice.emerion_dashboard.domain.customercredit.exception
+package br.com.vertice.emerion_dashboard.domain.exception
 
 class CustomerCreditNotFoundException(id: Long) : RuntimeException("CustomerCredit with id $id not found")

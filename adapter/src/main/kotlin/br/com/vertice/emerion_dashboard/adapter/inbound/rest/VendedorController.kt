@@ -25,8 +25,8 @@ class VendedorController(
         return ResponseEntity.ok(vendedor.toResponse())
     }
 
-    override fun listVendedores(page: Int, size: Int, nome: String?, situacao: String?, cnpjEmpresa: String?): ResponseEntity<VendedorPage> {
-        val query = ListVendedoresQuery(page = page, size = size, nomeContains = nome, situacao = situacao, cnpjEmpresa = cnpjEmpresa)
+    override fun listVendedores(page: Int, size: Int, nome: String?, ativo: String?, cnpjEmpresa: String?): ResponseEntity<VendedorPage> {
+        val query = ListVendedoresQuery(page = page, size = size, nomeContains = nome, ativo = ativo, cnpjEmpresa = cnpjEmpresa)
         val result = vendedorService.list(query)
         return ResponseEntity.ok(
             VendedorPage(

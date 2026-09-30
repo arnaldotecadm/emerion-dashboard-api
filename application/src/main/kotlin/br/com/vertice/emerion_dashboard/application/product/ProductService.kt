@@ -3,7 +3,7 @@ package br.com.vertice.emerion_dashboard.application.product
 import br.com.vertice.emerion_dashboard.application.outbound.port.ProductRepositoryPort
 import br.com.vertice.emerion_dashboard.domain.product.ListProductsQuery
 import br.com.vertice.emerion_dashboard.domain.product.Product
-import br.com.vertice.emerion_dashboard.domain.product.exception.ProductNotFoundException
+import br.com.vertice.emerion_dashboard.domain.exception.ProductNotFoundException
 import br.com.vertice.emerion_dashboard.domain.shared.Page
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import org.springframework.stereotype.Service

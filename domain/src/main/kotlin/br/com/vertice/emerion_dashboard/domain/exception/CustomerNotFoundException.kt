@@ -1,4 +1,4 @@
-package br.com.vertice.emerion_dashboard.domain.customer.exception
+package br.com.vertice.emerion_dashboard.domain.exception
 
 class CustomerNotFoundException : RuntimeException {
     constructor(id: Long) : super("Customer with id $id not found")
