@@ -1,4 +1,4 @@
-package br.com.vertice.emerion_dashboard.infrastructure.persistence.cognitouser.model
+package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.entity
 
 import jakarta.persistence.CollectionTable
 import jakarta.persistence.Column
@@ -47,6 +47,9 @@ class CognitoUserJpaEntity(
 
     @Column(name = "enabled", nullable = false)
     var enabled: Boolean = true,
+
+    @Column(name = "cnpj_empresa")
+    var cnpjEmpresa: String? = null,
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "cognito_user_group", joinColumns = [JoinColumn(name = "cognito_user_id")])

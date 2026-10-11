@@ -7,7 +7,7 @@ import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.mode
 import br.com.vertice.emerion_dashboard.application.notification.creation.CreateNotificationUseCase
 import br.com.vertice.emerion_dashboard.application.notification.creation.model.CreateNotificationCommand
 import br.com.vertice.emerion_dashboard.domain.cognitouser.model.CognitoUser
-import br.com.vertice.emerion_dashboard.domain.cognitouser.repository.CognitoUserRepository
+import br.com.vertice.emerion_dashboard.application.outbound.port.CognitoUserRepository
 import br.com.vertice.emerion_dashboard.domain.customerorder.model.CustomerOrder
 import br.com.vertice.emerion_dashboard.domain.customerorder.model.CustomerOrderItem
 import br.com.vertice.emerion_dashboard.domain.customerorder.repository.CustomerOrderRepository
@@ -57,6 +57,7 @@ class IngestCustomerOrdersServiceTest {
     private fun orderCommand(externalId: String, itens: List<IngestCustomerOrderItemCommand>) =
         IngestCustomerOrderCommand(
             externalId = externalId,
+            cnpjEmpresa = "12345678000100",
             codigoEmpresa = 1,
             codigoCliente = 100,
             cpfCnpj = null,
@@ -114,6 +115,7 @@ class IngestCustomerOrdersServiceTest {
             externalId = "NUM-2",
             codigoEmpresa = 1,
             codigoCliente = 100,
+            cnpjEmpresa = "12345678000100",
             cpfCnpj = null,
             numeroPedido = "NF-2",
             dataPedido = LocalDate.parse("2025-01-01"),
@@ -207,6 +209,7 @@ class IngestCustomerOrdersServiceTest {
         username = sub,
         email = null,
         enabled = enabled,
+        cnpjEmpresa = "",
         groups = emptyList(),
         lastSyncedAt = Instant.parse("2026-01-01T00:00:00Z"),
         createdAt = Instant.parse("2026-01-01T00:00:00Z"),

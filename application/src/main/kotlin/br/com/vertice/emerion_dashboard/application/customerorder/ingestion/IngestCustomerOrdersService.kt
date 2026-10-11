@@ -6,7 +6,7 @@ import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.mode
 import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestCustomerOrderItemCommand
 import br.com.vertice.emerion_dashboard.application.notification.creation.CreateNotificationUseCase
 import br.com.vertice.emerion_dashboard.application.notification.creation.model.CreateNotificationCommand
-import br.com.vertice.emerion_dashboard.domain.cognitouser.repository.CognitoUserRepository
+import br.com.vertice.emerion_dashboard.application.outbound.port.CognitoUserRepository
 import br.com.vertice.emerion_dashboard.domain.customerorder.model.CustomerOrder
 import br.com.vertice.emerion_dashboard.domain.customerorder.model.CustomerOrderItem
 import br.com.vertice.emerion_dashboard.domain.customerorder.repository.CustomerOrderRepository
@@ -73,6 +73,7 @@ class IngestCustomerOrdersService(
             val existing = customerOrderRepository.findByExternalId(item.externalId)
             val itens = item.itens.map { it.toDomain() }
             val toSave = existing?.mergeFromIngestion(
+                cnpjEmpresa = item.cnpjEmpresa,
                 codigoEmpresa = item.codigoEmpresa,
                 codigoCliente = item.codigoCliente,
                 cpfCnpj = item.cpfCnpj,
@@ -101,6 +102,7 @@ class IngestCustomerOrdersService(
                 now = now,
             ) ?: CustomerOrder.newFromIngestion(
                 externalId = item.externalId,
+                cnpjEmpresa = item.cnpjEmpresa,
                 codigoEmpresa = item.codigoEmpresa,
                 codigoCliente = item.codigoCliente,
                 cpfCnpj = item.cpfCnpj,

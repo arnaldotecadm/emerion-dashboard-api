@@ -94,7 +94,7 @@ class VendedorRepositoryPortAdapterIntegrationTest(
         val page = vendedorRepository.findAll(
             pageRequest = PageRequest(page = 0, size = 10),
             nomeContains = "Especial",
-            situacao = "ATIVO",
+            ativo = "ATIVO",
             cnpjEmpresa = null,
         )
 

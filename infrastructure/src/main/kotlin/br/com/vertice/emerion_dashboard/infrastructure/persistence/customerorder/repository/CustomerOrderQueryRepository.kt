@@ -69,6 +69,7 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
                 codigo_empresa AS codigoEmpresa,
                 codigo_cliente AS codigoCliente,
                 cpf_cnpj AS cpfCnpj,
+                cnpj_empresa AS cnpjEmpresa,
                 numero_pedido AS numeroPedido,
                 data_pedido AS dataPedido,
                 status_pedido AS statusPedido,

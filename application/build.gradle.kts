@@ -12,6 +12,7 @@ plugins {
 dependencies {
     implementation(project(":domain"))
 
+    implementation(libs.spring.boot.starter.security)
     implementation("org.springframework:spring-context")
     implementation("org.springframework:spring-tx")
     implementation("org.jetbrains.kotlin:kotlin-reflect")

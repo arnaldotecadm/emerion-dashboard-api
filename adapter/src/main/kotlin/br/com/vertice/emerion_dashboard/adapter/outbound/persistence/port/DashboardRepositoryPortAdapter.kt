@@ -2,6 +2,7 @@ package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.port
 
 import br.com.vertice.emerion_dashboard.adapter.mapper.DashboardMapper.toModel
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.repository.DashboardDataRepository
+import br.com.vertice.emerion_dashboard.application.cognitouser.UserService
 import br.com.vertice.emerion_dashboard.application.outbound.port.DashboardRepositoryPort
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardTotais
 import br.com.vertice.emerion_dashboard.domain.dashboard.TopTrends
@@ -9,7 +10,8 @@ import org.springframework.stereotype.Component
 
 @Component
 class DashboardRepositoryPortAdapter(
-    private val dashboardDataRepository: DashboardDataRepository
+    private val dashboardDataRepository: DashboardDataRepository,
+    private val userService: UserService
 ) : DashboardRepositoryPort {
     override fun getDashboardCustomerTopTrends(orderBy: String): List<TopTrends> {
         return dashboardDataRepository.getDashboardCustomerTopTrends(orderBy).map { it.toModel() }

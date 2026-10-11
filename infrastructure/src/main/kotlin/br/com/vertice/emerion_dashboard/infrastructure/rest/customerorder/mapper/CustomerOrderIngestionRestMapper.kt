@@ -26,6 +26,7 @@ object CustomerOrderIngestionRestMapper {
     fun toItemCommand(dto: CustomerOrderIngestionItem): IngestCustomerOrderCommand =
         IngestCustomerOrderCommand(
             externalId = dto.externalId,
+            cnpjEmpresa = dto.cnpjEmpresa,
             codigoEmpresa = dto.codigoEmpresa,
             codigoCliente = dto.codigoCliente,
             cpfCnpj = dto.cpfCnpj,

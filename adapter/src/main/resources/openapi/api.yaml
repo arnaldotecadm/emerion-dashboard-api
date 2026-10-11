@@ -35,6 +35,10 @@ tags:
     description: >
       Endpoints called by emerion-load-service to push IPI rules into
       PostgreSQL. Not consumed by the React app.
+  - name: customer-quotation-ingestion
+    description: >
+      Endpoints called by emerion-load-service to push customer quotations
+      into PostgreSQL. Not consumed by the React app.
   - name: fincre-ingestion
     description: >
       Endpoints called by emerion-load-service to push títulos a receber
@@ -1124,6 +1128,77 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /ingestion/customer-quotations:
+    post:
+      tags:
+        - customer-quotation-ingestion
+      operationId: ingestCustomerQuotations
+      summary: Ingest a batch of customer quotations from emerion-load-service
+      description: >
+        Upserts quotations by the tenant-safe combination of cnpjEmpresa
+        and externalId, making retries idempotent.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerQuotationIngestionBatch'
+      responses:
+        '200':
+          description: Batch processed (see per-item results for partial failures)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionResult'
+        '400':
+          description: Malformed request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /ingestion/customer-quotations/single:
+    post:
+      tags:
+        - customer-quotation-ingestion
+      operationId: ingestSingleCustomerQuotation
+      summary: Ingest a single customer quotation from emerion-load-service
+      description: >
+        Equivalent to sending a one-item batch to
+        POST /ingestion/customer-quotations. Upserts by the tenant-safe
+        combination of cnpjEmpresa and externalId.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerQuotationIngestionItem'
+      responses:
+        '200':
+          description: Item processed (outcome reflects CREATED/UPDATED/FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionItemResult'
+        '400':
+          description: Malformed request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /customer-orders:
     get:
       tags:
@@ -1298,9 +1373,9 @@ paths:
           required: false
           schema:
             type: string
-        - name: situacao
+        - name: ativo
           in: query
-          description: Exact match on vendedor situacao
+          description: Exact match on vendedor ativo
           required: false
           schema:
             type: string
@@ -2888,6 +2963,110 @@ components:
           type: number
           nullable: true
 
+    CustomerQuotationIngestionItem:
+      type: object
+      description: One customer quotation as produced by emerion-load-service.
+      required:
+        - externalId
+        - cnpjEmpresa
+        - codigoEmpresa
+        - codigoCliente
+        - customerExternalId
+        - dteres
+        - numeroPedido
+        - dataPedido
+        - totalPedidoComImpostos
+        - totalPedidoSemImpostos
+        - totalIpi
+        - totalIcms
+        - totalPis
+        - totalCofins
+        - totalSubstituicaoTributaria
+        - totalDescontoIncondicional
+        - totalFrete
+        - totalSeguro
+        - totalOutrasDespesas
+      properties:
+        externalId:
+          type: string
+          description: Legacy quotation identifier, used with cnpjEmpresa as the upsert key.
+        cnpjEmpresa:
+          type: string
+          description: Retailer/tenant CNPJ that owns this quotation.
+        codigoEmpresa:
+          type: integer
+        codigoCliente:
+          type: integer
+        customerExternalId:
+          type: integer
+          format: int64
+        dteres:
+          type: string
+          format: date
+        numeroPedido:
+          type: string
+        dataPedido:
+          type: string
+          format: date
+        totalPedidoComImpostos:
+          type: number
+        totalPedidoSemImpostos:
+          type: number
+        cpfCnpj:
+          type: string
+          nullable: true
+        statusPedido:
+          type: string
+          nullable: true
+        totalIpi:
+          type: number
+        totalIcms:
+          type: number
+        totalPis:
+          type: number
+        totalCofins:
+          type: number
+        totalSubstituicaoTributaria:
+          type: number
+        totalDescontoIncondicional:
+          type: number
+        totalFrete:
+          type: number
+        totalSeguro:
+          type: number
+        totalOutrasDespesas:
+          type: number
+        vendedorExternalId:
+          type: integer
+          format: int64
+          nullable: true
+        atendenteCod:
+          type: string
+          nullable: true
+        regimeTributario:
+          type: string
+          nullable: true
+        nomeRegimeTributario:
+          type: string
+          nullable: true
+        codigoPadraoFaturamento:
+          type: string
+          nullable: true
+
+    CustomerQuotationIngestionBatch:
+      type: object
+      required:
+        - batchId
+        - items
+      properties:
+        batchId:
+          type: string
+          description: Correlation id supplied by emerion-load-service for tracing/logging.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerQuotationIngestionItem'
+
     CustomerOrderIngestionItem:
       type: object
       description: >
@@ -2895,6 +3074,7 @@ components:
         emerion-load-service's CustomerOrderController.
       required:
         - externalId
+        - cnpjEmpresa
         - codigoEmpresa
         - codigoCliente
         - numeroPedido
@@ -2913,6 +3093,9 @@ components:
           description: >
             Order's legacy Firebird primary key (numres), used as the
             upsert/idempotency key.
+        cnpjEmpresa:
+          type: string
+          description: Retailer/tenant CNPJ that owns this record, used to segregate data per retailer.
         codigoEmpresa:
           type: integer
         codigoCliente:

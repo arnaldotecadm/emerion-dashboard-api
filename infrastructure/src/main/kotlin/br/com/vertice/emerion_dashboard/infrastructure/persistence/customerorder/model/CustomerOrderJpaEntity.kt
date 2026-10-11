@@ -34,6 +34,9 @@ class CustomerOrderJpaEntity(
     @Column(name = "external_id", nullable = false)
     var externalId: String = "",
 
+    @Column(name = "cnpj_empresa", nullable = false)
+    var cnpjEmpresa: String = "",
+
     @Column(name = "codigo_empresa", nullable = false)
     var codigoEmpresa: Int = 0,
 

@@ -15,6 +15,7 @@ import java.time.LocalDate
 interface CustomerOrderHeaderProjection {
     val id: Long
     val externalId: String
+    val cnpjEmpresa: String
     val codigoEmpresa: Int
     val codigoCliente: Int
     val cpfCnpj: String?

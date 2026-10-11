@@ -3,7 +3,7 @@ package br.com.vertice.emerion_dashboard.application.cognitouser.sync
 import br.com.vertice.emerion_dashboard.application.cognitouser.sync.model.SyncCognitoUsersResult
 import br.com.vertice.emerion_dashboard.domain.cognitouser.model.CognitoUser
 import br.com.vertice.emerion_dashboard.domain.cognitouser.repository.CognitoUserDirectory
-import br.com.vertice.emerion_dashboard.domain.cognitouser.repository.CognitoUserRepository
+import br.com.vertice.emerion_dashboard.application.outbound.port.CognitoUserRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

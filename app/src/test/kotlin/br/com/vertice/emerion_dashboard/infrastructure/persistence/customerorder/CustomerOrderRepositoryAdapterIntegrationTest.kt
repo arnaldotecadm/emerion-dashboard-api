@@ -44,6 +44,7 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
         val saved = customerOrderRepository.save(
             CustomerOrder.newFromIngestion(
                 externalId = "order-ext-1",
+                cnpjEmpresa = "12345678000199",
                 codigoEmpresa = 1,
                 codigoCliente = 1,
                 cpfCnpj = null,
@@ -74,6 +75,7 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
         customerOrderRepository.save(
             CustomerOrder.newFromIngestion(
                 externalId = "order-ext-other",
+                cnpjEmpresa = "12345678000199",
                 codigoEmpresa = 2,
                 codigoCliente = 2,
                 cpfCnpj = null,
@@ -95,6 +97,7 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
         customerOrderRepository.save(
             CustomerOrder.newFromIngestion(
                 externalId = "order-ext-match",
+                cnpjEmpresa = "12345678000199",
                 codigoEmpresa = 3,
                 codigoCliente = 3,
                 cpfCnpj = null,
@@ -131,6 +134,7 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
         val firstSave = customerOrderRepository.save(
             CustomerOrder.newFromIngestion(
                 externalId = "order-ext-reingest",
+                cnpjEmpresa = "12345678000199",
                 codigoEmpresa = 4,
                 codigoCliente = 4,
                 cpfCnpj = null,
@@ -155,6 +159,7 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
             existing.mergeFromIngestion(
                 codigoEmpresa = existing.codigoEmpresa,
                 codigoCliente = existing.codigoCliente,
+                cnpjEmpresa = existing.cnpjEmpresa,
                 cpfCnpj = null,
                 numeroPedido = existing.numeroPedido,
                 dataPedido = existing.dataPedido,

@@ -1,7 +1,7 @@
 package br.com.vertice.emerion_dashboard.infrastructure.persistence.cognitouser
 
 import br.com.vertice.emerion_dashboard.domain.cognitouser.model.CognitoUser
-import br.com.vertice.emerion_dashboard.domain.cognitouser.repository.CognitoUserRepository
+import br.com.vertice.emerion_dashboard.application.outbound.port.CognitoUserRepository
 import br.com.vertice.emerion_dashboard.support.PostgresIntegrationTest
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -33,6 +33,7 @@ class CognitoUserRepositoryAdapterIntegrationTest(
                 username = "jane.doe",
                 email = "jane.doe@example.com",
                 enabled = true,
+                cnpjEmpresa = "12345678901234",
                 groups = listOf("COMPANY", "ADMIN"),
                 lastSyncedAt = now,
                 createdAt = now,
@@ -61,6 +62,7 @@ class CognitoUserRepositoryAdapterIntegrationTest(
                 username = "old.username",
                 email = "old@example.com",
                 enabled = false,
+                cnpjEmpresa = "123456789",
                 groups = listOf("COMPANY"),
                 lastSyncedAt = now,
                 createdAt = now,
@@ -100,6 +102,7 @@ class CognitoUserRepositoryAdapterIntegrationTest(
                 username = "user.three",
                 email = null,
                 enabled = true,
+                cnpjEmpresa = "123456789",
                 groups = emptyList(),
                 lastSyncedAt = now,
                 createdAt = now,

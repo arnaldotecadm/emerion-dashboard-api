@@ -6,6 +6,7 @@ import java.time.LocalDate
 /** Input command for a single customer order inside an ingestion batch. */
 data class IngestCustomerOrderCommand(
     val externalId: String,
+    val cnpjEmpresa: String,
     val codigoEmpresa: Int,
     val codigoCliente: Int,
     val cpfCnpj: String?,

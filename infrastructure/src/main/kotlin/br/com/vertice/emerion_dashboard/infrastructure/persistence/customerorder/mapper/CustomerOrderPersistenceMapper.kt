@@ -18,6 +18,7 @@ object CustomerOrderPersistenceMapper {
         CustomerOrder(
             id = header.id,
             externalId = header.externalId,
+            cnpjEmpresa = header.cnpjEmpresa,
             codigoEmpresa = header.codigoEmpresa,
             codigoCliente = header.codigoCliente,
             cpfCnpj = header.cpfCnpj,
@@ -119,6 +120,7 @@ object CustomerOrderPersistenceMapper {
         CustomerOrder(
             id = entity.id,
             externalId = entity.externalId,
+            cnpjEmpresa = entity.cnpjEmpresa,
             codigoEmpresa = entity.codigoEmpresa,
             codigoCliente = entity.codigoCliente,
             cpfCnpj = entity.cpfCnpj,
@@ -231,6 +233,7 @@ object CustomerOrderPersistenceMapper {
     fun toEntity(domain: CustomerOrder, existing: CustomerOrderJpaEntity?): CustomerOrderJpaEntity {
         val entity = existing ?: CustomerOrderJpaEntity(id = domain.id)
         entity.externalId = domain.externalId
+        entity.cnpjEmpresa = domain.cnpjEmpresa
         entity.codigoEmpresa = domain.codigoEmpresa
         entity.codigoCliente = domain.codigoCliente
         entity.cpfCnpj = domain.cpfCnpj

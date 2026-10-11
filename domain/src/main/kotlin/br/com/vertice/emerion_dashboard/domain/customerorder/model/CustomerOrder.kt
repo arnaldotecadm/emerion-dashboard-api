@@ -12,6 +12,7 @@ import java.time.LocalDate
 data class CustomerOrder(
     val id: Long?,
     val externalId: String,
+    val cnpjEmpresa: String,
     val codigoEmpresa: Int,
     val codigoCliente: Int,
     val cpfCnpj: String?,
@@ -44,6 +45,7 @@ data class CustomerOrder(
         /** Factory for a brand-new order coming from ingestion (no id yet). */
         fun newFromIngestion(
             externalId: String,
+            cnpjEmpresa: String,
             codigoEmpresa: Int,
             codigoCliente: Int,
             cpfCnpj: String?,
@@ -73,6 +75,7 @@ data class CustomerOrder(
         ) = CustomerOrder(
             id = null,
             externalId = externalId,
+            cnpjEmpresa = cnpjEmpresa,
             codigoEmpresa = codigoEmpresa,
             codigoCliente = codigoCliente,
             cpfCnpj = cpfCnpj,
@@ -110,6 +113,7 @@ data class CustomerOrder(
      * items in a single payload.
      */
     fun mergeFromIngestion(
+        cnpjEmpresa: String,
         codigoEmpresa: Int,
         codigoCliente: Int,
         cpfCnpj: String?,
@@ -137,6 +141,7 @@ data class CustomerOrder(
         itens: List<CustomerOrderItem>,
         now: Instant,
     ) = copy(
+        cnpjEmpresa = cnpjEmpresa,
         codigoEmpresa = codigoEmpresa,
         codigoCliente = codigoCliente,
         cpfCnpj = cpfCnpj,

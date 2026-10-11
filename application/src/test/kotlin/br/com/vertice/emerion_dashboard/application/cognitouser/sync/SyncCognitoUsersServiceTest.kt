@@ -3,7 +3,7 @@ package br.com.vertice.emerion_dashboard.application.cognitouser.sync
 import br.com.vertice.emerion_dashboard.domain.cognitouser.model.CognitoDirectoryUser
 import br.com.vertice.emerion_dashboard.domain.cognitouser.model.CognitoUser
 import br.com.vertice.emerion_dashboard.domain.cognitouser.repository.CognitoUserDirectory
-import br.com.vertice.emerion_dashboard.domain.cognitouser.repository.CognitoUserRepository
+import br.com.vertice.emerion_dashboard.application.outbound.port.CognitoUserRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -55,6 +55,7 @@ class SyncCognitoUsersServiceTest {
             username = "old.username",
             email = "old@example.com",
             enabled = false,
+            cnpjEmpresa = "12345678901234",
             groups = listOf("COMPANY"),
             lastSyncedAt = Instant.parse("2025-01-01T00:00:00Z"),
             createdAt = Instant.parse("2025-01-01T00:00:00Z"),

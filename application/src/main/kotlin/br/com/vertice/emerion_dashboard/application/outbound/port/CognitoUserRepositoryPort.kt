@@ -1,4 +1,4 @@
-package br.com.vertice.emerion_dashboard.domain.cognitouser.repository
+package br.com.vertice.emerion_dashboard.application.outbound.port
 
 import br.com.vertice.emerion_dashboard.domain.cognitouser.model.CognitoUser
 
@@ -8,9 +8,6 @@ import br.com.vertice.emerion_dashboard.domain.cognitouser.model.CognitoUser
  */
 interface CognitoUserRepository {
     fun findBySub(sub: String): CognitoUser?
-
     fun findAll(): List<CognitoUser>
-
-    /** Insert or update (by sub) and return the persisted user. */
     fun save(user: CognitoUser): CognitoUser
 }

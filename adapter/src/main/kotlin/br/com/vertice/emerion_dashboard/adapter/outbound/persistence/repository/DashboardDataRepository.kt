@@ -25,8 +25,8 @@ class DashboardDataRepository(
                 group by co.codigo_cliente
             )
             select 
-                c.id, 
-                c.razao_social, 
+                coalesce(c.id, tc.codigocliente),
+                coalesce(c.razao_social, ''),
                 tc.quantidadepedido, 
                 tc.totalfaturado  
             from emerion_dashboard.customer c
@@ -58,8 +58,8 @@ class DashboardDataRepository(
             	group by co.vendedor_external_id 
             )
             select 
-            	v.id, 
-            	v.nome, 
+            	coalesce(v.id, tc.CodigoVendedor), 
+            	coalesce(v.nome, ''), 
             	tc.quantidadepedido , 
             	tc.totalfaturado  
             from emerion_dashboard.vendedor v
@@ -84,7 +84,7 @@ class DashboardDataRepository(
             """
             select 
                 count(1) quantidadePedidos, 
-                sum(co.total_pedido_com_impostos) totalFaturado,
+                coalesce(sum(co.total_pedido_com_impostos), 0) totalFaturado,
                 (select count(1) from emerion_dashboard.customer c) quantidadeClientes,
                 (select count(1) from emerion_dashboard.vendedor) quantidadeVendedores
             from emerion_dashboard.customer_order co 

@@ -5,6 +5,7 @@ import br.com.vertice.emerion_dashboard.application.dashboard.DashboardSummarySe
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.api.DashboardApi
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardTopTrendsResponse
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
