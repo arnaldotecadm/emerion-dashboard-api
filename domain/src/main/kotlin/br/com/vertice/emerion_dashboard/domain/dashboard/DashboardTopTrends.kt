@@ -7,6 +7,7 @@ data class DashboardTopTrends(
     val topVendedores: List<TopTrends>,
     val customerOrders: List<DashboardMonthlyCount>,
     val customerQuotations: List<DashboardMonthlyCount>,
+    val ordersByRegion: List<DashboardOrdersByRegion>,
     val quantidadePedidos: Int,
     val quantidadeClientes: Int,
     val quantidadeVendedores: Int,

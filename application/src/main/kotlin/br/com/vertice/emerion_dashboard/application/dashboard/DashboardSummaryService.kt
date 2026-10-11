@@ -19,6 +19,7 @@ class DashboardSummaryService(
             topVendedores = repository.getDashboardSellerTopTrends(orderBy),
             customerOrders = monthlyTrends.map { DashboardMonthlyCount(it.yearMonth, it.customerOrders) },
             customerQuotations = monthlyTrends.map { DashboardMonthlyCount(it.yearMonth, it.customerQuotations) },
+            ordersByRegion = repository.getDashboardOrdersByRegion(),
             quantidadePedidos = totais.quantidadePedidos,
             quantidadeClientes = totais.quantidadeClientes,
             quantidadeVendedores = totais.quantidadeVendedores,

@@ -3,6 +3,7 @@ package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.repository
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardTopTrendsProjection
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardTotaisProjection
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardMonthlyTrendProjection
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardOrdersByRegionProjection
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
 import org.springframework.stereotype.Repository
@@ -13,6 +14,41 @@ class DashboardDataRepository(
     @PersistenceContext
     private val entityManager: EntityManager
 ) {
+
+    fun getDashboardOrdersByRegion(): List<DashboardOrdersByRegionProjection> {
+        val query = entityManager.createNativeQuery(
+            """
+            SELECT
+                CASE
+                    WHEN co.uf_pedido IN ('AC', 'AP', 'AM', 'PA', 'RO', 'RR', 'TO') THEN 'Norte'
+                    WHEN co.uf_pedido IN ('AL', 'BA', 'CE', 'MA', 'PB', 'PE', 'PI', 'RN', 'SE') THEN 'Nordeste'
+                    WHEN co.uf_pedido IN ('DF', 'GO', 'MT', 'MS') THEN 'Centro-Oeste'
+                    WHEN co.uf_pedido IN ('ES', 'MG', 'RJ', 'SP') THEN 'Sudeste'
+                    WHEN co.uf_pedido IN ('PR', 'RS', 'SC') THEN 'Sul'
+                    ELSE 'Não identificado'
+                END AS regiao,
+                COALESCE(SUM(CASE WHEN co.status_pedido = 'Faturado'
+                    THEN co.total_pedido_com_impostos ELSE 0 END), 0) AS faturado,
+                COALESCE(SUM(CASE WHEN co.status_pedido = 'Cancelado'
+                    THEN co.total_pedido_com_impostos ELSE 0 END), 0) AS cancelado,
+                COALESCE(SUM(CASE WHEN co.status_pedido NOT IN ('Faturado', 'Cancelado')
+                                     OR co.status_pedido IS NULL
+                    THEN co.total_pedido_com_impostos ELSE 0 END), 0) AS outros
+            FROM emerion_dashboard.customer_order co
+            GROUP BY regiao
+            ORDER BY SUM(co.total_pedido_com_impostos) DESC
+            """.trimIndent()
+        )
+        return query.resultList.map { row ->
+            val resultArray = row as Array<*>
+            DashboardOrdersByRegionProjection(
+                region = resultArray[0].toString(),
+                faturado = resultArray[1] as BigDecimal,
+                cancelado = resultArray[2] as BigDecimal,
+                outros = resultArray[3] as BigDecimal,
+            )
+        }
+    }
 
     fun getDashboardMonthlyTrends(): List<DashboardMonthlyTrendProjection> {
         val query = entityManager.createNativeQuery(

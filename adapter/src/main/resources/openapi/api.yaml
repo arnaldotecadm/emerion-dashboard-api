@@ -4000,6 +4000,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DashboardMonthlyCount'
+        ordersByRegion:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardOrdersByRegion'
         quantidadePedidos:
           type: integer
         totalFaturado:
@@ -4022,6 +4026,27 @@ components:
       required:
         - yearMonth
         - count
+
+    DashboardOrdersByRegion:
+      type: object
+      properties:
+        region:
+          type: string
+          description: Brazilian region derived from the order's UF.
+        faturado:
+          type: number
+          description: Total value for orders with status Faturado.
+        cancelado:
+          type: number
+          description: Total value for orders with status Cancelado.
+        outros:
+          type: number
+          description: Total value for orders with any other status.
+      required:
+        - region
+        - faturado
+        - cancelado
+        - outros
 
     SmartStockResponse:
       type: array

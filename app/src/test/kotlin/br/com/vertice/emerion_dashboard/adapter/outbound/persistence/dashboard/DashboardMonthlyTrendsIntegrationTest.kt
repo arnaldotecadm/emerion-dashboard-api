@@ -6,10 +6,12 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.sql.Date
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.YearMonth
 import javax.sql.DataSource
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @SpringBootTest
 class DashboardMonthlyTrendsIntegrationTest(
@@ -40,19 +42,47 @@ class DashboardMonthlyTrendsIntegrationTest(
         assertEquals(1, trends.single { it.yearMonth == currentMonth.minusMonths(2).toString() }.customerQuotations)
     }
 
-    private fun insertCustomerOrder(externalId: String, dataPedido: LocalDate) {
+    @Test
+    fun `groups order totals by region and billed cancelled or other status`() {
+        val baseline = dashboardRepository.getDashboardOrdersByRegion()
+            .singleOrNull { it.region == "Sudeste" }
+        val baselineFaturado = baseline?.faturado ?: BigDecimal.ZERO
+        val baselineCancelado = baseline?.cancelado ?: BigDecimal.ZERO
+        val baselineOutros = baseline?.outros ?: BigDecimal.ZERO
+
+        insertCustomerOrder("dashboard-region-billed", LocalDate.now(), "SP", "Faturado", BigDecimal("100.00"))
+        insertCustomerOrder("dashboard-region-cancelled", LocalDate.now(), "SP", "Cancelado", BigDecimal("25.00"))
+        insertCustomerOrder("dashboard-region-other", LocalDate.now(), "SP", "Em andamento", BigDecimal("10.00"))
+
+        val sudeste = dashboardRepository.getDashboardOrdersByRegion().single { it.region == "Sudeste" }
+
+        assertTrue((sudeste.faturado - baselineFaturado).compareTo(BigDecimal("100.00")) == 0)
+        assertTrue((sudeste.cancelado - baselineCancelado).compareTo(BigDecimal("25.00")) == 0)
+        assertTrue((sudeste.outros - baselineOutros).compareTo(BigDecimal("10.00")) == 0)
+    }
+
+    private fun insertCustomerOrder(
+        externalId: String,
+        dataPedido: LocalDate,
+        ufPedido: String? = null,
+        statusPedido: String? = null,
+        totalPedido: BigDecimal = BigDecimal.ZERO,
+    ) {
         dataSource.connection.use { connection ->
             connection.prepareStatement(
                 """
                 insert into emerion_dashboard.customer_order
-                    (cnpj_empresa, external_id, codigo_cliente, data_pedido)
-                values (?, ?, ?, ?)
+                    (cnpj_empresa, external_id, codigo_cliente, data_pedido, uf_pedido, status_pedido, total_pedido_com_impostos)
+                values (?, ?, ?, ?, ?, ?, ?)
                 """.trimIndent(),
             ).use { statement ->
                 statement.setString(1, "15323240000102")
                 statement.setString(2, externalId)
                 statement.setInt(3, 3206)
                 statement.setDate(4, Date.valueOf(dataPedido))
+                statement.setString(5, ufPedido)
+                statement.setString(6, statusPedido)
+                statement.setBigDecimal(7, totalPedido)
                 statement.executeUpdate()
             }
         }

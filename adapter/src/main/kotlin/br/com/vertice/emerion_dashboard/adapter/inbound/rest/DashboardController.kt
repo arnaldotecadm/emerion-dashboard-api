@@ -4,6 +4,7 @@ import br.com.vertice.emerion_dashboard.adapter.mapper.DashboardMapper.toRespons
 import br.com.vertice.emerion_dashboard.application.dashboard.DashboardSummaryService
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.api.DashboardApi
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardMonthlyCount
+import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardOrdersByRegion
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardTopTrendsResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
@@ -23,6 +24,14 @@ class DashboardController(
                 },
                 customerQuotations = topTrends.customerQuotations.map {
                     DashboardMonthlyCount(yearMonth = it.yearMonth, count = it.count)
+                },
+                ordersByRegion = topTrends.ordersByRegion.map {
+                    DashboardOrdersByRegion(
+                        region = it.region,
+                        faturado = it.faturado,
+                        cancelado = it.cancelado,
+                        outros = it.outros,
+                    )
                 },
                 quantidadePedidos = topTrends.quantidadePedidos,
                 totalFaturado = topTrends.totalFaturado,

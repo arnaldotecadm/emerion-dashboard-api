@@ -2,6 +2,7 @@ package br.com.vertice.emerion_dashboard.application.dashboard
 
 import br.com.vertice.emerion_dashboard.application.outbound.port.DashboardRepositoryPort
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyTrend
+import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardOrdersByRegion
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardTotais
 import io.mockk.every
 import io.mockk.mockk
@@ -25,6 +26,14 @@ class DashboardSummaryServiceTest {
             DashboardMonthlyTrend("2026-01", customerOrders = 3, customerQuotations = 0),
             DashboardMonthlyTrend("2026-02", customerOrders = 0, customerQuotations = 2),
         )
+        every { repository.getDashboardOrdersByRegion() } returns listOf(
+            DashboardOrdersByRegion(
+                region = "Sudeste",
+                faturado = BigDecimal("100.00"),
+                cancelado = BigDecimal("25.00"),
+                outros = BigDecimal("10.00"),
+            ),
+        )
         every { repository.getDashboardCustomerTopTrends(any()) } returns emptyList()
         every { repository.getDashboardSellerTopTrends(any()) } returns emptyList()
 
@@ -44,5 +53,9 @@ class DashboardSummaryServiceTest {
             ),
             result.customerQuotations.map { it.yearMonth to it.count },
         )
+        assertEquals("Sudeste", result.ordersByRegion.single().region)
+        assertEquals(BigDecimal("100.00"), result.ordersByRegion.single().faturado)
+        assertEquals(BigDecimal("25.00"), result.ordersByRegion.single().cancelado)
+        assertEquals(BigDecimal("10.00"), result.ordersByRegion.single().outros)
     }
 }
