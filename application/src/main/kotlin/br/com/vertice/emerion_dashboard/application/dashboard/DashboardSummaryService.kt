@@ -2,6 +2,8 @@ package br.com.vertice.emerion_dashboard.application.dashboard
 
 import br.com.vertice.emerion_dashboard.application.outbound.port.DashboardRepositoryPort
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyCount
+import br.com.vertice.emerion_dashboard.domain.dashboard.CustomerOrdersOverTime
+import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyTrend
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardTopTrends
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -11,13 +13,19 @@ import java.math.RoundingMode
 class DashboardSummaryService(
     private val repository: DashboardRepositoryPort
 ) : DashboardSummary {
+    fun getCustomerOrdersOverTime(): List<CustomerOrdersOverTime> =
+        repository.getDashboardMonthlyTrends().map { it.toCustomerOrdersOverTime() }
+
     override fun getDashboardTopTrends(orderBy: String): DashboardTopTrends {
         val totais = repository.getDashboardTotais()
         val monthlyTrends = repository.getDashboardMonthlyTrends()
         return DashboardTopTrends(
             topCustomers = repository.getDashboardCustomerTopTrends(orderBy),
             topVendedores = repository.getDashboardSellerTopTrends(orderBy),
-            customerOrders = monthlyTrends.map { DashboardMonthlyCount(it.yearMonth, it.customerOrders) },
+            customerOrders = monthlyTrends.map {
+                val orderTrend = it.toCustomerOrdersOverTime()
+                DashboardMonthlyCount(orderTrend.yearMonth, orderTrend.orderCount)
+            },
             customerQuotations = monthlyTrends.map { DashboardMonthlyCount(it.yearMonth, it.customerQuotations) },
             ordersByRegion = repository.getDashboardOrdersByRegion(),
             quantidadePedidos = totais.quantidadePedidos,
@@ -28,4 +36,11 @@ class DashboardSummaryService(
                 .divide(totais.quantidadePedidos.toBigDecimal(), 2, RoundingMode.HALF_UP) else BigDecimal.ZERO
         )
     }
+
+    private fun DashboardMonthlyTrend.toCustomerOrdersOverTime() =
+        CustomerOrdersOverTime(
+            yearMonth = yearMonth,
+            orderCount = customerOrders,
+            amountSold = customerOrdersAmountSold,
+        )
 }

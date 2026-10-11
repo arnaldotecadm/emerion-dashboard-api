@@ -24,9 +24,11 @@ class DashboardMonthlyTrendsIntegrationTest(
         val currentDate = LocalDate.now()
         val previousMonthDate = currentMonth.minusMonths(1).atDay(1)
         val twoMonthsAgoDate = currentMonth.minusMonths(2).atDay(1)
+        val baselineCurrentMonth = dashboardRepository.getDashboardMonthlyTrends()
+            .single { it.yearMonth == currentMonth.toString() }
 
-        insertCustomerOrder("dashboard-order-current", currentDate)
-        insertCustomerOrder("dashboard-order-previous", previousMonthDate)
+        insertCustomerOrder("dashboard-order-current", currentDate, totalPedido = BigDecimal("10.50"))
+        insertCustomerOrder("dashboard-order-previous", previousMonthDate, totalPedido = BigDecimal("7.25"))
         insertCustomerQuotation("dashboard-quotation-current", currentDate)
         insertCustomerQuotation("dashboard-quotation-earlier", twoMonthsAgoDate)
 
@@ -34,12 +36,16 @@ class DashboardMonthlyTrendsIntegrationTest(
 
         assertEquals(36, trends.size)
         assertEquals(trends.map { it.yearMonth }.sorted(), trends.map { it.yearMonth })
-        assertEquals(1, trends.single { it.yearMonth == currentMonth.toString() }.customerOrders)
+        assertEquals(baselineCurrentMonth.customerOrders + 1, trends.single { it.yearMonth == currentMonth.toString() }.customerOrders)
         assertEquals(1, trends.single { it.yearMonth == currentMonth.toString() }.customerQuotations)
         assertEquals(1, trends.single { it.yearMonth == currentMonth.minusMonths(1).toString() }.customerOrders)
         assertEquals(0, trends.single { it.yearMonth == currentMonth.minusMonths(1).toString() }.customerQuotations)
         assertEquals(0, trends.single { it.yearMonth == currentMonth.minusMonths(2).toString() }.customerOrders)
         assertEquals(1, trends.single { it.yearMonth == currentMonth.minusMonths(2).toString() }.customerQuotations)
+        assertTrue(
+            (trends.single { it.yearMonth == currentMonth.toString() }.customerOrdersAmountSold -
+                baselineCurrentMonth.customerOrdersAmountSold).compareTo(BigDecimal("10.50")) == 0,
+        )
     }
 
     @Test
@@ -49,6 +55,8 @@ class DashboardMonthlyTrendsIntegrationTest(
         val baselineFaturado = baseline?.faturado ?: BigDecimal.ZERO
         val baselineCancelado = baseline?.cancelado ?: BigDecimal.ZERO
         val baselineOutros = baseline?.outros ?: BigDecimal.ZERO
+        val baselineMonthlySales = dashboardRepository.getDashboardMonthlyTrends()
+            .single { it.yearMonth == YearMonth.now().toString() }.customerOrdersAmountSold
 
         insertCustomerOrder("dashboard-region-billed", LocalDate.now(), "SP", "Faturado", BigDecimal("100.00"))
         insertCustomerOrder("dashboard-region-cancelled", LocalDate.now(), "SP", "Cancelado", BigDecimal("25.00"))
@@ -59,6 +67,9 @@ class DashboardMonthlyTrendsIntegrationTest(
         assertTrue((sudeste.faturado - baselineFaturado).compareTo(BigDecimal("100.00")) == 0)
         assertTrue((sudeste.cancelado - baselineCancelado).compareTo(BigDecimal("25.00")) == 0)
         assertTrue((sudeste.outros - baselineOutros).compareTo(BigDecimal("10.00")) == 0)
+        val monthlySales = dashboardRepository.getDashboardMonthlyTrends()
+            .single { it.yearMonth == YearMonth.now().toString() }
+        assertTrue((monthlySales.customerOrdersAmountSold - baselineMonthlySales).compareTo(BigDecimal("135.00")) == 0)
     }
 
     private fun insertCustomerOrder(

@@ -21,6 +21,8 @@ tags:
       data into PostgreSQL. Not consumed by the React app.
   - name: customers
     description: Read endpoints consumed by the React frontend.
+  - name: sales
+    description: Sales analytics endpoints for the React dashboard.
   - name: product-ingestion
     description: >
       Endpoints called by emerion-load-service to push migrated Firebird
@@ -1605,6 +1607,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DashboardTopTrendsResponse'
+
+  /sales/customer-orders-over-time:
+    get:
+      tags:
+        - sales
+      operationId: getCustomerOrdersOverTime
+      summary: Get monthly customer order counts and sales amounts
+      description: >
+        Returns customer order counts and the sum of totalPedidoComImpostos
+        per month for the last 36 months. Months without orders are returned
+        with zero count and amount.
+      responses:
+        '200':
+          description: Monthly customer order sales series
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomerOrdersOverTime'
 
   /smartStock:
     get:
@@ -4047,6 +4069,21 @@ components:
         - faturado
         - cancelado
         - outros
+
+    CustomerOrdersOverTime:
+      type: object
+      properties:
+        yearMonth:
+          type: string
+          description: Month in YYYY-MM format.
+        orderCount:
+          type: integer
+        amountSold:
+          type: number
+      required:
+        - yearMonth
+        - orderCount
+        - amountSold
 
     SmartStockResponse:
       type: array

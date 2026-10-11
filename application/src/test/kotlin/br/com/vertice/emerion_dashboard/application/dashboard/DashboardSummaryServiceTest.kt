@@ -23,8 +23,18 @@ class DashboardSummaryServiceTest {
             totalFaturado = BigDecimal.ZERO,
         )
         every { repository.getDashboardMonthlyTrends() } returns listOf(
-            DashboardMonthlyTrend("2026-01", customerOrders = 3, customerQuotations = 0),
-            DashboardMonthlyTrend("2026-02", customerOrders = 0, customerQuotations = 2),
+            DashboardMonthlyTrend(
+                "2026-01",
+                customerOrders = 3,
+                customerOrdersAmountSold = BigDecimal("125.50"),
+                customerQuotations = 0,
+            ),
+            DashboardMonthlyTrend(
+                "2026-02",
+                customerOrders = 0,
+                customerOrdersAmountSold = BigDecimal.ZERO,
+                customerQuotations = 2,
+            ),
         )
         every { repository.getDashboardOrdersByRegion() } returns listOf(
             DashboardOrdersByRegion(
@@ -57,5 +67,31 @@ class DashboardSummaryServiceTest {
         assertEquals(BigDecimal("100.00"), result.ordersByRegion.single().faturado)
         assertEquals(BigDecimal("25.00"), result.ordersByRegion.single().cancelado)
         assertEquals(BigDecimal("10.00"), result.ordersByRegion.single().outros)
+    }
+
+    @Test
+    fun `returns monthly order counts and sales amounts for reuse`() {
+        every { repository.getDashboardMonthlyTrends() } returns listOf(
+            DashboardMonthlyTrend(
+                "2026-01",
+                customerOrders = 3,
+                customerOrdersAmountSold = BigDecimal("125.50"),
+                customerQuotations = 0,
+            ),
+            DashboardMonthlyTrend(
+                "2026-02",
+                customerOrders = 0,
+                customerOrdersAmountSold = BigDecimal.ZERO,
+                customerQuotations = 2,
+            ),
+        )
+
+        val result = service.getCustomerOrdersOverTime()
+
+        assertEquals(listOf("2026-01" to 3, "2026-02" to 0), result.map { it.yearMonth to it.orderCount })
+        assertEquals(
+            listOf(BigDecimal("125.50"), BigDecimal.ZERO),
+            result.map { it.amountSold },
+        )
     }
 }

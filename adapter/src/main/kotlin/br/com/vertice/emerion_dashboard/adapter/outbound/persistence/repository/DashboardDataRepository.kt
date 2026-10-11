@@ -61,7 +61,10 @@ class DashboardDataRepository(
                 )::date as month_start
             ),
             customer_orders as (
-                select date_trunc('month', co.data_pedido)::date as month_start, count(*) as item_count
+                select
+                    date_trunc('month', co.data_pedido)::date as month_start,
+                    count(*) as item_count,
+                    coalesce(sum(co.total_pedido_com_impostos), 0) as amount_sold
                 from emerion_dashboard.customer_order co
                 where co.data_pedido >= date_trunc('month', current_date) - interval '35 months'
                   and co.data_pedido <= current_date
@@ -77,6 +80,7 @@ class DashboardDataRepository(
             select
                 to_char(months.month_start, 'YYYY-MM') as year_month,
                 coalesce(customer_orders.item_count, 0) as customer_orders,
+                coalesce(customer_orders.amount_sold, 0) as amount_sold,
                 coalesce(customer_quotations.item_count, 0) as customer_quotations
             from months
             left join customer_orders on customer_orders.month_start = months.month_start
@@ -89,7 +93,8 @@ class DashboardDataRepository(
             DashboardMonthlyTrendProjection(
                 yearMonth = resultArray[0].toString(),
                 customerOrders = (resultArray[1] as Number).toInt(),
-                customerQuotations = (resultArray[2] as Number).toInt(),
+                customerOrdersAmountSold = resultArray[2] as BigDecimal,
+                customerQuotations = (resultArray[3] as Number).toInt(),
             )
         }
     }

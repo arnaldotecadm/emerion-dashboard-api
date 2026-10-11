@@ -28,6 +28,7 @@ object DashboardMapper {
         DashboardMonthlyTrend(
             yearMonth = yearMonth,
             customerOrders = customerOrders,
+            customerOrdersAmountSold = customerOrdersAmountSold,
             customerQuotations = customerQuotations,
         )
 
