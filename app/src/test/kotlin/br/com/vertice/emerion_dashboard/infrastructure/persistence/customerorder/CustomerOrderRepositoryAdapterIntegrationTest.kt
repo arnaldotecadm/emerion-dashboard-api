@@ -59,6 +59,7 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
                 totalCofins = BigDecimal("0.0000"),
                 totalSubstituicaoTributaria = BigDecimal("95.0000"),
                 totalDescontoIncondicional = BigDecimal("0.0000"),
+                ufPedido = "SP",
                 itens = listOf(item("1.1.1", 1), item("1.1.2", 2)),
                 now = now,
             ),
@@ -67,6 +68,7 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
         val found = customerOrderRepository.findById(saved.id!!)
 
         assertEquals(saved, found)
+        assertEquals("SP", found?.ufPedido)
     }
 
     @Test

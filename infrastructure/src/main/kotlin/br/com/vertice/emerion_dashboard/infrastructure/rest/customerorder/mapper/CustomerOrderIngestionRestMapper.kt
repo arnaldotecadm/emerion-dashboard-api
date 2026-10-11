@@ -51,6 +51,7 @@ object CustomerOrderIngestionRestMapper {
             regimeTributario = dto.regimeTributario,
             nomeRegimeTributario = dto.nomeRegimeTributario,
             codigoPadraoFaturamento = dto.codigoPadraoFaturamento,
+            ufPedido = dto.ufPedido,
             itens = dto.itens.map(::toItemLineCommand),
         )
 

@@ -43,6 +43,7 @@ object CustomerOrderPersistenceMapper {
             regimeTributario = header.regimeTributario,
             nomeRegimeTributario = header.nomeRegimeTributario,
             codigoPadraoFaturamento = header.codigoPadraoFaturamento,
+            ufPedido = header.ufPedido,
             itens = items.map(::toItemDomain),
             createdAt = header.createdAt,
             updatedAt = header.updatedAt,
@@ -145,6 +146,7 @@ object CustomerOrderPersistenceMapper {
             regimeTributario = entity.regimeTributario,
             nomeRegimeTributario = entity.nomeRegimeTributario,
             codigoPadraoFaturamento = entity.codigoPadraoFaturamento,
+            ufPedido = entity.ufPedido,
             itens = entity.itens.map(::toItemDomain),
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt,
@@ -258,6 +260,7 @@ object CustomerOrderPersistenceMapper {
         entity.regimeTributario = domain.regimeTributario
         entity.nomeRegimeTributario = domain.nomeRegimeTributario
         entity.codigoPadraoFaturamento = domain.codigoPadraoFaturamento
+        entity.ufPedido = domain.ufPedido
         entity.createdAt = domain.createdAt
         entity.updatedAt = domain.updatedAt
         upsertItems(entity, domain.itens)

@@ -98,6 +98,7 @@ class IngestCustomerOrdersService(
                 regimeTributario = item.regimeTributario,
                 nomeRegimeTributario = item.nomeRegimeTributario,
                 codigoPadraoFaturamento = item.codigoPadraoFaturamento,
+                ufPedido = item.ufPedido,
                 itens = itens,
                 now = now,
             ) ?: CustomerOrder.newFromIngestion(
@@ -127,6 +128,7 @@ class IngestCustomerOrdersService(
                 regimeTributario = item.regimeTributario,
                 nomeRegimeTributario = item.nomeRegimeTributario,
                 codigoPadraoFaturamento = item.codigoPadraoFaturamento,
+                ufPedido = item.ufPedido,
                 itens = itens,
                 now = now,
             )

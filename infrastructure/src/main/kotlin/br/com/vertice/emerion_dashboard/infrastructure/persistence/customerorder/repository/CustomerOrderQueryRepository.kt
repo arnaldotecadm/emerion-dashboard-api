@@ -52,6 +52,7 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
                 regime_tributario AS regimeTributario,
                 nome_regime_tributario AS nomeRegimeTributario,
                 codigo_padrao_faturamento AS codigoPadraoFaturamento,
+                uf_pedido AS ufPedido,
                 created_at AS createdAt,
                 updated_at AS updatedAt
             FROM customer_order
@@ -91,6 +92,7 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
                 regime_tributario AS regimeTributario,
                 nome_regime_tributario AS nomeRegimeTributario,
                 codigo_padrao_faturamento AS codigoPadraoFaturamento,
+                uf_pedido AS ufPedido,
                 created_at AS createdAt,
                 updated_at AS updatedAt
             FROM customer_order

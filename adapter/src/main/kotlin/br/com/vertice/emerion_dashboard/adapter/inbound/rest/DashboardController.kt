@@ -3,6 +3,7 @@ package br.com.vertice.emerion_dashboard.adapter.inbound.rest
 import br.com.vertice.emerion_dashboard.adapter.mapper.DashboardMapper.toResponse
 import br.com.vertice.emerion_dashboard.application.dashboard.DashboardSummaryService
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.api.DashboardApi
+import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardMonthlyCount
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardTopTrendsResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
@@ -17,6 +18,12 @@ class DashboardController(
             val response = DashboardTopTrendsResponse(
                 topCustomers = topTrends.topCustomers.map { it.toResponse() },
                 topVendedores = topTrends.topVendedores.map { it.toResponse() },
+                customerOrders = topTrends.customerOrders.map {
+                    DashboardMonthlyCount(yearMonth = it.yearMonth, count = it.count)
+                },
+                customerQuotations = topTrends.customerQuotations.map {
+                    DashboardMonthlyCount(yearMonth = it.yearMonth, count = it.count)
+                },
                 quantidadePedidos = topTrends.quantidadePedidos,
                 totalFaturado = topTrends.totalFaturado,
                 quantidadeClientes = topTrends.quantidadeClientes,

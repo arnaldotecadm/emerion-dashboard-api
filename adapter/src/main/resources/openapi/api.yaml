@@ -3160,6 +3160,9 @@ components:
         codigoPadraoFaturamento:
           type: string
           nullable: true
+        ufPedido:
+          type: string
+          nullable: true
         itens:
           type: array
           items:
@@ -3729,6 +3732,9 @@ components:
         codigoPadraoFaturamento:
           type: string
           nullable: true
+        ufPedido:
+          type: string
+          nullable: true
         itens:
           type: array
           items:
@@ -3986,6 +3992,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DashboardTopTrendsDTO'
+        customerOrders:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardMonthlyCount'
+        customerQuotations:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardMonthlyCount'
         quantidadePedidos:
           type: integer
         totalFaturado:
@@ -3996,6 +4010,18 @@ components:
           type: integer
         ticketMedio:
           type: number
+
+    DashboardMonthlyCount:
+      type: object
+      properties:
+        yearMonth:
+          type: string
+          description: Month in YYYY-MM format.
+        count:
+          type: integer
+      required:
+        - yearMonth
+        - count
 
     SmartStockResponse:
       type: array

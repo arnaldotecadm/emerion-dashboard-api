@@ -2,18 +2,34 @@ package br.com.vertice.emerion_dashboard.adapter.mapper
 
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardTopTrendsProjection
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardTotaisProjection
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardMonthlyTrendProjection
+import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyTrend
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardTopTrends
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardTotais
 import br.com.vertice.emerion_dashboard.domain.dashboard.TopTrends
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardTopTrendsDTO
+import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardMonthlyCount
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardTopTrendsResponse
 
 object DashboardMapper {
 
+    fun DashboardMonthlyTrendProjection.toModel(): DashboardMonthlyTrend =
+        DashboardMonthlyTrend(
+            yearMonth = yearMonth,
+            customerOrders = customerOrders,
+            customerQuotations = customerQuotations,
+        )
+
     fun DashboardTopTrends.toResponse(): DashboardTopTrendsResponse {
         return DashboardTopTrendsResponse(
             topCustomers = this.topCustomers.map { it.toResponse() },
-            topVendedores = this.topVendedores.map { it.toResponse() }
+            topVendedores = this.topVendedores.map { it.toResponse() },
+            customerOrders = this.customerOrders.map {
+                DashboardMonthlyCount(yearMonth = it.yearMonth, count = it.count)
+            },
+            customerQuotations = this.customerQuotations.map {
+                DashboardMonthlyCount(yearMonth = it.yearMonth, count = it.count)
+            },
         )
     }
 

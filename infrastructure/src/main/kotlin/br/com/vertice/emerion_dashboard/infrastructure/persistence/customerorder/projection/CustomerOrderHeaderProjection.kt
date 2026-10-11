@@ -40,6 +40,7 @@ interface CustomerOrderHeaderProjection {
     val regimeTributario: String?
     val nomeRegimeTributario: String?
     val codigoPadraoFaturamento: String?
+    val ufPedido: String?
     val createdAt: Instant
     val updatedAt: Instant
 }

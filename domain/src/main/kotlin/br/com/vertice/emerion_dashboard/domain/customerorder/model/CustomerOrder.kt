@@ -40,6 +40,7 @@ data class CustomerOrder(
     val itens: List<CustomerOrderItem>,
     val createdAt: Instant,
     val updatedAt: Instant,
+    val ufPedido: String? = null,
 ) {
     companion object {
         /** Factory for a brand-new order coming from ingestion (no id yet). */
@@ -70,6 +71,7 @@ data class CustomerOrder(
             regimeTributario: String? = null,
             nomeRegimeTributario: String? = null,
             codigoPadraoFaturamento: String? = null,
+            ufPedido: String? = null,
             itens: List<CustomerOrderItem>,
             now: Instant,
         ) = CustomerOrder(
@@ -103,6 +105,7 @@ data class CustomerOrder(
             itens = itens,
             createdAt = now,
             updatedAt = now,
+            ufPedido = ufPedido,
         )
     }
 
@@ -138,6 +141,7 @@ data class CustomerOrder(
         regimeTributario: String? = null,
         nomeRegimeTributario: String? = null,
         codigoPadraoFaturamento: String? = null,
+        ufPedido: String? = null,
         itens: List<CustomerOrderItem>,
         now: Instant,
     ) = copy(
@@ -166,6 +170,7 @@ data class CustomerOrder(
         regimeTributario = regimeTributario,
         nomeRegimeTributario = nomeRegimeTributario,
         codigoPadraoFaturamento = codigoPadraoFaturamento,
+        ufPedido = ufPedido,
         itens = itens,
         updatedAt = now,
     )

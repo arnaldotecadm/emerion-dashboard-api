@@ -2,6 +2,7 @@ package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.repository
 
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardTopTrendsProjection
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardTotaisProjection
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardMonthlyTrendProjection
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
 import org.springframework.stereotype.Repository
@@ -12,6 +13,50 @@ class DashboardDataRepository(
     @PersistenceContext
     private val entityManager: EntityManager
 ) {
+
+    fun getDashboardMonthlyTrends(): List<DashboardMonthlyTrendProjection> {
+        val query = entityManager.createNativeQuery(
+            """
+            with months as (
+                select generate_series(
+                    date_trunc('month', current_date) - interval '35 months',
+                    date_trunc('month', current_date),
+                    interval '1 month'
+                )::date as month_start
+            ),
+            customer_orders as (
+                select date_trunc('month', co.data_pedido)::date as month_start, count(*) as item_count
+                from emerion_dashboard.customer_order co
+                where co.data_pedido >= date_trunc('month', current_date) - interval '35 months'
+                  and co.data_pedido <= current_date
+                group by date_trunc('month', co.data_pedido)::date
+            ),
+            customer_quotations as (
+                select date_trunc('month', cq.data_pedido)::date as month_start, count(*) as item_count
+                from emerion_dashboard.customer_quotation cq
+                where cq.data_pedido >= date_trunc('month', current_date) - interval '35 months'
+                  and cq.data_pedido <= current_date
+                group by date_trunc('month', cq.data_pedido)::date
+            )
+            select
+                to_char(months.month_start, 'YYYY-MM') as year_month,
+                coalesce(customer_orders.item_count, 0) as customer_orders,
+                coalesce(customer_quotations.item_count, 0) as customer_quotations
+            from months
+            left join customer_orders on customer_orders.month_start = months.month_start
+            left join customer_quotations on customer_quotations.month_start = months.month_start
+            order by months.month_start
+            """.trimIndent()
+        )
+        return query.resultList.map { row ->
+            val resultArray = row as Array<*>
+            DashboardMonthlyTrendProjection(
+                yearMonth = resultArray[0].toString(),
+                customerOrders = (resultArray[1] as Number).toInt(),
+                customerQuotations = (resultArray[2] as Number).toInt(),
+            )
+        }
+    }
 
     fun getDashboardCustomerTopTrends(orderBy: String): List<DashboardTopTrendsProjection> {
         val query = entityManager.createNativeQuery(

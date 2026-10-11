@@ -5,6 +5,8 @@ import java.math.BigDecimal
 data class DashboardTopTrends(
     val topCustomers: List<TopTrends>,
     val topVendedores: List<TopTrends>,
+    val customerOrders: List<DashboardMonthlyCount>,
+    val customerQuotations: List<DashboardMonthlyCount>,
     val quantidadePedidos: Int,
     val quantidadeClientes: Int,
     val quantidadeVendedores: Int,

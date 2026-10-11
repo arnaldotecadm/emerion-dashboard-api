@@ -109,6 +109,9 @@ class CustomerOrderJpaEntity(
     @Column(name = "codigo_padrao_faturamento")
     var codigoPadraoFaturamento: String? = null,
 
+    @Column(name = "uf_pedido")
+    var ufPedido: String? = null,
+
     @OneToMany(mappedBy = "customerOrder", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     var itens: MutableList<CustomerOrderItemJpaEntity> = mutableListOf(),
 

@@ -32,4 +32,5 @@ data class IngestCustomerOrderCommand(
     val nomeRegimeTributario: String? = null,
     val codigoPadraoFaturamento: String? = null,
     val itens: List<IngestCustomerOrderItemCommand>,
+    val ufPedido: String? = null,
 )

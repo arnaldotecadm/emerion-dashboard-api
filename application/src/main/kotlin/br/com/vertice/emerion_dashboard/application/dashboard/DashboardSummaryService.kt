@@ -1,6 +1,7 @@
 package br.com.vertice.emerion_dashboard.application.dashboard
 
 import br.com.vertice.emerion_dashboard.application.outbound.port.DashboardRepositoryPort
+import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyCount
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardTopTrends
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -12,9 +13,12 @@ class DashboardSummaryService(
 ) : DashboardSummary {
     override fun getDashboardTopTrends(orderBy: String): DashboardTopTrends {
         val totais = repository.getDashboardTotais()
+        val monthlyTrends = repository.getDashboardMonthlyTrends()
         return DashboardTopTrends(
             topCustomers = repository.getDashboardCustomerTopTrends(orderBy),
             topVendedores = repository.getDashboardSellerTopTrends(orderBy),
+            customerOrders = monthlyTrends.map { DashboardMonthlyCount(it.yearMonth, it.customerOrders) },
+            customerQuotations = monthlyTrends.map { DashboardMonthlyCount(it.yearMonth, it.customerQuotations) },
             quantidadePedidos = totais.quantidadePedidos,
             quantidadeClientes = totais.quantidadeClientes,
             quantidadeVendedores = totais.quantidadeVendedores,

@@ -40,6 +40,7 @@ object CustomerOrderQueryRestMapper {
             regimeTributario = customerOrder.regimeTributario,
             nomeRegimeTributario = customerOrder.nomeRegimeTributario,
             codigoPadraoFaturamento = customerOrder.codigoPadraoFaturamento,
+            ufPedido = customerOrder.ufPedido,
             itens = customerOrder.itens.map(::toItemResponse),
             createdAt = customerOrder.createdAt.atOffset(ZoneOffset.UTC),
             updatedAt = customerOrder.updatedAt.atOffset(ZoneOffset.UTC),

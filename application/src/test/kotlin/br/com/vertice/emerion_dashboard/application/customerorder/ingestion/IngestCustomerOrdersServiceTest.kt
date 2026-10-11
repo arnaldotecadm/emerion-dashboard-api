@@ -73,6 +73,7 @@ class IngestCustomerOrdersServiceTest {
             totalSubstituicaoTributaria = BigDecimal.ZERO,
             totalDescontoIncondicional = BigDecimal.ZERO,
             itens = itens,
+            ufPedido = "SP",
         )
 
     @Test
@@ -189,6 +190,7 @@ class IngestCustomerOrdersServiceTest {
 
         assertEquals(IngestOutcome.CREATED, result.outcome)
         assertEquals("NUM-4", result.externalId)
+        assertEquals("SP", savedSlot.captured.ufPedido)
         verify(exactly = 1) { customerOrderRepository.save(any()) }
     }
 
