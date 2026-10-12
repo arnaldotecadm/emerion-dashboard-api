@@ -37,12 +37,14 @@ class CustomerOrderRepositoryAdapter(
         codigoCliente: Int?,
         statusPedido: String?,
         codigoEmpresa: Int?,
+        numeroPedido: String?,
     ): Page<CustomerOrder> {
         val springPageable = SpringPageRequest.of(pageRequest.page, pageRequest.size)
         val headerPage = queryRepository.searchHeaders(
             codigoCliente,
             statusPedido?.takeIf { it.isNotBlank() },
             codigoEmpresa,
+            numeroPedido?.trim()?.takeIf { it.isNotEmpty() }?.let { "%$it%" },
             springPageable,
         )
         val headerIds = headerPage.content.map { it.id }

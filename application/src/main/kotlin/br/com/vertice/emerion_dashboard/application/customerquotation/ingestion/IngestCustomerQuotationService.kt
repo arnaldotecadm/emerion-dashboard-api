@@ -34,8 +34,10 @@ class IngestCustomerQuotationService(
     }
 
     @Transactional
-    fun ingestSingle(command: IngestCustomerQuotationCommand): IngestItemResult =
-        ingestItem(command, Instant.now(clock))
+    fun ingestSingle(command: IngestCustomerQuotationCommand): IngestItemResult {
+        logger.info("Ingesting single customer quotation externalId='{}'", command.externalId)
+        return ingestItem(command, Instant.now(clock))
+    }
 
     private fun ingestItem(item: IngestCustomerQuotationCommand, now: Instant): IngestItemResult = try {
         val existing = customerQuotationRepository.findByCnpjEmpresaAndExternalId(item.cnpjEmpresa, item.externalId)

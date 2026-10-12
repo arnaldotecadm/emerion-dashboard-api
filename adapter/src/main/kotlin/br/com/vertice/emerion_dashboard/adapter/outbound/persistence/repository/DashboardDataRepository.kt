@@ -140,7 +140,7 @@ class DashboardDataRepository(
         }
     }
 
-    fun getDashboardSellerTopTrends(orderBy: String): List<DashboardTopTrendsProjection> {
+    fun getDashboardSellerTopTrends(orderBy: String, years: Int?): List<DashboardTopTrendsProjection> {
         val query = entityManager.createNativeQuery(
             """
             with top_vendedores as (
@@ -149,6 +149,8 @@ class DashboardDataRepository(
             		count(1) as quantidadePedido, 
             		sum(co.total_pedido_com_impostos) as totalFaturado 
             	from emerion_dashboard.customer_order co
+            	where cast(:years as integer) is null
+            	   or extract(year from co.data_pedido) >= extract(year from current_date) - cast(:years as integer) + 1
             	group by co.vendedor_external_id 
             )
             select 
@@ -162,6 +164,7 @@ class DashboardDataRepository(
             limit 10
         """.trimIndent()
         )
+        query.setParameter("years", years)
         return query.resultList.map { row ->
             val resultArray = row as Array<*>
             DashboardTopTrendsProjection(

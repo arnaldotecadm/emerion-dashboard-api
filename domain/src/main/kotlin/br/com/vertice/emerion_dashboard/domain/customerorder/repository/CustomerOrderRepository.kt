@@ -19,6 +19,7 @@ interface CustomerOrderRepository {
         codigoCliente: Int?,
         statusPedido: String?,
         codigoEmpresa: Int?,
+        numeroPedido: String? = null,
     ): Page<CustomerOrder>
 
     /** Insert or update (by externalId), replacing the itens list wholesale, and return the persisted order. */

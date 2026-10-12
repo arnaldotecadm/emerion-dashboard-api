@@ -99,6 +99,8 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
             WHERE (:codigoCliente IS NULL OR codigo_cliente = :codigoCliente)
               AND (:statusPedido IS NULL OR status_pedido = :statusPedido)
               AND (:codigoEmpresa IS NULL OR codigo_empresa = :codigoEmpresa)
+              AND (CAST(:numeroPedido AS text) IS NULL OR numero_pedido ILIKE CAST(:numeroPedido AS text))
+            order by numero_pedido desc
         """,
         countQuery = """
             SELECT count(*)
@@ -106,12 +108,14 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
             WHERE (:codigoCliente IS NULL OR codigo_cliente = :codigoCliente)
               AND (:statusPedido IS NULL OR status_pedido = :statusPedido)
               AND (:codigoEmpresa IS NULL OR codigo_empresa = :codigoEmpresa)
+              AND (CAST(:numeroPedido AS text) IS NULL OR numero_pedido ILIKE CAST(:numeroPedido AS text))
         """,
     )
     fun searchHeaders(
         @Param("codigoCliente") codigoCliente: Int?,
         @Param("statusPedido") statusPedido: String?,
         @Param("codigoEmpresa") codigoEmpresa: Int?,
+        @Param("numeroPedido") numeroPedido: String?,
         pageable: Pageable,
     ): Page<CustomerOrderHeaderProjection>
 

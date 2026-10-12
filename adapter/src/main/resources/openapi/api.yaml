@@ -1239,6 +1239,12 @@ paths:
           required: false
           schema:
             type: integer
+        - name: numeroPedido
+          in: query
+          description: Partial (contains) match on the order number, e.g. `719` matches `A7190`.
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: Paginated list of customer orders
@@ -1638,6 +1644,41 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/CustomerOrdersOverTime'
+
+  /sales/seller-top-trends:
+    get:
+      tags:
+        - sales
+      operationId: getSellerTopTrends
+      summary: Get the top sellers ranked by the chosen criterion
+      parameters:
+        - name: orderby
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [QUANTIDADEPEDIDO, TOTALFATURADO]
+            default: QUANTIDADEPEDIDO
+        - name: years
+          in: query
+          required: false
+          description: >
+            Limits the ranking to orders from the current year (1), the last
+            2 years (2) or the last 3 years (3), by calendar year of
+            dataPedido. Omit to include all orders.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 3
+      responses:
+        '200':
+          description: Top sellers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DashboardTopTrendsDTO'
 
   /smartStock:
     get:

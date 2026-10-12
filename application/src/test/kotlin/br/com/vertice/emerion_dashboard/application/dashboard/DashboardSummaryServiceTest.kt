@@ -45,7 +45,7 @@ class DashboardSummaryServiceTest {
             ),
         )
         every { repository.getDashboardCustomerTopTrends(any()) } returns emptyList()
-        every { repository.getDashboardSellerTopTrends(any()) } returns emptyList()
+        every { repository.getDashboardSellerTopTrends(any(), any()) } returns emptyList()
 
         val result = service.getDashboardTopTrends("QUANTIDADEPEDIDO", null)
 

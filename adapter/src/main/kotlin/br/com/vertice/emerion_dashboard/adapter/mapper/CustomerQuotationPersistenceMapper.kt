@@ -2,6 +2,7 @@ package br.com.vertice.emerion_dashboard.adapter.mapper
 
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.entity.CustomerQuotationJpaEntity
 import br.com.vertice.emerion_dashboard.domain.customerquotation.CustomerQuotation
+import java.math.BigDecimal
 
 object CustomerQuotationPersistenceMapper {
     fun CustomerQuotationJpaEntity.toDomain(): CustomerQuotation = CustomerQuotation(
@@ -54,13 +55,13 @@ object CustomerQuotationPersistenceMapper {
             statusPedido = statusPedido,
             totalIpi = totalIpi,
             totalIcms = totalIcms,
-            totalPis = totalPis,
-            totalCofins = totalCofins,
+            totalPis = totalPis ?: BigDecimal.ZERO,
+            totalCofins = totalCofins ?: BigDecimal.ZERO,
             totalSubstituicaoTributaria = totalSubstituicaoTributaria,
-            totalDescontoIncondicional = totalDescontoIncondicional,
-            totalFrete = totalFrete,
-            totalSeguro = totalSeguro,
-            totalOutrasDespesas = totalOutrasDespesas,
+            totalDescontoIncondicional = totalDescontoIncondicional ?: BigDecimal.ZERO,
+            totalFrete = totalFrete ?: BigDecimal.ZERO,
+            totalSeguro = totalSeguro ?: BigDecimal.ZERO,
+            totalOutrasDespesas = totalOutrasDespesas ?: BigDecimal.ZERO,
             vendedorExternalId = vendedorExternalId,
             atendenteCod = atendenteCod,
             regimeTributario = regimeTributario,

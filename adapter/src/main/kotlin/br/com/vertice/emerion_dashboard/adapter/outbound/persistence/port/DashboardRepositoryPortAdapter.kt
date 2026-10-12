@@ -19,8 +19,8 @@ class DashboardRepositoryPortAdapter(
         return dashboardDataRepository.getDashboardCustomerTopTrends(orderBy).map { it.toModel() }
     }
 
-    override fun getDashboardSellerTopTrends(orderBy: String): List<TopTrends> {
-        return dashboardDataRepository.getDashboardSellerTopTrends(orderBy).map { it.toModel() }
+    override fun getDashboardSellerTopTrends(orderBy: String, years: Int?): List<TopTrends> {
+        return dashboardDataRepository.getDashboardSellerTopTrends(orderBy, years).map { it.toModel() }
     }
 
     override fun getDashboardMonthlyTrends(years: Int?): List<DashboardMonthlyTrend> =

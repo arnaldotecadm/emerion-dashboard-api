@@ -127,6 +127,16 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
         )
 
         assertEquals(listOf("order-ext-match"), page.content.map { it.externalId })
+
+        val byFragment = customerOrderRepository.findAll(
+            pageRequest = PageRequest(page = 0, size = 10),
+            codigoCliente = null,
+            statusPedido = null,
+            codigoEmpresa = null,
+            numeroPedido = "f-3",
+        )
+        assertEquals(listOf("order-ext-match"), byFragment.content.map { it.externalId })
+        assertEquals(1L, byFragment.totalElements)
     }
 
     @Test
