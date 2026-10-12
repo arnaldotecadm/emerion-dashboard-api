@@ -4,7 +4,6 @@ import br.com.vertice.emerion_dashboard.application.config.SQSProducer
 import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.IngestCustomerOrdersService
 import br.com.vertice.emerion_dashboard.application.customerorder.ingestion.model.IngestCustomerOrderCommand
 import io.awspring.cloud.sqs.annotation.SqsListener
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import tools.jackson.databind.ObjectMapper
@@ -17,12 +16,7 @@ class SqsCustomerOrdersConsumer(
     @Value($$"${app.aws.queues.ingestion-requests.customer-orders}") private val queueUrl: String,
 ) {
 
-    private val logger = LoggerFactory.getLogger(javaClass)
-
-    @SqsListener(
-        "emerion-dashboard-customer-orders-batch",
-        maxConcurrentMessages = $$"${app.sqs.fan-out.max-concurrent-messages:10}",
-    )
+    @SqsListener("emerion-dashboard-customer-orders-batch")
     fun receiveMessage(message: String) {
         val customerOrders: List<IngestCustomerOrderCommand> =
             objectMapper.readValue(
@@ -33,14 +27,15 @@ class SqsCustomerOrdersConsumer(
                 )
             )
 
-        logger.info("Received {} customer orders, sending them to the ingestion queue", customerOrders.size)
-        sqsProducer.sendMessages(queueUrl, customerOrders)
+        println("Received ${customerOrders.size} customer orders")
+
+        customerOrders.forEach { order ->
+            println("Sending customer order with externalId=${order.externalId} to ingestion queue")
+            sqsProducer.sendMessage(queueUrl, order)
+        }
     }
 
-    @SqsListener(
-        "emerion-dashboard-customer-orders",
-        maxConcurrentMessages = $$"${app.sqs.ingestion.max-concurrent-messages:20}",
-    )
+    @SqsListener("emerion-dashboard-customer-orders")
     fun receiveMessage(message: IngestCustomerOrderCommand) {
         ingestionService.ingestSingle(message)
     }

@@ -5,7 +5,6 @@ import br.com.vertice.emerion_dashboard.application.product.ingestion.IngestProd
 import br.com.vertice.emerion_dashboard.application.product.ingestion.model.IngestProductCommand
 import io.awspring.cloud.sqs.annotation.SqsListener
 import jakarta.annotation.PostConstruct
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import tools.jackson.databind.ObjectMapper
@@ -18,12 +17,7 @@ class SqsProductConsumer(
     @Value($$"${app.aws.queues.ingestion-requests.products}") private val queueUrl: String,
 ) {
 
-    private val logger = LoggerFactory.getLogger(javaClass)
-
-    @SqsListener(
-        "emerion-dashboard-products-batch",
-        maxConcurrentMessages = $$"${app.sqs.fan-out.max-concurrent-messages:10}",
-    )
+    @SqsListener("emerion-dashboard-products-batch")
     fun receiveMessage(message: String) {
         val products: List<IngestProductCommand> =
             objectMapper.readValue(
@@ -34,14 +28,15 @@ class SqsProductConsumer(
                 )
             )
 
-        logger.info("Received {} products, sending them to the ingestion queue", products.size)
-        sqsProducer.sendMessages(queueUrl, products)
+        println("Received ${products.size} products")
+
+        products.forEach { product ->
+            println("Sending product with externalId=${product.externalId} to ingestion queue")
+            sqsProducer.sendMessage(queueUrl, product)
+        }
     }
 
-    @SqsListener(
-        "emerion-dashboard-products",
-        maxConcurrentMessages = $$"${app.sqs.ingestion.max-concurrent-messages:20}",
-    )
+    @SqsListener("emerion-dashboard-products")
     fun receiveMessage(message: IngestProductCommand) {
         ingestProductsService.ingestSingle(message)
     }
