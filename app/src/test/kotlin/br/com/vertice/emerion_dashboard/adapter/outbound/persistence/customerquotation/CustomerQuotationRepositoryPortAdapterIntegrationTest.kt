@@ -47,6 +47,7 @@ class CustomerQuotationRepositoryPortAdapterIntegrationTest(
             regimeTributario = "1",
             nomeRegimeTributario = "Simples Nacional",
             codigoPadraoFaturamento = "5.102",
+            numeroCotacao = 1234,
             now = Instant.parse("2026-01-01T00:00:00Z"),
         )
 

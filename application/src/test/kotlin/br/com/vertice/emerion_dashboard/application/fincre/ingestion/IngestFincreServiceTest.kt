@@ -1,5 +1,6 @@
 package br.com.vertice.emerion_dashboard.application.fincre.ingestion
 
+import br.com.vertice.emerion_dashboard.application.config.SQSProducer
 import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreBatchCommand
 import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreCommand
 import br.com.vertice.emerion_dashboard.application.fincre.ingestion.model.IngestFincreParcelaCommand
@@ -20,7 +21,13 @@ import kotlin.test.assertEquals
 
 class IngestFincreServiceTest {
     private val repository = mockk<FincreRepositoryPort>()
-    private val service = IngestFincreService(repository, Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC))
+    private val sqsProducer = mockk<SQSProducer>(relaxed = true)
+    private val service = IngestFincreService(
+        repository,
+        Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC),
+        sqsProducer,
+        "batch-queue",
+    )
 
     private val item = IngestFincreCommand(
         cnpjEmpresa = "15323240000102",
@@ -86,15 +93,22 @@ class IngestFincreServiceTest {
     }
 
     @Test
-    fun `records a failed item without aborting other batch items`() {
-        every { repository.findByCnpjEmpresaAndDocumento(item.cnpjEmpresa, item.documento) } returns null
+    fun `records a failed item when persistence fails`() {
         every { repository.findByCnpjEmpresaAndDocumento(item.cnpjEmpresa, "BAD") } throws RuntimeException("db down")
-        val savedSlot = slot<Fincre>()
-        every { repository.save(capture(savedSlot)) } answers { savedSlot.captured }
 
-        val result = service.ingest(IngestFincreBatchCommand("batch-1", listOf(item, item.copy(documento = "BAD"))))
+        val result = service.ingestSingle(item.copy(documento = "BAD"))
 
-        assertEquals(1, result.totalSucceeded)
-        assertEquals(1, result.totalFailed)
+        assertEquals(IngestOutcome.FAILED, result.outcome)
+    }
+
+    @Test
+    fun `queues a batch without touching the database`() {
+        val batch = IngestFincreBatchCommand("batch-1", listOf(item, item.copy(documento = "2")))
+
+        val result = service.ingest(batch)
+
+        verify { sqsProducer.sendMessageBatch("batch-queue", batch.items) }
+        verify(exactly = 0) { repository.save(any()) }
+        assertEquals(listOf(IngestOutcome.QUEUED, IngestOutcome.QUEUED), result.results.map { it.outcome })
     }
 }

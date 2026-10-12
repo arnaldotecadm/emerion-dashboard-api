@@ -32,6 +32,18 @@ app:
 
         vendedor: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-vendedor
         vendedor-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-vendedor-batch
+
+        customer-quotation: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-customer-quotation
+        customer-quotation-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-customer-quotation-batch
+
+        ipi: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-ipi
+        ipi-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-ipi-batch
+
+        icms: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-icms
+        icms-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-icms-batch
+
+        fincre: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-fincre
+        fincre-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-fincre-batch
   security:
     cognito:
       issuer-uri: https://cognito-idp.eu-north-1.amazonaws.com/user-pool-id

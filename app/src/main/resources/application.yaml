@@ -4,12 +4,18 @@ spring:
 
   # --- Datasource (PostgreSQL) ---
   datasource:
-    url: jdbc:postgresql://localhost:5432/emerion_dashboard
+    url: jdbc:postgresql://localhost:5432/emerion_dashboard?tcpKeepAlive=true&reWriteBatchedInserts=true
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
     hikari:
       schema: emerion_dashboard
+      # Small instances (e.g. RDS db.t4g.micro) handle few connections well; keep this low.
+      maximum-pool-size: ${DB_POOL_MAX_SIZE:10}
+      minimum-idle: ${DB_POOL_MIN_IDLE:5}
+      # Replace connections before network/RDS idle cuts kill them, and probe idle ones.
+      max-lifetime: 600000
+      keepalive-time: 120000
 
   # --- JPA / Hibernate ---
   # Flyway owns the schema; Hibernate must never create/alter tables.
@@ -20,7 +26,10 @@ spring:
     properties:
       hibernate:
         jdbc:
-          batch_size: 20
+          batch_size: 50
+          batch_versioned_data: true
+        order_inserts: true
+        order_updates: true
         default_schema: emerion_dashboard
     show-sql: false
 
@@ -71,6 +80,18 @@ app:
 
         vendedor: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-vendedor
         vendedor-batch: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-vendedor-batch
+
+        customer-quotation: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-customer-quotation
+        customer-quotation-batch: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-customer-quotation-batch
+
+        ipi: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-ipi
+        ipi-batch: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-ipi-batch
+
+        icms: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-icms
+        icms-batch: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-icms-batch
+
+        fincre: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-fincre
+        fincre-batch: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-fincre-batch
   security:
     cognito:
       # AWS Cognito user pool that issues the React app's JWTs (validated on

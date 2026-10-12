@@ -7,7 +7,9 @@ import br.com.vertice.emerion_dashboard.application.outbound.port.IcmsRepository
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
+import br.com.vertice.emerion_dashboard.application.config.SQSProducer
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
@@ -17,16 +19,18 @@ import java.time.Instant
 class IngestIcmsService(
     private val icmsRepository: IcmsRepositoryPort,
     private val clock: Clock = Clock.systemUTC(),
+    private val sqsProducer: SQSProducer,
+    @Value($$"${app.aws.queues.ingestion-requests.icms-batch}") private val batchQueueUrl: String,
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    @Transactional
     fun ingest(command: IngestIcmsBatchCommand): IngestBatchResult {
-        val results = command.items.map { ingestItem(it, Instant.now(clock)) }
-        logger.info(
-            "ICMS batch '{}' processed: {} succeeded, {} failed", command.batchId,
-            results.count { it.outcome != IngestOutcome.FAILED }, results.count { it.outcome == IngestOutcome.FAILED })
-        return IngestBatchResult(command.batchId, results)
+        sqsProducer.sendMessageBatch(batchQueueUrl, command.items)
+        logger.info("ICMS batch '{}' queued with {} item(s)", command.batchId, command.items.size)
+        return IngestBatchResult(
+            command.batchId,
+            command.items.map { IngestItemResult(key(it), IngestOutcome.QUEUED, null) },
+        )
     }
 
     @Transactional

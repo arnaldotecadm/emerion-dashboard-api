@@ -30,7 +30,6 @@ class IngestProductsService(
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    @Transactional
     override fun ingest(command: IngestBatchCommand): IngestBatchResult {
         logger.info("Ingesting batch '{}' with {} product(s)", command.batchId, command.items.size)
 

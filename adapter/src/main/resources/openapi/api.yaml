@@ -3012,13 +3012,7 @@ components:
         - totalPedidoSemImpostos
         - totalIpi
         - totalIcms
-        - totalPis
-        - totalCofins
         - totalSubstituicaoTributaria
-        - totalDescontoIncondicional
-        - totalFrete
-        - totalSeguro
-        - totalOutrasDespesas
       properties:
         externalId:
           type: string
@@ -3084,6 +3078,10 @@ components:
           nullable: true
         codigoPadraoFaturamento:
           type: string
+          nullable: true
+        numeroCotacao:
+          type: integer
+          format: int32
           nullable: true
 
     CustomerQuotationIngestionBatch:

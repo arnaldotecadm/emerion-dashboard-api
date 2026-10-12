@@ -1,5 +1,6 @@
 package br.com.vertice.emerion_dashboard.application.icms.ingestion
 
+import br.com.vertice.emerion_dashboard.application.config.SQSProducer
 import br.com.vertice.emerion_dashboard.application.icms.ingestion.model.IngestIcmsBatchCommand
 import br.com.vertice.emerion_dashboard.application.icms.ingestion.model.IngestIcmsCommand
 import br.com.vertice.emerion_dashboard.domain.icms.Icms
@@ -17,8 +18,13 @@ import kotlin.test.assertEquals
 
 class IngestIcmsServiceTest {
     private val repository = mockk<IcmsRepositoryPort>()
-    private val service =
-        IngestIcmsService(repository, Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC))
+    private val sqsProducer = mockk<SQSProducer>(relaxed = true)
+    private val service = IngestIcmsService(
+        repository,
+        Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC),
+        sqsProducer,
+        "batch-queue",
+    )
     private val item = IngestIcmsCommand(
         "15323240000102", "22071010E0", "Entrada", "REGRA ICMS ENTRADA 0", "SP", "3",
         BigDecimal("18.0"), BigDecimal("0.0"), BigDecimal("100.0"), "00 "
@@ -57,14 +63,22 @@ class IngestIcmsServiceTest {
     }
 
     @Test
-    fun `records a failed ICMS item without aborting other batch items`() {
-        every { repository.findByCnpjEmpresaAndCodigoIcms(item.cnpjEmpresa, item.codigoIcms) } returns null
+    fun `records a failed ICMS item when persistence fails`() {
         every { repository.findByCnpjEmpresaAndCodigoIcms(item.cnpjEmpresa, "BAD") } throws RuntimeException("db down")
-        every { repository.save(any()) } answers { firstArg() }
 
-        val result = service.ingest(IngestIcmsBatchCommand("batch-1", listOf(item, item.copy(codigoIcms = "BAD"))))
+        val result = service.ingestSingle(item.copy(codigoIcms = "BAD"))
 
-        assertEquals(1, result.totalSucceeded)
-        assertEquals(1, result.totalFailed)
+        assertEquals(IngestOutcome.FAILED, result.outcome)
+    }
+
+    @Test
+    fun `queues a batch without touching the database`() {
+        val batch = IngestIcmsBatchCommand("batch-1", listOf(item, item.copy(codigoIcms = "2")))
+
+        val result = service.ingest(batch)
+
+        verify { sqsProducer.sendMessageBatch("batch-queue", batch.items) }
+        verify(exactly = 0) { repository.save(any()) }
+        assertEquals(listOf(IngestOutcome.QUEUED, IngestOutcome.QUEUED), result.results.map { it.outcome })
     }
 }

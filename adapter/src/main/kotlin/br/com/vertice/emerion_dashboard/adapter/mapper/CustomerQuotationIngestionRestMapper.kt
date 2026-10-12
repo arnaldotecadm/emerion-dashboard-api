@@ -41,6 +41,7 @@ object CustomerQuotationIngestionRestMapper {
             regimeTributario = regimeTributario,
             nomeRegimeTributario = nomeRegimeTributario,
             codigoPadraoFaturamento = codigoPadraoFaturamento,
+            numeroCotacao = numeroCotacao,
         )
 
     fun IngestBatchResult.toResponse(): IngestionResult = IngestionResult(

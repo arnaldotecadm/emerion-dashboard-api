@@ -1,5 +1,6 @@
 package br.com.vertice.emerion_dashboard.application.ipi.ingestion
 
+import br.com.vertice.emerion_dashboard.application.config.SQSProducer
 import br.com.vertice.emerion_dashboard.application.ipi.ingestion.model.IngestIpiBatchCommand
 import br.com.vertice.emerion_dashboard.application.ipi.ingestion.model.IngestIpiCommand
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
@@ -18,8 +19,13 @@ import kotlin.test.assertEquals
 
 class IngestIpiServiceTest {
     private val repository = mockk<IpiRepositoryPort>()
-    private val service =
-        IngestIpiService(repository, Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC))
+    private val sqsProducer = mockk<SQSProducer>(relaxed = true)
+    private val service = IngestIpiService(
+        repository,
+        Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC),
+        sqsProducer,
+        "batch-queue",
+    )
     private val item = IngestIpiCommand(
         cnpjEmpresa = "15323240000102",
         codigoIpi = "22071010E0",
@@ -88,17 +94,22 @@ class IngestIpiServiceTest {
     }
 
     @Test
-    fun `records a failed IPI item without aborting other batch items`() {
-        every { repository.findByCnpjEmpresaAndCodigoIpi(item.cnpjEmpresa, item.codigoIpi) } returns null
+    fun `records a failed IPI item when persistence fails`() {
         every { repository.findByCnpjEmpresaAndCodigoIpi(item.cnpjEmpresa, "BAD") } throws RuntimeException("db down")
-        val savedSlot = slot<Ipi>()
-        every { repository.save(capture(savedSlot)) } answers { savedSlot.captured }
 
-        val result = service.ingest(
-            IngestIpiBatchCommand("batch-1", listOf(item, item.copy(codigoIpi = "BAD"))),
-        )
+        val result = service.ingestSingle(item.copy(codigoIpi = "BAD"))
 
-        assertEquals(1, result.totalSucceeded)
-        assertEquals(1, result.totalFailed)
+        assertEquals(IngestOutcome.FAILED, result.outcome)
+    }
+
+    @Test
+    fun `queues a batch without touching the database`() {
+        val batch = IngestIpiBatchCommand("batch-1", listOf(item, item.copy(codigoIpi = "2")))
+
+        val result = service.ingest(batch)
+
+        verify { sqsProducer.sendMessageBatch("batch-queue", batch.items) }
+        verify(exactly = 0) { repository.save(any()) }
+        assertEquals(listOf(IngestOutcome.QUEUED, IngestOutcome.QUEUED), result.results.map { it.outcome })
     }
 }

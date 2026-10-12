@@ -32,6 +32,7 @@ object CustomerQuotationPersistenceMapper {
         regimeTributario = regimeTributario,
         nomeRegimeTributario = nomeRegimeTributario,
         codigoPadraoFaturamento = codigoPadraoFaturamento,
+        numeroCotacao = numeroCotacao,
         createdAt = createdAt,
         updatedAt = updatedAt,
     )
@@ -65,6 +66,7 @@ object CustomerQuotationPersistenceMapper {
             regimeTributario = regimeTributario,
             nomeRegimeTributario = nomeRegimeTributario,
             codigoPadraoFaturamento = codigoPadraoFaturamento,
+            numeroCotacao = numeroCotacao,
             createdAt = createdAt,
             updatedAt = updatedAt,
         )

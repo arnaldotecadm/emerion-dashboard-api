@@ -1,5 +1,6 @@
 package br.com.vertice.emerion_dashboard.application.customerquotation.ingestion
 
+import br.com.vertice.emerion_dashboard.application.config.SQSProducer
 import br.com.vertice.emerion_dashboard.application.customerquotation.ingestion.model.IngestCustomerQuotationBatchCommand
 import br.com.vertice.emerion_dashboard.application.customerquotation.ingestion.model.IngestCustomerQuotationCommand
 import br.com.vertice.emerion_dashboard.application.outbound.port.CustomerQuotationRepositoryPort
@@ -19,8 +20,13 @@ import kotlin.test.assertEquals
 
 class IngestCustomerQuotationServiceTest {
     private val repository = mockk<CustomerQuotationRepositoryPort>()
-    private val service =
-        IngestCustomerQuotationService(repository, Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC))
+    private val sqsProducer = mockk<SQSProducer>(relaxed = true)
+    private val service = IngestCustomerQuotationService(
+        repository,
+        Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC),
+        sqsProducer,
+        "batch-queue",
+    )
     private val item = IngestCustomerQuotationCommand(
         externalId = "25689",
         cnpjEmpresa = "15323240000102",
@@ -48,6 +54,7 @@ class IngestCustomerQuotationServiceTest {
         regimeTributario = "1",
         nomeRegimeTributario = "Simples Nacional",
         codigoPadraoFaturamento = "5.102",
+        numeroCotacao = 1234,
     )
 
     @Test
@@ -97,6 +104,7 @@ class IngestCustomerQuotationServiceTest {
             regimeTributario = item.regimeTributario,
             nomeRegimeTributario = item.nomeRegimeTributario,
             codigoPadraoFaturamento = item.codigoPadraoFaturamento,
+            numeroCotacao = item.numeroCotacao,
             now = Instant.parse("2025-01-01T00:00:00Z"),
         ).copy(id = 42L)
         every {
@@ -112,25 +120,24 @@ class IngestCustomerQuotationServiceTest {
     }
 
     @Test
-    fun `records a failed quotation without aborting the rest of the batch`() {
-        every {
-            repository.findByCnpjEmpresaAndExternalId(item.cnpjEmpresa, item.externalId)
-        } returns null
+    fun `records a failed quotation when persistence fails`() {
         every {
             repository.findByCnpjEmpresaAndExternalId(item.cnpjEmpresa, "BAD")
         } throws RuntimeException("db down")
-        val saved = slot<CustomerQuotation>()
-        every { repository.save(capture(saved)) } answers { saved.captured }
 
-        val result = service.ingest(
-            IngestCustomerQuotationBatchCommand(
-                "batch-1",
-                listOf(item, item.copy(externalId = "BAD")),
-            ),
-        )
+        val result = service.ingestSingle(item.copy(externalId = "BAD"))
 
-        assertEquals(1, result.totalSucceeded)
-        assertEquals(1, result.totalFailed)
-        assertEquals(IngestOutcome.FAILED, result.results[1].outcome)
+        assertEquals(IngestOutcome.FAILED, result.outcome)
+    }
+
+    @Test
+    fun `queues a batch without touching the database`() {
+        val batch = IngestCustomerQuotationBatchCommand("batch-1", listOf(item, item.copy(externalId = "2")))
+
+        val result = service.ingest(batch)
+
+        verify { sqsProducer.sendMessageBatch("batch-queue", batch.items) }
+        verify(exactly = 0) { repository.save(any()) }
+        assertEquals(listOf(IngestOutcome.QUEUED, IngestOutcome.QUEUED), result.results.map { it.outcome })
     }
 }

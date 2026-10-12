@@ -9,7 +9,9 @@ import br.com.vertice.emerion_dashboard.application.outbound.port.FincreReposito
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
+import br.com.vertice.emerion_dashboard.application.config.SQSProducer
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
@@ -19,19 +21,18 @@ import java.time.Instant
 class IngestFincreService(
     private val fincreRepository: FincreRepositoryPort,
     private val clock: Clock = Clock.systemUTC(),
+    private val sqsProducer: SQSProducer,
+    @Value($$"${app.aws.queues.ingestion-requests.fincre-batch}") private val batchQueueUrl: String,
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    @Transactional
     fun ingest(command: IngestFincreBatchCommand): IngestBatchResult {
-        val results = command.items.map { ingestItem(it, Instant.now(clock)) }
-        logger.info(
-            "FINCRE batch '{}' processed: {} succeeded, {} failed",
+        sqsProducer.sendMessageBatch(batchQueueUrl, command.items)
+        logger.info("FINCRE batch '{}' queued with {} item(s)", command.batchId, command.items.size)
+        return IngestBatchResult(
             command.batchId,
-            results.count { it.outcome != IngestOutcome.FAILED },
-            results.count { it.outcome == IngestOutcome.FAILED },
+            command.items.map { IngestItemResult(key(it), IngestOutcome.QUEUED, null) },
         )
-        return IngestBatchResult(command.batchId, results)
     }
 
     @Transactional
