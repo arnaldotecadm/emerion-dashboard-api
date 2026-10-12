@@ -1600,6 +1600,17 @@ paths:
             type: string
             enum: [QUANTIDADEPEDIDO, TOTALFATURADO]
             default: QUANTIDADEPEDIDO
+        - name: years
+          in: query
+          required: false
+          description: >
+            Limits the totals to orders from the current year (1), the last
+            2 years (2) or the last 3 years (3), by calendar year of
+            dataPedido. Omit to include all orders.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 3
       responses:
         '200':
           description: Dashboard top trends

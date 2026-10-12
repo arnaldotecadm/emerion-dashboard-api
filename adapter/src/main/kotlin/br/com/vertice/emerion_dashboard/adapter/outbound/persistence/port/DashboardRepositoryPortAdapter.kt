@@ -23,13 +23,13 @@ class DashboardRepositoryPortAdapter(
         return dashboardDataRepository.getDashboardSellerTopTrends(orderBy).map { it.toModel() }
     }
 
-    override fun getDashboardMonthlyTrends(): List<DashboardMonthlyTrend> =
-        dashboardDataRepository.getDashboardMonthlyTrends().map { it.toModel() }
+    override fun getDashboardMonthlyTrends(years: Int?): List<DashboardMonthlyTrend> =
+        dashboardDataRepository.getDashboardMonthlyTrends(years).map { it.toModel() }
 
     override fun getDashboardOrdersByRegion(): List<DashboardOrdersByRegion> =
         dashboardDataRepository.getDashboardOrdersByRegion().map { it.toModel() }
 
-    override fun getDashboardTotais(): DashboardTotais {
-        return dashboardDataRepository.getDashboardTotais().toModel()
+    override fun     getDashboardTotais(years: Int?): DashboardTotais {
+            return dashboardDataRepository.getDashboardTotais(years).toModel()
     }
 }

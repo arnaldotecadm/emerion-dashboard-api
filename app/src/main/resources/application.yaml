@@ -10,6 +10,10 @@ spring:
     driver-class-name: org.postgresql.Driver
     hikari:
       schema: emerion_dashboard
+      # Size per instance; account for all application replicas in the DB connection budget.
+      # Must cover app.sqs.ingestion.max-concurrent-messages x active ingestion queues plus HTTP traffic.
+      maximum-pool-size: ${DB_POOL_MAX_SIZE:40}
+      minimum-idle: ${DB_POOL_MIN_IDLE:10}
 
   # --- JPA / Hibernate ---
   # Flyway owns the schema; Hibernate must never create/alter tables.
@@ -23,6 +27,14 @@ spring:
           batch_size: 20
         default_schema: emerion_dashboard
     show-sql: false
+
+  # --- SQS listeners (Spring Cloud AWS) ---
+  cloud:
+    aws:
+      sqs:
+        listener:
+          max-messages-per-poll: 10
+          poll-timeout: 10s
 
   # --- Flyway ---
   flyway:
@@ -46,6 +58,13 @@ server:
 app:
   cors:
     allowed-origins: http://localhost:5173
+  sqs:
+    # Parallel messages per queue. "ingestion" listeners write to PostgreSQL (one pooled connection
+    # each); "fan-out" listeners only split batch messages into per-item messages.
+    ingestion:
+      max-concurrent-messages: ${SQS_INGESTION_CONCURRENCY:20}
+    fan-out:
+      max-concurrent-messages: ${SQS_FAN_OUT_CONCURRENCY:10}
   aws:
     # Explicit static credentials for now (per ops preference while running
     # outside AWS); once deployed to AWS/ECS/EC2 with a task/instance role,

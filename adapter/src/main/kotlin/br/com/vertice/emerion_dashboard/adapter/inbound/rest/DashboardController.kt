@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController
 class DashboardController(
     private val dashboardSummaryService: DashboardSummaryService
 ) : DashboardApi {
-    override fun getDashboardTopTrends(orderby: String): ResponseEntity<DashboardTopTrendsResponse> {
-        dashboardSummaryService.getDashboardTopTrends(orderby).let { topTrends ->
+    override fun getDashboardTopTrends(orderby: String, years: Int?): ResponseEntity<DashboardTopTrendsResponse> {
+        dashboardSummaryService.getDashboardTopTrends(orderby, years).let { topTrends ->
             val response = DashboardTopTrendsResponse(
                 topCustomers = topTrends.topCustomers.map { it.toResponse() },
                 topVendedores = topTrends.topVendedores.map { it.toResponse() },

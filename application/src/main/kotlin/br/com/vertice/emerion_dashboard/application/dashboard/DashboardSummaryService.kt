@@ -1,8 +1,8 @@
 package br.com.vertice.emerion_dashboard.application.dashboard
 
 import br.com.vertice.emerion_dashboard.application.outbound.port.DashboardRepositoryPort
-import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyCount
 import br.com.vertice.emerion_dashboard.domain.dashboard.CustomerOrdersOverTime
+import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyCount
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyTrend
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardTopTrends
 import org.springframework.stereotype.Service
@@ -13,12 +13,12 @@ import java.math.RoundingMode
 class DashboardSummaryService(
     private val repository: DashboardRepositoryPort
 ) : DashboardSummary {
-    fun getCustomerOrdersOverTime(): List<CustomerOrdersOverTime> =
-        repository.getDashboardMonthlyTrends().map { it.toCustomerOrdersOverTime() }
+    fun getCustomerOrdersOverTime(years: Int? = null): List<CustomerOrdersOverTime> =
+        repository.getDashboardMonthlyTrends(years).map { it.toCustomerOrdersOverTime() }
 
-    override fun getDashboardTopTrends(orderBy: String): DashboardTopTrends {
-        val totais = repository.getDashboardTotais()
-        val monthlyTrends = repository.getDashboardMonthlyTrends()
+    override fun getDashboardTopTrends(orderBy: String, years: Int?): DashboardTopTrends {
+        val totais = repository.getDashboardTotais(years)
+        val monthlyTrends = repository.getDashboardMonthlyTrends(years)
         return DashboardTopTrends(
             topCustomers = repository.getDashboardCustomerTopTrends(orderBy),
             topVendedores = repository.getDashboardSellerTopTrends(orderBy),

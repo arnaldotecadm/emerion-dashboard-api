@@ -24,7 +24,7 @@ class DashboardMonthlyTrendsIntegrationTest(
         val currentDate = LocalDate.now()
         val previousMonthDate = currentMonth.minusMonths(1).atDay(1)
         val twoMonthsAgoDate = currentMonth.minusMonths(2).atDay(1)
-        val baselineCurrentMonth = dashboardRepository.getDashboardMonthlyTrends()
+        val baselineCurrentMonth = dashboardRepository.getDashboardMonthlyTrends(null)
             .single { it.yearMonth == currentMonth.toString() }
 
         insertCustomerOrder("dashboard-order-current", currentDate, totalPedido = BigDecimal("10.50"))
@@ -32,7 +32,7 @@ class DashboardMonthlyTrendsIntegrationTest(
         insertCustomerQuotation("dashboard-quotation-current", currentDate)
         insertCustomerQuotation("dashboard-quotation-earlier", twoMonthsAgoDate)
 
-        val trends = dashboardRepository.getDashboardMonthlyTrends()
+        val trends = dashboardRepository.getDashboardMonthlyTrends(null)
 
         assertEquals(36, trends.size)
         assertEquals(trends.map { it.yearMonth }.sorted(), trends.map { it.yearMonth })
@@ -49,13 +49,23 @@ class DashboardMonthlyTrendsIntegrationTest(
     }
 
     @Test
+    fun `limits monthly trends to the requested calendar years`() {
+        val year = LocalDate.now().year
+        listOf(1, 2, 3).forEach { years ->
+            val trends = dashboardRepository.getDashboardMonthlyTrends(years)
+            assertEquals("${year - years + 1}-01", trends.first().yearMonth)
+            assertEquals(YearMonth.now().toString(), trends.last().yearMonth)
+        }
+    }
+
+    @Test
     fun `groups order totals by region and billed cancelled or other status`() {
         val baseline = dashboardRepository.getDashboardOrdersByRegion()
             .singleOrNull { it.region == "Sudeste" }
         val baselineFaturado = baseline?.faturado ?: BigDecimal.ZERO
         val baselineCancelado = baseline?.cancelado ?: BigDecimal.ZERO
         val baselineOutros = baseline?.outros ?: BigDecimal.ZERO
-        val baselineMonthlySales = dashboardRepository.getDashboardMonthlyTrends()
+        val baselineMonthlySales = dashboardRepository.getDashboardMonthlyTrends(null)
             .single { it.yearMonth == YearMonth.now().toString() }.customerOrdersAmountSold
 
         insertCustomerOrder("dashboard-region-billed", LocalDate.now(), "SP", "Faturado", BigDecimal("100.00"))
@@ -67,7 +77,7 @@ class DashboardMonthlyTrendsIntegrationTest(
         assertTrue((sudeste.faturado - baselineFaturado).compareTo(BigDecimal("100.00")) == 0)
         assertTrue((sudeste.cancelado - baselineCancelado).compareTo(BigDecimal("25.00")) == 0)
         assertTrue((sudeste.outros - baselineOutros).compareTo(BigDecimal("10.00")) == 0)
-        val monthlySales = dashboardRepository.getDashboardMonthlyTrends()
+        val monthlySales = dashboardRepository.getDashboardMonthlyTrends(null)
             .single { it.yearMonth == YearMonth.now().toString() }
         assertTrue((monthlySales.customerOrdersAmountSold - baselineMonthlySales).compareTo(BigDecimal("135.00")) == 0)
     }

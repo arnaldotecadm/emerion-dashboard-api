@@ -8,7 +8,7 @@ import br.com.vertice.emerion_dashboard.domain.dashboard.TopTrends
 interface DashboardRepositoryPort {
     fun getDashboardCustomerTopTrends(orderBy: String): List<TopTrends>
     fun getDashboardSellerTopTrends(orderBy: String): List<TopTrends>
-    fun getDashboardMonthlyTrends(): List<DashboardMonthlyTrend>
+    fun getDashboardMonthlyTrends(years: Int?): List<DashboardMonthlyTrend>
     fun getDashboardOrdersByRegion(): List<DashboardOrdersByRegion>
-    fun getDashboardTotais(): DashboardTotais
+    fun getDashboardTotais(years: Int?): DashboardTotais
 }

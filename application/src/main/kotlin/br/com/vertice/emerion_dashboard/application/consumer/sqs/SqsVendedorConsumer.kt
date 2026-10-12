@@ -20,7 +20,7 @@ class SqsVendedorConsumer(
 
     @SqsListener(
         "emerion-dashboard-vendedor-batch",
-        maxConcurrentMessages = $$"${app.sqs.fan-out.max-concurrent-messages:5}",
+        maxConcurrentMessages = $$"${app.sqs.fan-out.max-concurrent-messages:10}",
     )
     fun receiveMessage(message: String) {
         val vendedores: List<IngestVendedorCommand> =

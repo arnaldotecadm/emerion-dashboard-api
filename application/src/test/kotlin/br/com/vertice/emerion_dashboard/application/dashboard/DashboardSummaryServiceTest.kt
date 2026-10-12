@@ -16,13 +16,13 @@ class DashboardSummaryServiceTest {
 
     @Test
     fun `returns aligned customer order and quotation counts for every month`() {
-        every { repository.getDashboardTotais() } returns DashboardTotais(
+        every { repository.getDashboardTotais(any()) } returns DashboardTotais(
             quantidadePedidos = 0,
             quantidadeClientes = 0,
             quantidadeVendedores = 0,
             totalFaturado = BigDecimal.ZERO,
         )
-        every { repository.getDashboardMonthlyTrends() } returns listOf(
+        every { repository.getDashboardMonthlyTrends(any()) } returns listOf(
             DashboardMonthlyTrend(
                 "2026-01",
                 customerOrders = 3,
@@ -47,7 +47,7 @@ class DashboardSummaryServiceTest {
         every { repository.getDashboardCustomerTopTrends(any()) } returns emptyList()
         every { repository.getDashboardSellerTopTrends(any()) } returns emptyList()
 
-        val result = service.getDashboardTopTrends("QUANTIDADEPEDIDO")
+        val result = service.getDashboardTopTrends("QUANTIDADEPEDIDO", null)
 
         assertEquals(
             listOf(
@@ -71,7 +71,7 @@ class DashboardSummaryServiceTest {
 
     @Test
     fun `returns monthly order counts and sales amounts for reuse`() {
-        every { repository.getDashboardMonthlyTrends() } returns listOf(
+        every { repository.getDashboardMonthlyTrends(any()) } returns listOf(
             DashboardMonthlyTrend(
                 "2026-01",
                 customerOrders = 3,

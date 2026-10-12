@@ -50,12 +50,19 @@ class DashboardDataRepository(
         }
     }
 
-    fun getDashboardMonthlyTrends(): List<DashboardMonthlyTrendProjection> {
+    fun getDashboardMonthlyTrends(years: Int?): List<DashboardMonthlyTrendProjection> {
         val query = entityManager.createNativeQuery(
             """
-            with months as (
+            with bounds as (
+                select case
+                    when cast(:years as integer) is null
+                        then (date_trunc('month', current_date) - interval '35 months')::date
+                    else make_date(extract(year from current_date)::int - cast(:years as integer) + 1, 1, 1)
+                end as start_date
+            ),
+            months as (
                 select generate_series(
-                    date_trunc('month', current_date) - interval '35 months',
+                    (select start_date from bounds),
                     date_trunc('month', current_date),
                     interval '1 month'
                 )::date as month_start
@@ -66,14 +73,14 @@ class DashboardDataRepository(
                     count(*) as item_count,
                     coalesce(sum(co.total_pedido_com_impostos), 0) as amount_sold
                 from emerion_dashboard.customer_order co
-                where co.data_pedido >= date_trunc('month', current_date) - interval '35 months'
+                where co.data_pedido >= (select start_date from bounds)
                   and co.data_pedido <= current_date
                 group by date_trunc('month', co.data_pedido)::date
             ),
             customer_quotations as (
                 select date_trunc('month', cq.data_pedido)::date as month_start, count(*) as item_count
                 from emerion_dashboard.customer_quotation cq
-                where cq.data_pedido >= date_trunc('month', current_date) - interval '35 months'
+                where cq.data_pedido >= (select start_date from bounds)
                   and cq.data_pedido <= current_date
                 group by date_trunc('month', cq.data_pedido)::date
             )
@@ -88,6 +95,7 @@ class DashboardDataRepository(
             order by months.month_start
             """.trimIndent()
         )
+        query.setParameter("years", years)
         return query.resultList.map { row ->
             val resultArray = row as Array<*>
             DashboardMonthlyTrendProjection(
@@ -165,17 +173,45 @@ class DashboardDataRepository(
         }
     }
 
-    fun getDashboardTotais(): DashboardTotaisProjection {
+    fun getDashboardTotais(years: Int?): DashboardTotaisProjection {
         val query = entityManager.createNativeQuery(
             """
-            select 
-                count(1) quantidadePedidos, 
-                coalesce(sum(co.total_pedido_com_impostos), 0) totalFaturado,
-                (select count(1) from emerion_dashboard.customer c) quantidadeClientes,
-                (select count(1) from emerion_dashboard.vendedor) quantidadeVendedores
-            from emerion_dashboard.customer_order co 
+            with pedidos as (
+                select
+                    codigo_cliente,
+                    vendedor_external_id,
+                    total_pedido_com_impostos
+                from emerion_dashboard.customer_order
+                where cast(:years as integer) is null
+                   or extract(year from data_pedido) >= extract(year from current_date) - cast(:years as integer) + 1
+            ),
+            totais_clientes as (
+                select count(distinct(id)) as quantidadeClientes
+                from emerion_dashboard.customer c
+                right join pedidos co on c.id = co.codigo_cliente
+            ),
+            totais_vendedores as (
+                select count(distinct(id)) as quantidadeVendedores
+                from emerion_dashboard.vendedor v
+                right join pedidos co on v.external_id::int = co.vendedor_external_id
+            ),
+            pedido_totais as (
+                select
+                    count(1) as quantidadePedidos,
+                    coalesce(sum(total_pedido_com_impostos), 0) as totalFaturado
+                from pedidos
+            )
+            select
+                quantidadePedidos,
+                totalFaturado,
+                quantidadeClientes,
+                quantidadeVendedores
+            from pedido_totais
+            cross join totais_clientes
+            cross join totais_vendedores
         """.trimIndent()
         )
+        query.setParameter("years", years)
         val resultArray = query.singleResult as Array<*>
         return DashboardTotaisProjection(
             quantidadePedidos = (resultArray[0] as Number).toInt(),
