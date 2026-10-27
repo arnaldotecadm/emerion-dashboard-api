@@ -18,6 +18,7 @@ interface CustomerOrderHeaderProjection {
     val cnpjEmpresa: String
     val codigoEmpresa: Int
     val codigoCliente: Int
+    val nomeFantasia: String?
     val cpfCnpj: String?
     val numeroPedido: String
     val dataPedido: LocalDate

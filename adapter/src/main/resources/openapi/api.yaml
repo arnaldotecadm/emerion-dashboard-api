@@ -1239,12 +1239,26 @@ paths:
           required: false
           schema:
             type: integer
+        - name: nomeFantasia
+          in: query
+          description: Partial (contains) match on the customer trade name.
+          required: false
+          schema:
+            type: string
         - name: numeroPedido
           in: query
           description: Partial (contains) match on the order number, e.g. `719` matches `A7190`.
           required: false
           schema:
             type: string
+        - name: period
+          in: query
+          description: Filter by the current week (Monday through Sunday), month, year, or all dates.
+          required: false
+          schema:
+            type: string
+            enum: [WEEK, MONTH, YEAR, ALL]
+            default: ALL
       responses:
         '200':
           description: Paginated list of customer orders
@@ -3745,6 +3759,9 @@ components:
           type: integer
         codigoCliente:
           type: integer
+        nomeFantasia:
+          type: string
+          nullable: true
         cpfCnpj:
           type: string
           nullable: true

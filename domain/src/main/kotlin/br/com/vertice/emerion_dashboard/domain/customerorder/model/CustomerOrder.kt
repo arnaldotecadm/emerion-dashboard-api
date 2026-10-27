@@ -15,6 +15,7 @@ data class CustomerOrder(
     val cnpjEmpresa: String,
     val codigoEmpresa: Int,
     val codigoCliente: Int,
+    val nomeFantasia: String? = null,
     val cpfCnpj: String?,
     val numeroPedido: String,
     val dataPedido: LocalDate,

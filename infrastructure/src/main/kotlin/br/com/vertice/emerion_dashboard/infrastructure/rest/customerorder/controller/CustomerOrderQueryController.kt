@@ -30,7 +30,9 @@ class CustomerOrderQueryController(
         codigoCliente: Int?,
         statusPedido: String?,
         codigoEmpresa: Int?,
+        nomeFantasia: String?,
         numeroPedido: String?,
+        period: String,
     ): ResponseEntity<CustomerOrderPage> {
         val query = ListCustomerOrdersQuery(
             page = page,
@@ -38,7 +40,9 @@ class CustomerOrderQueryController(
             codigoCliente = codigoCliente,
             statusPedido = statusPedido,
             codigoEmpresa = codigoEmpresa,
+            nomeFantasia = nomeFantasia,
             numeroPedido = numeroPedido,
+            period = period,
         )
         val result = customerOrderQueryUseCase.list(query)
         return ResponseEntity.ok(CustomerOrderQueryRestMapper.toPageResponse(result))

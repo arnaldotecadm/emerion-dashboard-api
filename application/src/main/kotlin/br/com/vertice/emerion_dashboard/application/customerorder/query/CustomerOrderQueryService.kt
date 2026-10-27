@@ -25,6 +25,8 @@ class CustomerOrderQueryService(
             codigoCliente = query.codigoCliente,
             statusPedido = query.statusPedido,
             codigoEmpresa = query.codigoEmpresa,
+            nomeFantasia = query.nomeFantasia,
             numeroPedido = query.numeroPedido,
+            period = query.period,
         )
 }

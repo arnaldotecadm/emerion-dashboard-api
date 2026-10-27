@@ -26,37 +26,40 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
         nativeQuery = true,
         value = """
             SELECT
-                id,
-                external_id AS externalId,
-                codigo_empresa AS codigoEmpresa,
-                codigo_cliente AS codigoCliente,
-                cpf_cnpj AS cpfCnpj,
-                numero_pedido AS numeroPedido,
-                data_pedido AS dataPedido,
-                status_pedido AS statusPedido,
-                total_pedido_com_impostos AS totalPedidoComImpostos,
-                total_pedido_sem_impostos AS totalPedidoSemImpostos,
-                total_ipi AS totalIpi,
-                total_icms AS totalIcms,
-                total_pis AS totalPis,
-                total_cofins AS totalCofins,
-                total_substituicao_tributaria AS totalSubstituicaoTributaria,
-                total_desconto_incondicional AS totalDescontoIncondicional,
-                total_frete AS totalFrete,
-                total_seguro AS totalSeguro,
-                total_outras_despesas AS totalOutrasDespesas,
-                vendedor_external_id AS vendedorExternalId,
-                data_entrega_prevista AS dataEntregaPrevista,
-                codigo_transportadora AS codigoTransportadora,
-                pedido_anterior AS pedidoAnterior,
-                regime_tributario AS regimeTributario,
-                nome_regime_tributario AS nomeRegimeTributario,
-                codigo_padrao_faturamento AS codigoPadraoFaturamento,
-                uf_pedido AS ufPedido,
-                created_at AS createdAt,
-                updated_at AS updatedAt
-            FROM customer_order
-            WHERE id = :id
+                co.id,
+                co.external_id AS externalId,
+                co.codigo_empresa AS codigoEmpresa,
+                c.nome_fantasia AS nomeFantasia,
+                co.codigo_cliente AS codigoCliente,
+                co.cpf_cnpj AS cpfCnpj,
+                co.cnpj_empresa AS cnpjEmpresa,
+                co.numero_pedido AS numeroPedido,
+                co.data_pedido AS dataPedido,
+                co.status_pedido AS statusPedido,
+                co.total_pedido_com_impostos AS totalPedidoComImpostos,
+                co.total_pedido_sem_impostos AS totalPedidoSemImpostos,
+                co.total_ipi AS totalIpi,
+                co.total_icms AS totalIcms,
+                co.total_pis AS totalPis,
+                co.total_cofins AS totalCofins,
+                co.total_substituicao_tributaria AS totalSubstituicaoTributaria,
+                co.total_desconto_incondicional AS totalDescontoIncondicional,
+                co.total_frete AS totalFrete,
+                co.total_seguro AS totalSeguro,
+                co.total_outras_despesas AS totalOutrasDespesas,
+                co.vendedor_external_id AS vendedorExternalId,
+                co.data_entrega_prevista AS dataEntregaPrevista,
+                co.codigo_transportadora AS codigoTransportadora,
+                co.pedido_anterior AS pedidoAnterior,
+                co.regime_tributario AS regimeTributario,
+                co.nome_regime_tributario AS nomeRegimeTributario,
+                co.codigo_padrao_faturamento AS codigoPadraoFaturamento,
+                co.uf_pedido AS ufPedido,
+                co.created_at AS createdAt,
+                co.updated_at AS updatedAt
+            FROM customer_order co
+            left join customer c on c.external_id::int = co.codigo_cliente
+            WHERE co.id = :id
         """,
     )
     fun findHeaderProjectionById(@Param("id") id: Long): CustomerOrderHeaderProjection?
@@ -65,57 +68,102 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
         nativeQuery = true,
         value = """
             SELECT
-                id,
-                external_id AS externalId,
-                codigo_empresa AS codigoEmpresa,
-                codigo_cliente AS codigoCliente,
-                cpf_cnpj AS cpfCnpj,
-                cnpj_empresa AS cnpjEmpresa,
-                numero_pedido AS numeroPedido,
-                data_pedido AS dataPedido,
-                status_pedido AS statusPedido,
-                total_pedido_com_impostos AS totalPedidoComImpostos,
-                total_pedido_sem_impostos AS totalPedidoSemImpostos,
-                total_ipi AS totalIpi,
-                total_icms AS totalIcms,
-                total_pis AS totalPis,
-                total_cofins AS totalCofins,
-                total_substituicao_tributaria AS totalSubstituicaoTributaria,
-                total_desconto_incondicional AS totalDescontoIncondicional,
-                total_frete AS totalFrete,
-                total_seguro AS totalSeguro,
-                total_outras_despesas AS totalOutrasDespesas,
-                vendedor_external_id AS vendedorExternalId,
-                data_entrega_prevista AS dataEntregaPrevista,
-                codigo_transportadora AS codigoTransportadora,
-                pedido_anterior AS pedidoAnterior,
-                regime_tributario AS regimeTributario,
-                nome_regime_tributario AS nomeRegimeTributario,
-                codigo_padrao_faturamento AS codigoPadraoFaturamento,
-                uf_pedido AS ufPedido,
-                created_at AS createdAt,
-                updated_at AS updatedAt
-            FROM customer_order
-            WHERE (:codigoCliente IS NULL OR codigo_cliente = :codigoCliente)
-              AND (:statusPedido IS NULL OR status_pedido = :statusPedido)
-              AND (:codigoEmpresa IS NULL OR codigo_empresa = :codigoEmpresa)
-              AND (CAST(:numeroPedido AS text) IS NULL OR numero_pedido ILIKE CAST(:numeroPedido AS text))
-            order by numero_pedido desc
+                co.id,
+                co.external_id AS externalId,
+                co.codigo_empresa AS codigoEmpresa,
+                co.codigo_cliente AS codigoCliente,
+                c.nome_fantasia AS nomeFantasia,
+                co.cpf_cnpj AS cpfCnpj,
+                co.cnpj_empresa AS cnpjEmpresa,
+                co.numero_pedido AS numeroPedido,
+                co.data_pedido AS dataPedido,
+                co.status_pedido AS statusPedido,
+                co.total_pedido_com_impostos AS totalPedidoComImpostos,
+                co.total_pedido_sem_impostos AS totalPedidoSemImpostos,
+                co.total_ipi AS totalIpi,
+                co.total_icms AS totalIcms,
+                co.total_pis AS totalPis,
+                co.total_cofins AS totalCofins,
+                co.total_substituicao_tributaria AS totalSubstituicaoTributaria,
+                co.total_desconto_incondicional AS totalDescontoIncondicional,
+                co.total_frete AS totalFrete,
+                co.total_seguro AS totalSeguro,
+                co.total_outras_despesas AS totalOutrasDespesas,
+                co.vendedor_external_id AS vendedorExternalId,
+                co.data_entrega_prevista AS dataEntregaPrevista,
+                co.codigo_transportadora AS codigoTransportadora,
+                co.pedido_anterior AS pedidoAnterior,
+                co.regime_tributario AS regimeTributario,
+                co.nome_regime_tributario AS nomeRegimeTributario,
+                co.codigo_padrao_faturamento AS codigoPadraoFaturamento,
+                co.uf_pedido AS ufPedido,
+                co.created_at AS createdAt,
+                co.updated_at AS updatedAt
+            FROM customer_order co
+            LEFT JOIN customer c ON c.external_id::int = co.codigo_cliente
+            WHERE (:codigoCliente IS NULL OR co.codigo_cliente = :codigoCliente)
+              AND (:statusPedido IS NULL OR co.status_pedido = :statusPedido)
+              AND (:codigoEmpresa IS NULL OR co.codigo_empresa = :codigoEmpresa)
+              AND (CAST(:nomeFantasia AS text) IS NULL OR c.nome_fantasia ILIKE CAST(:nomeFantasia AS text))
+              AND (CAST(:numeroPedido AS text) IS NULL OR co.numero_pedido ILIKE CAST(:numeroPedido AS text))
+              AND (
+                    CAST(:period AS text) IS NULL
+                    OR CAST(:period AS text) = 'ALL'
+                    OR (
+                        CAST(:period AS text) = 'WEEK'
+                        AND co.data_pedido >= date_trunc('week', current_date)::date
+                        AND co.data_pedido < (date_trunc('week', current_date) + interval '1 week')::date
+                    )
+                    OR (
+                        CAST(:period AS text) = 'MONTH'
+                        AND co.data_pedido >= date_trunc('month', current_date)::date
+                        AND co.data_pedido < (date_trunc('month', current_date) + interval '1 month')::date
+                    )
+                    OR (
+                        CAST(:period AS text) = 'YEAR'
+                        AND co.data_pedido >= date_trunc('year', current_date)::date
+                        AND co.data_pedido < (date_trunc('year', current_date) + interval '1 year')::date
+                    )
+              )
+            order by co.numero_pedido desc
         """,
         countQuery = """
             SELECT count(*)
             FROM customer_order
+            LEFT JOIN customer c ON c.external_id::int = codigo_cliente
             WHERE (:codigoCliente IS NULL OR codigo_cliente = :codigoCliente)
               AND (:statusPedido IS NULL OR status_pedido = :statusPedido)
               AND (:codigoEmpresa IS NULL OR codigo_empresa = :codigoEmpresa)
+              AND (CAST(:nomeFantasia AS text) IS NULL OR c.nome_fantasia ILIKE CAST(:nomeFantasia AS text))
               AND (CAST(:numeroPedido AS text) IS NULL OR numero_pedido ILIKE CAST(:numeroPedido AS text))
+              AND (
+                    CAST(:period AS text) IS NULL
+                    OR CAST(:period AS text) = 'ALL'
+                    OR (
+                        CAST(:period AS text) = 'WEEK'
+                        AND data_pedido >= date_trunc('week', current_date)::date
+                        AND data_pedido < (date_trunc('week', current_date) + interval '1 week')::date
+                    )
+                    OR (
+                        CAST(:period AS text) = 'MONTH'
+                        AND data_pedido >= date_trunc('month', current_date)::date
+                        AND data_pedido < (date_trunc('month', current_date) + interval '1 month')::date
+                    )
+                    OR (
+                        CAST(:period AS text) = 'YEAR'
+                        AND data_pedido >= date_trunc('year', current_date)::date
+                        AND data_pedido < (date_trunc('year', current_date) + interval '1 year')::date
+                    )
+              )
         """,
     )
     fun searchHeaders(
         @Param("codigoCliente") codigoCliente: Int?,
         @Param("statusPedido") statusPedido: String?,
         @Param("codigoEmpresa") codigoEmpresa: Int?,
+        @Param("nomeFantasia") nomeFantasia: String?,
         @Param("numeroPedido") numeroPedido: String?,
+        @Param("period") period: String?,
         pageable: Pageable,
     ): Page<CustomerOrderHeaderProjection>
 

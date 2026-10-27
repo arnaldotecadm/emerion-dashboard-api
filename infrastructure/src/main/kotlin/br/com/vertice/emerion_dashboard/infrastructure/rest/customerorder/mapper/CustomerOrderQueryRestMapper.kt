@@ -18,6 +18,7 @@ object CustomerOrderQueryRestMapper {
             externalId = customerOrder.externalId,
             codigoEmpresa = customerOrder.codigoEmpresa,
             codigoCliente = customerOrder.codigoCliente,
+            nomeFantasia = customerOrder.nomeFantasia,
             cpfCnpj = customerOrder.cpfCnpj,
             numeroPedido = customerOrder.numeroPedido,
             dataPedido = customerOrder.dataPedido,
