@@ -12,14 +12,14 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class CustomerAddressQueryService(
     private val customerAddressRepository: CustomerAddressRepository,
-) : CustomerAddressQueryUseCase {
+) {
 
     @Transactional(readOnly = true)
-    override fun getById(id: Long): CustomerAddress =
+    fun getById(id: Long): CustomerAddress =
         customerAddressRepository.findById(id) ?: throw CustomerAddressNotFoundException(id)
 
     @Transactional(readOnly = true)
-    override fun list(query: ListCustomerAddressesQuery): Page<CustomerAddress> =
+    fun list(query: ListCustomerAddressesQuery): Page<CustomerAddress> =
         customerAddressRepository.findAll(
             pageRequest = PageRequest(page = query.page, size = query.size),
             cpfCnpjContains = query.cpfCnpjContains,

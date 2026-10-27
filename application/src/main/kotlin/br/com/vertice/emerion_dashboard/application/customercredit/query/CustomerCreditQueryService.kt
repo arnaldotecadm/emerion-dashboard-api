@@ -12,14 +12,14 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class CustomerCreditQueryService(
     private val customerCreditRepository: CustomerCreditRepository,
-) : CustomerCreditQueryUseCase {
+) {
 
     @Transactional(readOnly = true)
-    override fun getById(id: Long): CustomerCredit =
+    fun getById(id: Long): CustomerCredit =
         customerCreditRepository.findById(id) ?: throw CustomerCreditNotFoundException(id)
 
     @Transactional(readOnly = true)
-    override fun list(query: ListCustomerCreditsQuery): Page<CustomerCredit> =
+    fun list(query: ListCustomerCreditsQuery): Page<CustomerCredit> =
         customerCreditRepository.findAll(
             pageRequest = PageRequest(page = query.page, size = query.size),
             customerExternalId = query.customerExternalId,

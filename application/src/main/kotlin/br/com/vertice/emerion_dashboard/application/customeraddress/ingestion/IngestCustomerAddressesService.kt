@@ -26,12 +26,12 @@ import java.time.Instant
 class IngestCustomerAddressesService(
     private val customerAddressRepository: CustomerAddressRepository,
     private val clock: Clock = Clock.systemUTC(),
-) : IngestCustomerAddressesUseCase {
+) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @Transactional
-    override fun ingest(command: IngestBatchCommand): IngestBatchResult {
+    fun ingest(command: IngestBatchCommand): IngestBatchResult {
         logger.info("Ingesting batch '{}' with {} customer address set(s)", command.batchId, command.items.size)
 
         val results = command.items.map { item -> ingestItem(item, Instant.now(clock)) }
@@ -46,7 +46,7 @@ class IngestCustomerAddressesService(
     }
 
     @Transactional
-    override fun ingestSingle(command: IngestCustomerAddressCommand): IngestItemResult {
+    fun ingestSingle(command: IngestCustomerAddressCommand): IngestItemResult {
         logger.info("Ingesting single customer address set externalId='{}'", command.externalId)
         return ingestItem(command, Instant.now(clock))
     }

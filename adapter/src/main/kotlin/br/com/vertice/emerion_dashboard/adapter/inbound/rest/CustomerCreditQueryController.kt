@@ -1,8 +1,9 @@
-package br.com.vertice.emerion_dashboard.infrastructure.rest.customercredit.controller
+package br.com.vertice.emerion_dashboard.adapter.inbound.rest
 
-import br.com.vertice.emerion_dashboard.application.customercredit.query.CustomerCreditQueryUseCase
+import br.com.vertice.emerion_dashboard.adapter.mapper.CustomerCreditQueryRestMapper.toPageResponse
+import br.com.vertice.emerion_dashboard.adapter.mapper.CustomerCreditQueryRestMapper.toResponse
+import br.com.vertice.emerion_dashboard.application.customercredit.query.CustomerCreditQueryService
 import br.com.vertice.emerion_dashboard.application.customercredit.query.model.ListCustomerCreditsQuery
-import br.com.vertice.emerion_dashboard.infrastructure.rest.customercredit.mapper.CustomerCreditQueryRestMapper
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.api.CustomerCreditsApi
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerCreditPage
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerCreditResponse
@@ -16,13 +17,11 @@ import org.springframework.web.bind.annotation.RestController
  */
 @RestController
 class CustomerCreditQueryController(
-    private val customerCreditQueryUseCase: CustomerCreditQueryUseCase,
+    private val customerCreditQueryService: CustomerCreditQueryService,
 ) : CustomerCreditsApi {
 
-    override fun getCustomerCreditById(id: Long): ResponseEntity<CustomerCreditResponse> {
-        val customerCredit = customerCreditQueryUseCase.getById(id)
-        return ResponseEntity.ok(CustomerCreditQueryRestMapper.toResponse(customerCredit))
-    }
+    override fun getCustomerCreditById(id: Long): ResponseEntity<CustomerCreditResponse> =
+        ResponseEntity.ok(customerCreditQueryService.getById(id).toResponse())
 
     override fun listCustomerCredits(
         page: Int,
@@ -38,7 +37,6 @@ class CustomerCreditQueryController(
             tipo = tipo,
             cnpjEmpresa = cnpjEmpresa,
         )
-        val result = customerCreditQueryUseCase.list(query)
-        return ResponseEntity.ok(CustomerCreditQueryRestMapper.toPageResponse(result))
+        return ResponseEntity.ok(customerCreditQueryService.list(query).toPageResponse())
     }
 }

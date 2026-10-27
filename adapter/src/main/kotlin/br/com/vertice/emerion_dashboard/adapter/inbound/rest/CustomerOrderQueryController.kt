@@ -1,8 +1,9 @@
-package br.com.vertice.emerion_dashboard.infrastructure.rest.customerorder.controller
+package br.com.vertice.emerion_dashboard.adapter.inbound.rest
 
-import br.com.vertice.emerion_dashboard.application.customerorder.query.CustomerOrderQueryUseCase
+import br.com.vertice.emerion_dashboard.adapter.mapper.CustomerOrderQueryRestMapper.toPageResponse
+import br.com.vertice.emerion_dashboard.adapter.mapper.CustomerOrderQueryRestMapper.toResponse
+import br.com.vertice.emerion_dashboard.application.customerorder.query.CustomerOrderQueryService
 import br.com.vertice.emerion_dashboard.application.customerorder.query.model.ListCustomerOrdersQuery
-import br.com.vertice.emerion_dashboard.infrastructure.rest.customerorder.mapper.CustomerOrderQueryRestMapper
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.api.CustomerOrdersApi
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerOrderPage
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerOrderResponse
@@ -16,13 +17,11 @@ import org.springframework.web.bind.annotation.RestController
  */
 @RestController
 class CustomerOrderQueryController(
-    private val customerOrderQueryUseCase: CustomerOrderQueryUseCase,
+    private val customerOrderQueryService: CustomerOrderQueryService,
 ) : CustomerOrdersApi {
 
-    override fun getCustomerOrderById(id: Long): ResponseEntity<CustomerOrderResponse> {
-        val customerOrder = customerOrderQueryUseCase.getById(id)
-        return ResponseEntity.ok(CustomerOrderQueryRestMapper.toResponse(customerOrder))
-    }
+    override fun getCustomerOrderById(id: Long): ResponseEntity<CustomerOrderResponse> =
+        ResponseEntity.ok(customerOrderQueryService.getById(id).toResponse())
 
     override fun listCustomerOrders(
         page: Int,
@@ -44,7 +43,6 @@ class CustomerOrderQueryController(
             numeroPedido = numeroPedido,
             period = period,
         )
-        val result = customerOrderQueryUseCase.list(query)
-        return ResponseEntity.ok(CustomerOrderQueryRestMapper.toPageResponse(result))
+        return ResponseEntity.ok(customerOrderQueryService.list(query).toPageResponse())
     }
 }

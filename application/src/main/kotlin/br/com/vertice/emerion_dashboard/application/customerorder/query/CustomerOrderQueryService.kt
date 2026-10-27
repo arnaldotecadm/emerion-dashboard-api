@@ -12,14 +12,14 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class CustomerOrderQueryService(
     private val customerOrderRepository: CustomerOrderRepository,
-) : CustomerOrderQueryUseCase {
+) {
 
     @Transactional(readOnly = true)
-    override fun getById(id: Long): CustomerOrder =
+    fun getById(id: Long): CustomerOrder =
         customerOrderRepository.findById(id) ?: throw CustomerOrderNotFoundException(id)
 
     @Transactional(readOnly = true)
-    override fun list(query: ListCustomerOrdersQuery): Page<CustomerOrder> =
+    fun list(query: ListCustomerOrdersQuery): Page<CustomerOrder> =
         customerOrderRepository.findAll(
             pageRequest = PageRequest(page = query.page, size = query.size),
             codigoCliente = query.codigoCliente,
