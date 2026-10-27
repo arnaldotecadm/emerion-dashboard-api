@@ -26,11 +26,11 @@ class IngestVendedoresService(
     private val clock: Clock = Clock.systemUTC(),
     private val sqsProducer: SQSProducer,
     @Value($$"${app.aws.queues.ingestion-requests.vendedor-batch}") private val batchQueueUrl: String
-) : IngestVendedoresUseCase {
+) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    override fun ingest(command: IngestBatchCommand): IngestBatchResult {
+    fun ingest(command: IngestBatchCommand): IngestBatchResult {
         logger.info("Ingesting batch '{}' with {} vendedor(es)", command.batchId, command.items.size)
 
         sqsProducer.sendMessageBatch(batchQueueUrl, command.items)
@@ -51,7 +51,7 @@ class IngestVendedoresService(
     }
 
     @Transactional
-    override fun ingestSingle(command: IngestVendedorCommand): IngestItemResult {
+    fun ingestSingle(command: IngestVendedorCommand): IngestItemResult {
         logger.info("Ingesting single vendedor externalId='{}'", command.externalId)
         return ingestItem(command, Instant.now(clock))
     }
