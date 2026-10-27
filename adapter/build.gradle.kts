@@ -21,6 +21,7 @@ dependencies {
     implementation(libs.spring.boot.starter.validation)
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.security)
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server:${libs.versions.springBoot.get()}")
     implementation(libs.springdoc.openapi.webmvc.ui)
 
     testImplementation(kotlin("test"))

@@ -1,38 +1,29 @@
-package br.com.vertice.emerion_dashboard.infrastructure.rest.notification.controller
+package br.com.vertice.emerion_dashboard.adapter.inbound.rest
 
-import br.com.vertice.emerion_dashboard.application.notification.query.NotificationQueryUseCase
+import br.com.vertice.emerion_dashboard.adapter.mapper.NotificationQueryRestMapper.toDomain
+import br.com.vertice.emerion_dashboard.adapter.mapper.NotificationQueryRestMapper.toPageResponse
+import br.com.vertice.emerion_dashboard.adapter.mapper.NotificationQueryRestMapper.toResponse
+import br.com.vertice.emerion_dashboard.application.notification.query.NotificationQueryService
 import br.com.vertice.emerion_dashboard.application.notification.query.model.ListNotificationsQuery
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.api.NotificationsApi
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.NotificationCategory
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.NotificationPage
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.NotificationResponse
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.NotificationStatus
-import br.com.vertice.emerion_dashboard.infrastructure.rest.notification.mapper.NotificationQueryRestMapper
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.bind.annotation.RestController
 
-/**
- * Driving/inbound adapter for the notification endpoints consumed by the
- * React frontend. Implements the generated `NotificationsApi` contract,
- * contains no business logic. Every operation is scoped to the calling
- * user's Cognito subject, read off the already-validated bearer token in
- * the security context (see CognitoJwtConfig/SecurityConfig) rather than a
- * request parameter — the generated interface has no such parameter to
- * override, and a subject read from the request body/query could be
- * spoofed — so a user can never read or act on someone else's
- * notifications.
- */
 @RestController
 class NotificationQueryController(
-    private val notificationQueryUseCase: NotificationQueryUseCase,
+    private val notificationQueryService: NotificationQueryService,
 ) : NotificationsApi {
 
     override fun getNotificationById(id: Long): ResponseEntity<NotificationResponse> {
-        val notification = notificationQueryUseCase.getById(id, currentUserId())
-        return ResponseEntity.ok(NotificationQueryRestMapper.toResponse(notification))
+        val notification = notificationQueryService.getById(id, currentUserId())
+        return ResponseEntity.ok(notification.toResponse())
     }
 
     override fun listNotifications(
@@ -45,21 +36,21 @@ class NotificationQueryController(
             page = page,
             size = size,
             userId = currentUserId(),
-            status = status?.let(NotificationQueryRestMapper::toDomain),
-            category = category?.let(NotificationQueryRestMapper::toDomain),
+            status = status?.toDomain(),
+            category = category?.toDomain(),
         )
-        val result = notificationQueryUseCase.list(query)
-        return ResponseEntity.ok(NotificationQueryRestMapper.toPageResponse(result))
+        val result = notificationQueryService.list(query)
+        return ResponseEntity.ok(result.toPageResponse())
     }
 
     override fun markNotificationAsRead(id: Long): ResponseEntity<NotificationResponse> {
-        val notification = notificationQueryUseCase.markAsRead(id, currentUserId())
-        return ResponseEntity.ok(NotificationQueryRestMapper.toResponse(notification))
+        val notification = notificationQueryService.markAsRead(id, currentUserId())
+        return ResponseEntity.ok(notification.toResponse())
     }
 
     override fun dismissNotification(id: Long): ResponseEntity<NotificationResponse> {
-        val notification = notificationQueryUseCase.dismiss(id, currentUserId())
-        return ResponseEntity.ok(NotificationQueryRestMapper.toResponse(notification))
+        val notification = notificationQueryService.dismiss(id, currentUserId())
+        return ResponseEntity.ok(notification.toResponse())
     }
 
     /** Cognito `sub` claim of the caller, taken from the JWT authentication already established by Spring Security. */

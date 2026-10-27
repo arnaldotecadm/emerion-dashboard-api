@@ -17,12 +17,12 @@ import java.time.Instant
 class IngestLiberacaoService(
     private val liberacaoRepository: LiberacaoRepository,
     private val clock: Clock = Clock.systemUTC(),
-) : IngestLiberacaoUseCase {
+) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @Transactional
-    override fun ingestSingle(command: IngestLiberacaoCommand): IngestLiberacaoItemResult {
+    fun ingestSingle(command: IngestLiberacaoCommand): IngestLiberacaoItemResult {
         val key = key(command)
         return try {
             val now = Instant.now(clock)

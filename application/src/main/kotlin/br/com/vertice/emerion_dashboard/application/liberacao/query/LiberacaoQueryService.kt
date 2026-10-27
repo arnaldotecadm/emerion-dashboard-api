@@ -12,14 +12,14 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class LiberacaoQueryService(
     private val liberacaoRepository: LiberacaoRepository,
-) : LiberacaoQueryUseCase {
+) {
 
     @Transactional(readOnly = true)
-    override fun getById(id: Long): Liberacao =
+    fun getById(id: Long): Liberacao =
         liberacaoRepository.findById(id) ?: throw LiberacaoNotFoundException(id)
 
     @Transactional(readOnly = true)
-    override fun list(query: ListLiberacoesQuery): Page<Liberacao> =
+    fun list(query: ListLiberacoesQuery): Page<Liberacao> =
         liberacaoRepository.findAll(
             pageRequest = PageRequest(page = query.page, size = query.size),
             numeroPedido = query.numeroPedido,

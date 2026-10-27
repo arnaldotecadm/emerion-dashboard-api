@@ -25,12 +25,12 @@ import java.time.Instant
 class IngestCustomerCreditsService(
     private val customerCreditRepository: CustomerCreditRepository,
     private val clock: Clock = Clock.systemUTC(),
-) : IngestCustomerCreditsUseCase {
+) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @Transactional
-    override fun ingest(command: IngestBatchCommand): IngestBatchResult {
+    fun ingest(command: IngestBatchCommand): IngestBatchResult {
         logger.info("Ingesting batch '{}' with {} customer credit entr(y/ies)", command.batchId, command.items.size)
 
         val results = command.items.map { item -> ingestItem(item, Instant.now(clock)) }
@@ -45,7 +45,7 @@ class IngestCustomerCreditsService(
     }
 
     @Transactional
-    override fun ingestSingle(command: IngestCustomerCreditCommand): IngestItemResult {
+    fun ingestSingle(command: IngestCustomerCreditCommand): IngestItemResult {
         logger.info(
             "Ingesting single customer credit entry customerExternalId='{}', sequencia='{}'",
             command.customerExternalId,

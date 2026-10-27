@@ -1,4 +1,4 @@
-package br.com.vertice.emerion_dashboard.infrastructure.rest.notification.mapper
+package br.com.vertice.emerion_dashboard.adapter.mapper
 
 import br.com.vertice.emerion_dashboard.domain.notification.model.Notification
 import br.com.vertice.emerion_dashboard.domain.notification.model.NotificationCategory
@@ -16,62 +16,62 @@ import java.time.ZoneOffset
 /** Maps between the domain model and the generated OpenAPI query DTOs. */
 object NotificationQueryRestMapper {
 
-    fun toResponse(notification: Notification): NotificationResponse =
+    fun Notification.toResponse(): NotificationResponse =
         NotificationResponse(
-            id = notification.id,
-            userId = notification.userId,
-            name = notification.name,
-            description = notification.description,
-            status = toDto(notification.status),
-            category = toDto(notification.category),
-            priority = toDto(notification.priority),
-            referenceType = notification.referenceType,
-            referenceId = notification.referenceId,
-            actionUrl = notification.actionUrl,
-            createdAt = notification.createdAt.atOffset(ZoneOffset.UTC),
-            updatedAt = notification.updatedAt.atOffset(ZoneOffset.UTC),
-            readAt = notification.readAt?.atOffset(ZoneOffset.UTC),
-            dismissedAt = notification.dismissedAt?.atOffset(ZoneOffset.UTC),
+            id = id,
+            userId = userId,
+            name = name,
+            description = description,
+            status = status.toDto(),
+            category = category.toDto(),
+            priority = priority.toDto(),
+            referenceType = referenceType,
+            referenceId = referenceId,
+            actionUrl = actionUrl,
+            createdAt = createdAt.atOffset(ZoneOffset.UTC),
+            updatedAt = updatedAt.atOffset(ZoneOffset.UTC),
+            readAt = readAt?.atOffset(ZoneOffset.UTC),
+            dismissedAt = dismissedAt?.atOffset(ZoneOffset.UTC),
         )
 
-    fun toPageResponse(page: DomainPage<Notification>): NotificationPage =
+    fun DomainPage<Notification>.toPageResponse(): NotificationPage =
         NotificationPage(
-            data = page.content.map(::toResponse),
+            data = content.map { it.toResponse() },
             pagination = PaginationInfo(
-                total = page.totalElements,
-                page = page.page,
-                propertySize = page.size,
-                totalPages = page.totalPages,
+                total = totalElements,
+                page = page,
+                propertySize = size,
+                totalPages = totalPages,
             ),
         )
 
-    fun toDomain(status: NotificationStatusDto): NotificationStatus = when (status) {
+    fun NotificationStatusDto.toDomain(): NotificationStatus = when (this) {
         NotificationStatusDto.UNREAD -> NotificationStatus.UNREAD
         NotificationStatusDto.READ -> NotificationStatus.READ
         NotificationStatusDto.DISMISSED -> NotificationStatus.DISMISSED
     }
 
-    fun toDomain(category: NotificationCategoryDto): NotificationCategory = when (category) {
+    fun NotificationCategoryDto.toDomain(): NotificationCategory = when (this) {
         NotificationCategoryDto.INGESTION -> NotificationCategory.INGESTION
         NotificationCategoryDto.STATUS_UPDATE -> NotificationCategory.STATUS_UPDATE
         NotificationCategoryDto.APPROVAL_NEEDED -> NotificationCategory.APPROVAL_NEEDED
         NotificationCategoryDto.SYSTEM -> NotificationCategory.SYSTEM
     }
 
-    private fun toDto(status: NotificationStatus): NotificationStatusDto = when (status) {
+    private fun NotificationStatus.toDto(): NotificationStatusDto = when (this) {
         NotificationStatus.UNREAD -> NotificationStatusDto.UNREAD
         NotificationStatus.READ -> NotificationStatusDto.READ
         NotificationStatus.DISMISSED -> NotificationStatusDto.DISMISSED
     }
 
-    private fun toDto(category: NotificationCategory): NotificationCategoryDto = when (category) {
+    private fun NotificationCategory.toDto(): NotificationCategoryDto = when (this) {
         NotificationCategory.INGESTION -> NotificationCategoryDto.INGESTION
         NotificationCategory.STATUS_UPDATE -> NotificationCategoryDto.STATUS_UPDATE
         NotificationCategory.APPROVAL_NEEDED -> NotificationCategoryDto.APPROVAL_NEEDED
         NotificationCategory.SYSTEM -> NotificationCategoryDto.SYSTEM
     }
 
-    private fun toDto(priority: NotificationPriority): NotificationPriorityDto = when (priority) {
+    private fun NotificationPriority.toDto(): NotificationPriorityDto = when (this) {
         NotificationPriority.LOW -> NotificationPriorityDto.LOW
         NotificationPriority.MEDIUM -> NotificationPriorityDto.MEDIUM
         NotificationPriority.HIGH -> NotificationPriorityDto.HIGH
