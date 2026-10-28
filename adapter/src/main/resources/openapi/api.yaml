@@ -1639,6 +1639,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/DashboardTopTrendsResponse'
 
+  /dashboard/customer-top-trends:
+    get:
+      tags:
+        - dashboard
+      operationId: getDashboardCustomerTopTrends
+      summary: Get customer-specific dashboard trends
+      parameters:
+        - name: years
+          in: query
+          required: false
+          description: >
+            Limits monthly average ticket, customer profitability, and new
+            customer registrations to the current calendar year (1), the
+            last 2 calendar years (2), or the last 3 calendar years (3).
+            Omit to include all data.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 3
+      responses:
+        '200':
+          description: Customer top trends
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardCustomerTopTrendsResponse'
+
   /sales/customer-orders-over-time:
     get:
       tags:
@@ -4103,6 +4130,46 @@ components:
           type: integer
         ticketMedio:
           type: number
+
+    DashboardCustomerTopTrendsResponse:
+      type: object
+      required:
+        - customerDistributionByRegion
+        - activeCustomers
+        - monthlyAverageTicket
+        - mostProfitableCustomers
+        - newCustomersByMonth
+      properties:
+        customerDistributionByRegion:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerRegionDistribution'
+        activeCustomers:
+          type: integer
+        monthlyAverageTicket:
+          type: number
+          description: Average billed order value across the trailing 12 months.
+        mostProfitableCustomers:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardTopTrendsDTO'
+        newCustomersByMonth:
+          type: array
+          description: Customer registrations by month for the last 12 months.
+          items:
+            $ref: '#/components/schemas/DashboardMonthlyCount'
+
+    CustomerRegionDistribution:
+      type: object
+      required:
+        - region
+        - customerCount
+      properties:
+        region:
+          type: string
+          description: Customer UF, or "Não informado" when UF is blank.
+        customerCount:
+          type: integer
 
     DashboardMonthlyCount:
       type: object

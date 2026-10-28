@@ -5,6 +5,7 @@ import br.com.vertice.emerion_dashboard.domain.dashboard.CustomerOrdersOverTime
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyCount
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyTrend
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardTopTrends
+import br.com.vertice.emerion_dashboard.domain.dashboard.CustomerTopTrends
 import br.com.vertice.emerion_dashboard.domain.dashboard.TopTrends
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -19,6 +20,15 @@ class DashboardSummaryService(
 
     fun getSellerTopTrends(orderBy: String, years: Int? = null): List<TopTrends> =
         repository.getDashboardSellerTopTrends(orderBy, years)
+
+    fun getCustomerTopTrends(years: Int? = null): CustomerTopTrends =
+        CustomerTopTrends(
+            customerDistributionByRegion = repository.getCustomerDistributionByRegion(),
+            activeCustomers = repository.getActiveCustomerCount(),
+            monthlyAverageTicket = repository.getCustomerMonthlyAverageTicket(years),
+            mostProfitableCustomers = repository.getMostProfitableCustomers(years),
+            newCustomersByMonth = repository.getNewCustomersByMonth(years),
+        )
 
     override fun getDashboardTopTrends(orderBy: String, years: Int?): DashboardTopTrends {
         val totais = repository.getDashboardTotais(years)

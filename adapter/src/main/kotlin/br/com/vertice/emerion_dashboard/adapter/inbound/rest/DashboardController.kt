@@ -6,6 +6,8 @@ import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.api.Dashbo
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardMonthlyCount
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardOrdersByRegion
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardTopTrendsResponse
+import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerRegionDistribution
+import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardCustomerTopTrendsResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RestController
@@ -14,6 +16,23 @@ import org.springframework.web.bind.annotation.RestController
 class DashboardController(
     private val dashboardSummaryService: DashboardSummaryService
 ) : DashboardApi {
+    override fun getDashboardCustomerTopTrends(years: Int?): ResponseEntity<DashboardCustomerTopTrendsResponse> {
+        val trends = dashboardSummaryService.getCustomerTopTrends(years)
+        return ResponseEntity.ok(
+            DashboardCustomerTopTrendsResponse(
+                customerDistributionByRegion = trends.customerDistributionByRegion.map {
+                    CustomerRegionDistribution(region = it.region, customerCount = it.customerCount)
+                },
+                activeCustomers = trends.activeCustomers,
+                monthlyAverageTicket = trends.monthlyAverageTicket,
+                mostProfitableCustomers = trends.mostProfitableCustomers.map { it.toResponse() },
+                newCustomersByMonth = trends.newCustomersByMonth.map {
+                    DashboardMonthlyCount(yearMonth = it.yearMonth, count = it.count)
+                },
+            ),
+        )
+    }
+
     override fun getDashboardTopTrends(orderby: String, years: Int?): ResponseEntity<DashboardTopTrendsResponse> {
         dashboardSummaryService.getDashboardTopTrends(orderby, years).let { topTrends ->
             val response = DashboardTopTrendsResponse(

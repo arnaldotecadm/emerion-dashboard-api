@@ -1,0 +1,219 @@
+package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.dashboard
+
+import br.com.vertice.emerion_dashboard.application.outbound.port.DashboardRepositoryPort
+import br.com.vertice.emerion_dashboard.support.PostgresIntegrationTest
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.sql.Date
+import java.time.LocalDate
+import java.time.YearMonth
+import java.util.UUID
+import javax.sql.DataSource
+import kotlin.test.assertFalse
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
+@SpringBootTest
+class CustomerTopTrendsIntegrationTest(
+    @Autowired private val dashboardRepository: DashboardRepositoryPort,
+    @Autowired private val dataSource: DataSource,
+) : PostgresIntegrationTest() {
+
+    @Test
+    fun `returns customer region status ticket profit and registration trends`() {
+        val currentMonth = YearMonth.now()
+        val previousMonth = currentMonth.minusMonths(1)
+        val allTimeBaseline = orderTotalsForAllTime()
+        val initialRegionCount = dashboardRepository.getCustomerDistributionByRegion()
+            .singleOrNull { it.region == "ZZ" }?.customerCount ?: 0
+        val initialActiveCount = dashboardRepository.getActiveCustomerCount()
+        val initialNewCustomers = dashboardRepository.getNewCustomersByMonth().associate { it.yearMonth to it.count }
+
+        val firstCode = (System.nanoTime() % 800_000_000L).toInt() + 1_000_000_000
+        val activeCustomerId = insertCustomer(
+            code = firstCode,
+            blocked = false,
+            region = "ZZ",
+            registeredAt = currentMonth.atDay(10),
+        )
+        insertCustomer(
+            code = firstCode + 1,
+            blocked = true,
+            region = "ZZ",
+            registeredAt = previousMonth.atDay(10),
+        )
+
+        val activeOrderId = insertCustomerOrder(firstCode, "120.00")
+        val blockedOrderId = insertCustomerOrder(firstCode + 1, "45.00")
+        insertOrderItem(activeOrderId, 900_000_000_000L)
+        insertOrderItem(blockedOrderId, 100L)
+
+        val previousYear = YearMonth.now().minusYears(1)
+        val previousYearCustomerCode = firstCode + 2
+        val previousYearCustomerId = insertCustomer(
+            code = previousYearCustomerCode,
+            blocked = true,
+            region = "YY",
+            registeredAt = previousYear.atDay(10),
+        )
+        val previousYearOrderId = insertCustomerOrder(
+            previousYearCustomerCode,
+            "100.00",
+            previousYear.atDay(10),
+        )
+        insertOrderItem(previousYearOrderId, 800_000_000_000_000L)
+
+        val distribution = dashboardRepository.getCustomerDistributionByRegion().single { it.region == "ZZ" }
+        assertEquals(initialRegionCount + 2, distribution.customerCount)
+        assertEquals(initialActiveCount + 1, dashboardRepository.getActiveCustomerCount())
+
+        val ticketAddedOrders = BigDecimal("165.00")
+        val expectedTicket = (allTimeBaseline.totalBilled + ticketAddedOrders + BigDecimal("100.00"))
+            .divide((allTimeBaseline.orderCount + 3).toBigDecimal(), 2, RoundingMode.HALF_UP)
+        assertEquals(expectedTicket, dashboardRepository.getCustomerMonthlyAverageTicket())
+        val currentCalendarYearBaseline = orderTotalsForCalendarYear(YearMonth.now().year)
+        val expectedCalendarYearTicket = (currentCalendarYearBaseline.totalBilled + ticketAddedOrders)
+            .divide((currentCalendarYearBaseline.orderCount + 2).toBigDecimal(), 2, RoundingMode.HALF_UP)
+        assertEquals(expectedCalendarYearTicket, dashboardRepository.getCustomerMonthlyAverageTicket(years = 1))
+
+        val mostProfitable = dashboardRepository.getMostProfitableCustomers(years = 1).first()
+        assertEquals(activeCustomerId.toInt(), mostProfitable.identifier)
+        assertEquals(BigDecimal("900000000000.0000"), mostProfitable.totalSales)
+        assertEquals(1, mostProfitable.amountSales)
+        assertTrue(
+            dashboardRepository.getMostProfitableCustomers(years = 2)
+                .any { it.identifier == previousYearCustomerId.toInt() },
+        )
+        assertFalse(
+            dashboardRepository.getMostProfitableCustomers(years = 1)
+                .any { it.identifier == previousYearCustomerId.toInt() },
+        )
+
+        val newCustomers = dashboardRepository.getNewCustomersByMonth().associate { it.yearMonth to it.count }
+        val orderedNewCustomers = dashboardRepository.getNewCustomersByMonth()
+        assertEquals(
+            orderedNewCustomers.map { it.yearMonth }.sortedDescending(),
+            orderedNewCustomers.map { it.yearMonth },
+        )
+        assertTrue(newCustomers.size >= 13)
+        assertEquals((initialNewCustomers[currentMonth.toString()] ?: 0) + 1, newCustomers[currentMonth.toString()])
+        assertEquals((initialNewCustomers[previousMonth.toString()] ?: 0) + 1, newCustomers[previousMonth.toString()])
+        assertEquals(YearMonth.now().monthValue, dashboardRepository.getNewCustomersByMonth(years = 1).size)
+        assertEquals(
+            YearMonth.now().monthValue + 12,
+            dashboardRepository.getNewCustomersByMonth(years = 2).size,
+        )
+    }
+
+    private fun orderTotalsForAllTime(): MonthOrderTotals =
+        dataSource.connection.use { connection ->
+            connection.prepareStatement(
+                """
+                select count(*), coalesce(sum(total_pedido_com_impostos), 0)
+                from emerion_dashboard.customer_order
+                where data_pedido >= date '1900-01-01'
+                  and data_pedido <= current_date
+                """.trimIndent(),
+            ).use { statement ->
+                statement.executeQuery().use { resultSet ->
+                    resultSet.next()
+                    MonthOrderTotals(resultSet.getInt(1), resultSet.getBigDecimal(2))
+                }
+            }
+        }
+
+    private fun orderTotalsForCalendarYear(year: Int): MonthOrderTotals =
+        dataSource.connection.use { connection ->
+            connection.prepareStatement(
+                """
+                select count(*), coalesce(sum(total_pedido_com_impostos), 0)
+                from emerion_dashboard.customer_order
+                where data_pedido >= make_date(?, 1, 1)
+                  and data_pedido < make_date(? + 1, 1, 1)
+                  and data_pedido <= current_date
+                """.trimIndent(),
+            ).use { statement ->
+                statement.setInt(1, year)
+                statement.setInt(2, year)
+                statement.executeQuery().use { resultSet ->
+                    resultSet.next()
+                    MonthOrderTotals(resultSet.getInt(1), resultSet.getBigDecimal(2))
+                }
+            }
+        }
+
+    private fun insertCustomer(code: Int, blocked: Boolean, region: String, registeredAt: LocalDate): Long =
+        dataSource.connection.use { connection ->
+            connection.prepareStatement(
+                """
+                insert into emerion_dashboard.customer (
+                    external_id, nome_fantasia, razao_social, cpf_cnpj, cnpj_empresa,
+                    bloqueado, uf, data_cadastro
+                ) values (?, ?, ?, ?, ?, ?, ?, ?)
+                returning id
+                """.trimIndent(),
+            ).use { statement ->
+                statement.setString(1, code.toString())
+                statement.setString(2, "Trend $code")
+                statement.setString(3, "Trend Customer $code")
+                statement.setString(4, code.toString().padStart(11, '0'))
+                statement.setString(5, "15323240000102")
+                statement.setBoolean(6, blocked)
+                statement.setString(7, region)
+                statement.setDate(8, Date.valueOf(registeredAt))
+                statement.executeQuery().use { resultSet ->
+                    resultSet.next()
+                    resultSet.getLong(1)
+                }
+            }
+        }
+
+    private fun insertCustomerOrder(
+        customerCode: Int,
+        total: String,
+        dataPedido: LocalDate = LocalDate.now(),
+    ): Long =
+        dataSource.connection.use { connection ->
+            connection.prepareStatement(
+                """
+                insert into emerion_dashboard.customer_order (
+                    cnpj_empresa, external_id, codigo_cliente, data_pedido, total_pedido_com_impostos
+                ) values (?, ?, ?, ?, ?)
+                returning id
+                """.trimIndent(),
+            ).use { statement ->
+                statement.setString(1, "15323240000102")
+                statement.setString(2, "customer-trend-${UUID.randomUUID()}")
+                statement.setInt(3, customerCode)
+                statement.setDate(4, Date.valueOf(dataPedido))
+                statement.setBigDecimal(5, BigDecimal(total))
+                statement.executeQuery().use { resultSet ->
+                    resultSet.next()
+                    resultSet.getLong(1)
+                }
+            }
+        }
+
+    private fun insertOrderItem(customerOrderId: Long, profit: Long) {
+        dataSource.connection.use { connection ->
+            connection.prepareStatement(
+                """
+                insert into emerion_dashboard.customer_order_item (
+                    customer_order_id, produto, seq_re2, lucro_valor
+                ) values (?, ?, ?, ?)
+                """.trimIndent(),
+            ).use { statement ->
+                statement.setLong(1, customerOrderId)
+                statement.setString(2, "customer-trend-product")
+                statement.setInt(3, 1)
+                statement.setBigDecimal(4, BigDecimal.valueOf(profit))
+                statement.executeUpdate()
+            }
+        }
+    }
+
+    private data class MonthOrderTotals(val orderCount: Int, val totalBilled: BigDecimal)
+}

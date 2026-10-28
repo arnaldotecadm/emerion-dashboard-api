@@ -7,8 +7,11 @@ import br.com.vertice.emerion_dashboard.application.outbound.port.DashboardRepos
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardTotais
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyTrend
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardOrdersByRegion
+import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyCount
+import br.com.vertice.emerion_dashboard.domain.dashboard.CustomerRegionDistribution
 import br.com.vertice.emerion_dashboard.domain.dashboard.TopTrends
 import org.springframework.stereotype.Component
+import java.math.BigDecimal
 
 @Component
 class DashboardRepositoryPortAdapter(
@@ -32,4 +35,18 @@ class DashboardRepositoryPortAdapter(
     override fun     getDashboardTotais(years: Int?): DashboardTotais {
             return dashboardDataRepository.getDashboardTotais(years).toModel()
     }
+
+    override fun getCustomerDistributionByRegion(): List<CustomerRegionDistribution> =
+        dashboardDataRepository.getCustomerDistributionByRegion().map { it.toModel() }
+
+    override fun getActiveCustomerCount(): Int = dashboardDataRepository.getActiveCustomerCount()
+
+    override fun getCustomerMonthlyAverageTicket(years: Int?): BigDecimal =
+        dashboardDataRepository.getCustomerMonthlyAverageTicket(years)
+
+    override fun getMostProfitableCustomers(years: Int?): List<TopTrends> =
+        dashboardDataRepository.getMostProfitableCustomers(years).map { it.toModel() }
+
+    override fun getNewCustomersByMonth(years: Int?): List<DashboardMonthlyCount> =
+        dashboardDataRepository.getNewCustomersByMonth(years).map { it.toModel() }
 }

@@ -4,6 +4,9 @@ import br.com.vertice.emerion_dashboard.application.outbound.port.DashboardRepos
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyTrend
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardOrdersByRegion
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardTotais
+import br.com.vertice.emerion_dashboard.domain.dashboard.CustomerRegionDistribution
+import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyCount
+import br.com.vertice.emerion_dashboard.domain.dashboard.TopTrends
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
@@ -93,5 +96,30 @@ class DashboardSummaryServiceTest {
             listOf(BigDecimal("125.50"), BigDecimal.ZERO),
             result.map { it.amountSold },
         )
+    }
+
+    @Test
+    fun `returns customer-specific top trends`() {
+        every { repository.getCustomerDistributionByRegion() } returns
+            listOf(CustomerRegionDistribution(region = "SP", customerCount = 12))
+        every { repository.getActiveCustomerCount() } returns 10
+        every { repository.getCustomerMonthlyAverageTicket(any()) } returns BigDecimal("42.50")
+        every { repository.getMostProfitableCustomers(any()) } returns
+            listOf(TopTrends(identifier = 1, name = "Customer", amountSales = 2, totalSales = BigDecimal("100.00")))
+        every { repository.getNewCustomersByMonth(any()) } returns
+            listOf(DashboardMonthlyCount(yearMonth = "2026-01", count = 3))
+
+        val result = service.getCustomerTopTrends(years = 2)
+
+        assertEquals(12, result.customerDistributionByRegion.single().customerCount)
+        assertEquals(10, result.activeCustomers)
+        assertEquals(BigDecimal("42.50"), result.monthlyAverageTicket)
+        assertEquals("Customer", result.mostProfitableCustomers.single().name)
+        assertEquals(3, result.newCustomersByMonth.single().count)
+        io.mockk.verify {
+            repository.getCustomerMonthlyAverageTicket(2)
+            repository.getMostProfitableCustomers(2)
+            repository.getNewCustomersByMonth(2)
+        }
     }
 }
