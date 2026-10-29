@@ -25,9 +25,11 @@ class DashboardSummaryService(
         CustomerTopTrends(
             customerDistributionByRegion = repository.getCustomerDistributionByRegion(),
             activeCustomers = repository.getActiveCustomerCount(),
+            unpaidInvoicesAmount = repository.getUnpaidInvoicesAmount(years),
             monthlyAverageTicket = repository.getCustomerMonthlyAverageTicket(years),
             mostProfitableCustomers = repository.getMostProfitableCustomers(years),
             newCustomersByMonth = repository.getNewCustomersByMonth(years),
+            overdueInvoices = repository.getOverdueInvoices(years),
         )
 
     override fun getDashboardTopTrends(orderBy: String, years: Int?): DashboardTopTrends {

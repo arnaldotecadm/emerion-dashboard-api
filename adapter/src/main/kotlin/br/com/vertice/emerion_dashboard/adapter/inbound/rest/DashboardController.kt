@@ -5,12 +5,14 @@ import br.com.vertice.emerion_dashboard.application.dashboard.DashboardSummarySe
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.api.DashboardApi
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardMonthlyCount
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardOrdersByRegion
+import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.OverdueInvoice
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardTopTrendsResponse
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerRegionDistribution
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardCustomerTopTrendsResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RestController
+import java.time.format.DateTimeFormatter
 
 @RestController
 class DashboardController(
@@ -24,10 +26,20 @@ class DashboardController(
                     CustomerRegionDistribution(region = it.region, customerCount = it.customerCount)
                 },
                 activeCustomers = trends.activeCustomers,
+                unpaidInvoicesAmount = trends.unpaidInvoicesAmount,
                 monthlyAverageTicket = trends.monthlyAverageTicket,
                 mostProfitableCustomers = trends.mostProfitableCustomers.map { it.toResponse() },
                 newCustomersByMonth = trends.newCustomersByMonth.map {
                     DashboardMonthlyCount(yearMonth = it.yearMonth, count = it.count)
+                },
+                overdueInvoices = trends.overdueInvoices.map {
+                    OverdueInvoice(
+                        customerCode = it.customerCode,
+                        customerName = it.customerName,
+                        amount = it.amount,
+                        dueDate = it.dueDate,
+                        description = "Vencido há ${it.daysOverdue} days (${it.dueDate.format(OVERDUE_DATE_FORMAT)})",
+                    )
                 },
             ),
         )
@@ -62,3 +74,5 @@ class DashboardController(
         }
     }
 }
+
+private val OVERDUE_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy")

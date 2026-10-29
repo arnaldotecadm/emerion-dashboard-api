@@ -6,6 +6,8 @@ import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardOrdersByRegionProjection
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardCustomerRegionProjection
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardNewCustomersByMonthProjection
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardOverdueInvoiceProjection
+import br.com.vertice.emerion_dashboard.domain.dashboard.OverdueInvoice
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyTrend
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyCount
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardOrdersByRegion
@@ -19,6 +21,15 @@ import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.Dash
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardTopTrendsResponse
 
 object DashboardMapper {
+
+    fun DashboardOverdueInvoiceProjection.toModel(): OverdueInvoice =
+        OverdueInvoice(
+            customerCode = customerCode,
+            customerName = customerName,
+            amount = amount,
+            dueDate = dueDate,
+            daysOverdue = daysOverdue,
+        )
 
     fun DashboardCustomerRegionProjection.toModel(): CustomerRegionDistribution =
         CustomerRegionDistribution(region = region, customerCount = customerCount)

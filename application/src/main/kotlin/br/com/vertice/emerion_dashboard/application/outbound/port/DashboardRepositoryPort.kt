@@ -16,7 +16,9 @@ interface DashboardRepositoryPort {
     fun getDashboardTotais(years: Int?): DashboardTotais
     fun getCustomerDistributionByRegion(): List<CustomerRegionDistribution>
     fun getActiveCustomerCount(): Int
+    fun getUnpaidInvoicesAmount(years: Int? = null): java.math.BigDecimal
     fun getCustomerMonthlyAverageTicket(years: Int? = null): BigDecimal
     fun getMostProfitableCustomers(years: Int? = null): List<TopTrends>
     fun getNewCustomersByMonth(years: Int? = null): List<DashboardMonthlyCount>
+    fun getOverdueInvoices(years: Int? = null): List<br.com.vertice.emerion_dashboard.domain.dashboard.OverdueInvoice>
 }

@@ -1,5 +1,6 @@
 package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.repository
 
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardOverdueInvoiceProjection
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardTopTrendsProjection
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardTotaisProjection
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardMonthlyTrendProjection
@@ -257,6 +258,57 @@ class DashboardDataRepository(
         return (query.singleResult as Number).toInt()
     }
 
+    fun getUnpaidInvoicesAmount(years: Int?): BigDecimal {
+        val query = entityManager.createNativeQuery(
+            """
+            select coalesce(sum(trp.valor_parcela), 0)
+            from emerion_dashboard.titulo_receber_parcela trp
+            where coalesce(trp.flag_pago, '') != '*'
+              and trp.data_vencimento <= now()
+              and (
+                cast(:years as integer) is null
+                or trp.data_vencimento >= make_date(extract(year from current_date)::int - cast(:years as integer) + 1, 1, 1)
+              )
+            """.trimIndent(),
+        )
+        query.setParameter("years", years)
+        return query.singleResult as BigDecimal
+    }
+
+    fun getOverdueInvoices(years: Int?): List<DashboardOverdueInvoiceProjection> {
+        val query = entityManager.createNativeQuery(
+            """
+            select
+                tr.codigo_cliente,
+                coalesce(tr.nome_cliente, ''),
+                trp.valor_parcela,
+                trp.data_vencimento,
+                (current_date - trp.data_vencimento)
+            from emerion_dashboard.titulo_receber tr
+            join emerion_dashboard.titulo_receber_parcela trp on trp.documento = tr.documento
+            where coalesce(trp.flag_pago, '') != '*'
+              and trp.data_vencimento <= now()
+              and (
+                cast(:years as integer) is null
+                or trp.data_vencimento >= make_date(extract(year from current_date)::int - cast(:years as integer) + 1, 1, 1)
+              )
+            order by trp.data_vencimento, trp.id
+            limit 5
+            """.trimIndent(),
+        )
+        query.setParameter("years", years)
+        return query.resultList.map { row ->
+            val resultArray = row as Array<*>
+            DashboardOverdueInvoiceProjection(
+                customerCode = (resultArray[0] as? Number)?.toLong(),
+                customerName = resultArray[1].toString(),
+                amount = (resultArray[2] as? BigDecimal) ?: BigDecimal.ZERO,
+                dueDate = resultArray[3] as java.time.LocalDate,
+                daysOverdue = (resultArray[4] as Number).toInt(),
+            )
+        }
+    }
+
     fun getCustomerMonthlyAverageTicket(years: Int?): BigDecimal {
         val query = entityManager.createNativeQuery(
             """
@@ -356,6 +408,7 @@ class DashboardDataRepository(
                 coalesce(monthly_customers.customer_count, 0) as customer_count
             from months
             left join monthly_customers on monthly_customers.month_start = months.month_start
+            order by months.month_start desc
             """.trimIndent(),
         )
         query.setParameter("years", years)

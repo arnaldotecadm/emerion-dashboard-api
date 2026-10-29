@@ -108,6 +108,42 @@ class CustomerTopTrendsIntegrationTest(
         )
     }
 
+    @Test
+    fun `sums unpaid installments already due`() {
+        val initial = dashboardRepository.getUnpaidInvoicesAmount()
+        val initialCurrentYear = dashboardRepository.getUnpaidInvoicesAmount(years = 1)
+        val document = "trend-doc-${UUID.randomUUID()}"
+        dataSource.connection.use { connection ->
+            connection.createStatement().use {
+                it.execute(
+                    "insert into emerion_dashboard.titulo_receber (cnpj_empresa, documento) " +
+                        "values ('15323240000102', '$document')",
+                )
+                it.execute(
+                    """
+                    insert into emerion_dashboard.titulo_receber_parcela
+                        (documento, numero_parcela, valor_parcela, data_vencimento, flag_pago) values
+                        ('$document', 1, 100.00, current_date - 5, null),
+                        ('$document', 2, 50.00, current_date - 1, ''),
+                        ('$document', 3, 70.00, current_date - 5, '*'),
+                        ('$document', 4, 30.00, current_date + 30, null),
+                        ('$document', 5, 20.00, make_date(extract(year from current_date)::int - 1, 6, 1), null)
+                    """.trimIndent(),
+                )
+            }
+        }
+
+        assertEquals(0, (initial + BigDecimal("170.00")).compareTo(dashboardRepository.getUnpaidInvoicesAmount()))
+        val overdue = dashboardRepository.getOverdueInvoices()
+        assertTrue(overdue.size <= 5)
+        assertEquals(overdue.map { it.dueDate }.sorted(), overdue.map { it.dueDate })
+        assertTrue(overdue.all { it.daysOverdue >= 0 })
+        assertEquals(
+            0,
+            (initialCurrentYear + BigDecimal("150.00")).compareTo(dashboardRepository.getUnpaidInvoicesAmount(years = 1)),
+        )
+    }
+
     private fun orderTotalsForAllTime(): MonthOrderTotals =
         dataSource.connection.use { connection ->
             connection.prepareStatement(

@@ -1650,7 +1650,7 @@ paths:
           in: query
           required: false
           description: >
-            Limits monthly average ticket, customer profitability, and new
+            Limits monthly average ticket, customer profitability, unpaid invoices, and new
             customer registrations to the current calendar year (1), the
             last 2 calendar years (2), or the last 3 calendar years (3).
             Omit to include all data.
@@ -4136,9 +4136,11 @@ components:
       required:
         - customerDistributionByRegion
         - activeCustomers
+        - unpaidInvoicesAmount
         - monthlyAverageTicket
         - mostProfitableCustomers
         - newCustomersByMonth
+        - overdueInvoices
       properties:
         customerDistributionByRegion:
           type: array
@@ -4146,6 +4148,9 @@ components:
             $ref: '#/components/schemas/CustomerRegionDistribution'
         activeCustomers:
           type: integer
+        unpaidInvoicesAmount:
+          type: number
+          description: Sum of valorParcela of unpaid receivable installments already due, filtered by dataVencimento calendar year when years is supplied.
         monthlyAverageTicket:
           type: number
           description: Average billed order value across the trailing 12 months.
@@ -4158,6 +4163,36 @@ components:
           description: Customer registrations by month for the last 12 months.
           items:
             $ref: '#/components/schemas/DashboardMonthlyCount'
+        overdueInvoices:
+          type: array
+          description: >
+            Up to 5 unpaid receivable installments already due, oldest due date
+            first, filtered by dueDate calendar year when years is supplied.
+          items:
+            $ref: '#/components/schemas/OverdueInvoice'
+
+    OverdueInvoice:
+      type: object
+      required:
+        - customerName
+        - amount
+        - dueDate
+        - description
+      properties:
+        customerCode:
+          type: integer
+          format: int64
+          nullable: true
+        customerName:
+          type: string
+        amount:
+          type: number
+        dueDate:
+          type: string
+          format: date
+        description:
+          type: string
+          description: 'Formatted as "Vencido há X days (dd/MM/yyyy)".'
 
     CustomerRegionDistribution:
       type: object
