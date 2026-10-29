@@ -125,7 +125,7 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
                         AND co.data_pedido < (date_trunc('year', current_date) + interval '1 year')::date
                     )
               )
-            order by co.numero_pedido desc
+            order by co.external_id::int desc
         """,
         countQuery = """
             SELECT count(*)

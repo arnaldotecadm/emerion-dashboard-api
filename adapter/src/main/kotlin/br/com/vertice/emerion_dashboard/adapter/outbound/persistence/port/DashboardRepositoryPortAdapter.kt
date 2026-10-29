@@ -52,6 +52,12 @@ class DashboardRepositoryPortAdapter(
     override fun getOverdueInvoices(years: Int?) =
         dashboardDataRepository.getOverdueInvoices(years).map { it.toModel() }
 
+    override fun getCockpitMonthlyMetrics() = dashboardDataRepository.getCockpitMonthlyMetrics().toModel()
+
+    override fun getUnpaidInvoicesSummary() = dashboardDataRepository.getUnpaidInvoicesSummary().toModel()
+
+    override fun getRecentOrders(limit: Int) = dashboardDataRepository.getRecentOrders(limit).map { it.toModel() }
+
     override fun getNewCustomersByMonth(years: Int?): List<DashboardMonthlyCount> =
         dashboardDataRepository.getNewCustomersByMonth(years).map { it.toModel() }
 }

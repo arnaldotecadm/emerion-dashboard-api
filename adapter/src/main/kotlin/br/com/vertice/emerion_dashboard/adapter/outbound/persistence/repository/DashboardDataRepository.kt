@@ -1,6 +1,9 @@
 package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.repository
 
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardCockpitMetricsProjection
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardOverdueInvoiceProjection
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardRecentOrderProjection
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardUnpaidInvoicesProjection
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardTopTrendsProjection
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardTotaisProjection
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardMonthlyTrendProjection
@@ -305,6 +308,128 @@ class DashboardDataRepository(
                 amount = (resultArray[2] as? BigDecimal) ?: BigDecimal.ZERO,
                 dueDate = resultArray[3] as java.time.LocalDate,
                 daysOverdue = (resultArray[4] as Number).toInt(),
+            )
+        }
+    }
+
+    fun getCockpitMonthlyMetrics(): DashboardCockpitMetricsProjection {
+        val query = entityManager.createNativeQuery(
+            """
+            with bounds as (
+                select
+                    date_trunc('month', current_date)::date as month_start,
+                    (date_trunc('month', current_date) + interval '1 month')::date as next_month_start
+            )
+            select
+                coalesce((
+                    select sum(co.total_pedido_com_impostos)
+                    from emerion_dashboard.customer_order co, bounds b
+                    where co.data_pedido >= b.month_start and co.data_pedido < b.next_month_start
+                ), 0),
+                coalesce((
+                    select round(avg(coi.tot_ren), 2)
+                    from emerion_dashboard.customer_order_item coi
+                    join emerion_dashboard.customer_order co on co.id = coi.customer_order_id, bounds b
+                    where co.data_pedido >= b.month_start and co.data_pedido < b.next_month_start
+                ), 0),
+                (
+                    select count(*)
+                    from emerion_dashboard.customer_order co, bounds b
+                    where co.data_pedido >= b.month_start and co.data_pedido < b.next_month_start
+                ),
+                (
+                    select count(*)
+                    from emerion_dashboard.customer_quotation cq, bounds b
+                    where cq.data_pedido >= b.month_start and cq.data_pedido < b.next_month_start
+                ),
+                coalesce((
+                    select sum(trp.valor_parcela)
+                    from emerion_dashboard.titulo_receber_parcela trp, bounds b
+                    where trp.data_vencimento >= b.month_start and trp.data_vencimento < b.next_month_start
+                ), 0),
+                coalesce((
+                    select sum(trp.valor_parcela)
+                    from emerion_dashboard.titulo_receber_parcela trp, bounds b
+                    where trp.flag_pago = '*'
+                      and trp.data_vencimento >= b.month_start and trp.data_vencimento < b.next_month_start
+                ), 0)
+            """.trimIndent(),
+        )
+        val row = query.singleResult as Array<*>
+        return DashboardCockpitMetricsProjection(
+            salesTotal = row[0] as BigDecimal,
+            averageMarkup = row[1] as BigDecimal,
+            customerOrders = (row[2] as Number).toInt(),
+            customerQuotations = (row[3] as Number).toInt(),
+            amountToReceive = row[4] as BigDecimal,
+            amountReceived = row[5] as BigDecimal,
+        )
+    }
+
+    fun getUnpaidInvoicesSummary(): DashboardUnpaidInvoicesProjection {
+        val query = entityManager.createNativeQuery(
+            """
+            select count(*), coalesce(sum(trp.valor_parcela), 0)
+            from emerion_dashboard.titulo_receber_parcela trp
+            where coalesce(trp.flag_pago, '') != '*'
+              and trp.data_vencimento >= date_trunc('month', current_date)
+              and trp.data_vencimento <= now()
+            """.trimIndent(),
+        )
+        val row = query.singleResult as Array<*>
+        return DashboardUnpaidInvoicesProjection(
+            count = (row[0] as Number).toInt(),
+            amount = row[1] as BigDecimal,
+        )
+    }
+
+    fun getRecentOrders(limit: Int): List<DashboardRecentOrderProjection> {
+        val query = entityManager.createNativeQuery(
+            """
+            select * from (
+                select
+                    co.numero_pedido,
+                    co.codigo_cliente,
+                    coalesce(c.razao_social, '') as customer_name,
+                    co.data_pedido,
+                    co.status_pedido,
+                    co.total_pedido_com_impostos,
+                    v.nome as salesman_name,
+                    coalesce((
+                        select round(avg(coi.tot_ren), 2)
+                        from emerion_dashboard.customer_order_item coi
+                        where coi.customer_order_id = co.id
+                    ), 0) as average_markup,
+                    co.id
+                from emerion_dashboard.customer_order co
+                left join emerion_dashboard.vendedor v
+                    on case
+                        when v.external_id ~ '^[0-9]+$' then v.external_id::numeric
+                        else null
+                    end = co.vendedor_external_id
+                left join emerion_dashboard.customer c
+                    on case
+                        when c.external_id ~ '^[0-9]+$' then c.external_id::numeric
+                        else null
+                    end = co.codigo_cliente
+                order by (coalesce(co.status_pedido, '') = 'Faturado'), co.data_pedido desc, co.id desc
+                limit :limit
+            ) recent
+            order by data_pedido desc, id desc
+            """.trimIndent(),
+        )
+        query.setParameter("limit", limit)
+        return query.resultList.map { row ->
+            val resultArray = row as Array<*>
+            DashboardRecentOrderProjection(
+                orderNumber = resultArray[0] as String?,
+                customerCode = (resultArray[1] as Number).toInt(),
+                customerName = resultArray[2].toString(),
+                orderDate = resultArray[3] as java.time.LocalDate,
+                status = resultArray[4] as String?,
+                totalAmount = resultArray[5] as BigDecimal,
+                salesmanName = resultArray[6] as String?,
+                averageMarkup = resultArray[7] as BigDecimal,
             )
         }
     }

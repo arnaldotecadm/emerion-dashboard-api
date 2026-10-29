@@ -20,5 +20,8 @@ interface DashboardRepositoryPort {
     fun getCustomerMonthlyAverageTicket(years: Int? = null): BigDecimal
     fun getMostProfitableCustomers(years: Int? = null): List<TopTrends>
     fun getNewCustomersByMonth(years: Int? = null): List<DashboardMonthlyCount>
+    fun getCockpitMonthlyMetrics(): br.com.vertice.emerion_dashboard.domain.dashboard.CockpitMonthlyMetrics
+    fun getUnpaidInvoicesSummary(): br.com.vertice.emerion_dashboard.domain.dashboard.UnpaidInvoicesSummary
+    fun getRecentOrders(limit: Int): List<br.com.vertice.emerion_dashboard.domain.dashboard.RecentOrder>
     fun getOverdueInvoices(years: Int? = null): List<br.com.vertice.emerion_dashboard.domain.dashboard.OverdueInvoice>
 }

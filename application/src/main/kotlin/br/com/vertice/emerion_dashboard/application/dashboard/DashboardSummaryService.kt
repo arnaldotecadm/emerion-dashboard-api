@@ -6,6 +6,7 @@ import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyCount
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyTrend
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardTopTrends
 import br.com.vertice.emerion_dashboard.domain.dashboard.CustomerTopTrends
+import br.com.vertice.emerion_dashboard.domain.dashboard.SalesCockpit
 import br.com.vertice.emerion_dashboard.domain.dashboard.TopTrends
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -20,6 +21,24 @@ class DashboardSummaryService(
 
     fun getSellerTopTrends(orderBy: String, years: Int? = null): List<TopTrends> =
         repository.getDashboardSellerTopTrends(orderBy, years)
+
+    fun getSalesCockpit(): SalesCockpit {
+        val metrics = repository.getCockpitMonthlyMetrics()
+        val unpaid = repository.getUnpaidInvoicesSummary()
+        return SalesCockpit(
+            monthlySalesTotal = metrics.salesTotal,
+            averageMarkup = metrics.averageMarkup,
+            unpaidInvoicesCount = unpaid.count,
+            unpaidInvoicesAmount = unpaid.amount,
+            customerQuotations = metrics.customerQuotations,
+            customerOrders = metrics.customerOrders,
+            invoices = 0,
+            amountToReceiveThisMonth = metrics.amountToReceive,
+            amountReceivedThisMonth = metrics.amountReceived,
+            amountDueThisMonth = metrics.amountToReceive - metrics.amountReceived,
+            recentOrders = repository.getRecentOrders(RECENT_ORDERS_LIMIT),
+        )
+    }
 
     fun getCustomerTopTrends(years: Int? = null): CustomerTopTrends =
         CustomerTopTrends(
@@ -60,3 +79,5 @@ class DashboardSummaryService(
             amountSold = customerOrdersAmountSold,
         )
 }
+
+private const val RECENT_ORDERS_LIMIT = 10

@@ -27,6 +27,7 @@ class CustomerTopTrendsIntegrationTest(
         val currentMonth = YearMonth.now()
         val previousMonth = currentMonth.minusMonths(1)
         val allTimeBaseline = orderTotalsForAllTime()
+        val currentCalendarYearBaseline = orderTotalsForCalendarYear(YearMonth.now().year)
         val initialRegionCount = dashboardRepository.getCustomerDistributionByRegion()
             .singleOrNull { it.region == "ZZ" }?.customerCount ?: 0
         val initialActiveCount = dashboardRepository.getActiveCustomerCount()
@@ -74,7 +75,6 @@ class CustomerTopTrendsIntegrationTest(
         val expectedTicket = (allTimeBaseline.totalBilled + ticketAddedOrders + BigDecimal("100.00"))
             .divide((allTimeBaseline.orderCount + 3).toBigDecimal(), 2, RoundingMode.HALF_UP)
         assertEquals(expectedTicket, dashboardRepository.getCustomerMonthlyAverageTicket())
-        val currentCalendarYearBaseline = orderTotalsForCalendarYear(YearMonth.now().year)
         val expectedCalendarYearTicket = (currentCalendarYearBaseline.totalBilled + ticketAddedOrders)
             .divide((currentCalendarYearBaseline.orderCount + 2).toBigDecimal(), 2, RoundingMode.HALF_UP)
         assertEquals(expectedCalendarYearTicket, dashboardRepository.getCustomerMonthlyAverageTicket(years = 1))
@@ -142,6 +142,76 @@ class CustomerTopTrendsIntegrationTest(
             0,
             (initialCurrentYear + BigDecimal("150.00")).compareTo(dashboardRepository.getUnpaidInvoicesAmount(years = 1)),
         )
+    }
+
+    @Test
+    fun `returns cockpit metrics and recent orders preferring non invoiced`() {
+        val code = (System.nanoTime() % 800_000_000L).toInt() + 1_000_000_000
+        val statuses = List(12) { "Faturado" } + listOf("Aberto", "Aprovado")
+        statuses.forEach { status ->
+            val orderId = insertCustomerOrder(code, "10.00", LocalDate.now())
+            dataSource.connection.use { connection ->
+                connection.prepareStatement(
+                    "update emerion_dashboard.customer_order set status_pedido = ? where id = ?",
+                ).use { statement ->
+                    statement.setString(1, status)
+                    statement.setLong(2, orderId)
+                    statement.executeUpdate()
+                }
+            }
+            insertOrderItem(orderId, 1)
+        }
+
+        val baseMetrics = dashboardRepository.getCockpitMonthlyMetrics()
+        insertMonthInstallments()
+        val metrics = dashboardRepository.getCockpitMonthlyMetrics()
+        assertEquals(0, (baseMetrics.amountToReceive + BigDecimal("300.00")).compareTo(metrics.amountToReceive))
+        assertEquals(0, (baseMetrics.amountReceived + BigDecimal("200.00")).compareTo(metrics.amountReceived))
+        assertTrue(metrics.customerOrders >= statuses.size)
+        assertTrue(metrics.salesTotal >= BigDecimal("140.00"))
+        assertTrue(metrics.averageMarkup.signum() >= 0)
+
+        val summary = dashboardRepository.getUnpaidInvoicesSummary()
+        assertTrue(summary.count >= 0 && summary.amount.signum() >= 0)
+        assertTrue(summary.amount <= dashboardRepository.getUnpaidInvoicesAmount())
+
+        val recent = dashboardRepository.getRecentOrders(10)
+        assertEquals(10, recent.size)
+        assertTrue(recent.all { it.averageMarkup.signum() >= 0 })
+        assertEquals(recent.map { it.orderDate }.sortedDescending(), recent.map { it.orderDate })
+        val nonInvoicedTotal = dataSource.connection.use { connection ->
+            connection.createStatement().use { statement ->
+                statement.executeQuery(
+                    "select count(*) from emerion_dashboard.customer_order " +
+                        "where coalesce(status_pedido, '') != 'Faturado'",
+                ).use { resultSet ->
+                    resultSet.next()
+                    resultSet.getInt(1)
+                }
+            }
+        }
+        assertEquals(minOf(10, nonInvoicedTotal), recent.count { it.status != "Faturado" })
+    }
+
+    private fun insertMonthInstallments() {
+        val document = "cockpit-doc-${UUID.randomUUID()}"
+        dataSource.connection.use { connection ->
+            connection.createStatement().use {
+                it.execute(
+                    "insert into emerion_dashboard.titulo_receber (cnpj_empresa, documento) " +
+                        "values ('15323240000102', '$document')",
+                )
+                it.execute(
+                    """
+                    insert into emerion_dashboard.titulo_receber_parcela
+                        (documento, numero_parcela, valor_parcela, data_vencimento, flag_pago) values
+                        ('$document', 1, 200.00, date_trunc('month', current_date)::date, '*'),
+                        ('$document', 2, 100.00, (date_trunc('month', current_date) + interval '1 month')::date - 1, null),
+                        ('$document', 3, 999.00, (date_trunc('month', current_date) + interval '1 month')::date, null)
+                    """.trimIndent(),
+                )
+            }
+        }
     }
 
     private fun orderTotalsForAllTime(): MonthOrderTotals =

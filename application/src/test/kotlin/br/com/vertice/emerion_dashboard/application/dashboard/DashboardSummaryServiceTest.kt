@@ -10,6 +10,8 @@ import br.com.vertice.emerion_dashboard.domain.dashboard.TopTrends
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
+import br.com.vertice.emerion_dashboard.domain.dashboard.CockpitMonthlyMetrics
+import br.com.vertice.emerion_dashboard.domain.dashboard.UnpaidInvoicesSummary
 import java.math.BigDecimal
 import kotlin.test.assertEquals
 
@@ -136,5 +138,27 @@ class DashboardSummaryServiceTest {
             repository.getMostProfitableCustomers(2)
             repository.getNewCustomersByMonth(2)
         }
+    }
+
+    @Test
+    fun `builds sales cockpit with placeholder invoices`() {
+        every { repository.getCockpitMonthlyMetrics() } returns
+            CockpitMonthlyMetrics(BigDecimal("1000.00"), BigDecimal("12.50"), customerOrders = 4, customerQuotations = 6,
+                amountToReceive = BigDecimal("500.00"), amountReceived = BigDecimal("200.00"))
+        every { repository.getUnpaidInvoicesSummary() } returns UnpaidInvoicesSummary(3, BigDecimal("250.00"))
+        every { repository.getRecentOrders(10) } returns emptyList()
+
+        val result = service.getSalesCockpit()
+
+        assertEquals(BigDecimal("1000.00"), result.monthlySalesTotal)
+        assertEquals(BigDecimal("12.50"), result.averageMarkup)
+        assertEquals(3, result.unpaidInvoicesCount)
+        assertEquals(BigDecimal("250.00"), result.unpaidInvoicesAmount)
+        assertEquals(6, result.customerQuotations)
+        assertEquals(4, result.customerOrders)
+        assertEquals(0, result.invoices)
+        assertEquals(BigDecimal("500.00"), result.amountToReceiveThisMonth)
+        assertEquals(BigDecimal("200.00"), result.amountReceivedThisMonth)
+        assertEquals(BigDecimal("300.00"), result.amountDueThisMonth)
     }
 }

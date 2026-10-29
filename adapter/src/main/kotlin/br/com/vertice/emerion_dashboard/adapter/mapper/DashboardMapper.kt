@@ -8,6 +8,15 @@ import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardNewCustomersByMonthProjection
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardOverdueInvoiceProjection
 import br.com.vertice.emerion_dashboard.domain.dashboard.OverdueInvoice
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardCockpitMetricsProjection
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardRecentOrderProjection
+import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.projection.DashboardUnpaidInvoicesProjection
+import br.com.vertice.emerion_dashboard.domain.dashboard.CockpitMonthlyMetrics
+import br.com.vertice.emerion_dashboard.domain.dashboard.RecentOrder
+import br.com.vertice.emerion_dashboard.domain.dashboard.SalesCockpit
+import br.com.vertice.emerion_dashboard.domain.dashboard.UnpaidInvoicesSummary
+import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CockpitRecentOrder
+import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.SalesCockpitResponse
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyTrend
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardMonthlyCount
 import br.com.vertice.emerion_dashboard.domain.dashboard.DashboardOrdersByRegion
@@ -21,6 +30,57 @@ import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.Dash
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardTopTrendsResponse
 
 object DashboardMapper {
+
+    fun DashboardCockpitMetricsProjection.toModel(): CockpitMonthlyMetrics =
+        CockpitMonthlyMetrics(
+            salesTotal = salesTotal,
+            averageMarkup = averageMarkup,
+            customerOrders = customerOrders,
+            customerQuotations = customerQuotations,
+            amountToReceive = amountToReceive,
+            amountReceived = amountReceived,
+        )
+
+    fun DashboardUnpaidInvoicesProjection.toModel(): UnpaidInvoicesSummary =
+        UnpaidInvoicesSummary(count = count, amount = amount)
+
+    fun DashboardRecentOrderProjection.toModel(): RecentOrder =
+        RecentOrder(
+            orderNumber = orderNumber,
+            customerCode = customerCode,
+            customerName = customerName,
+            orderDate = orderDate,
+            status = status,
+            totalAmount = totalAmount,
+            salesmanName = salesmanName,
+            averageMarkup = averageMarkup,
+        )
+
+    fun SalesCockpit.toResponse(): SalesCockpitResponse =
+        SalesCockpitResponse(
+            monthlySalesTotal = monthlySalesTotal,
+            averageMarkup = averageMarkup,
+            unpaidInvoicesCount = unpaidInvoicesCount,
+            unpaidInvoicesAmount = unpaidInvoicesAmount,
+            customerQuotations = customerQuotations,
+            customerOrders = customerOrders,
+            invoices = invoices,
+            amountToReceiveThisMonth = amountToReceiveThisMonth,
+            amountReceivedThisMonth = amountReceivedThisMonth,
+            amountDueThisMonth = amountDueThisMonth,
+            recentOrders = recentOrders.map {
+                CockpitRecentOrder(
+                    orderNumber = it.orderNumber,
+                    customerCode = it.customerCode,
+                    customerName = it.customerName,
+                    orderDate = it.orderDate,
+                    status = it.status,
+                    totalAmount = it.totalAmount,
+                    salesmanName = it.salesmanName,
+                    averageMarkup = it.averageMarkup,
+                )
+            },
+        )
 
     fun DashboardOverdueInvoiceProjection.toModel(): OverdueInvoice =
         OverdueInvoice(

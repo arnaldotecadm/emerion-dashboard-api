@@ -6,6 +6,7 @@ import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.api.Dashbo
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardMonthlyCount
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardOrdersByRegion
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.OverdueInvoice
+import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.SalesCockpitResponse
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardTopTrendsResponse
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerRegionDistribution
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.DashboardCustomerTopTrendsResponse
@@ -18,6 +19,9 @@ import java.time.format.DateTimeFormatter
 class DashboardController(
     private val dashboardSummaryService: DashboardSummaryService
 ) : DashboardApi {
+    override fun getDashboardSalesCockpit(): ResponseEntity<SalesCockpitResponse> =
+        ResponseEntity.ok(dashboardSummaryService.getSalesCockpit().toResponse())
+
     override fun getDashboardCustomerTopTrends(years: Int?): ResponseEntity<DashboardCustomerTopTrendsResponse> {
         val trends = dashboardSummaryService.getCustomerTopTrends(years)
         return ResponseEntity.ok(
