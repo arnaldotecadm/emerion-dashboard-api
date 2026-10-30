@@ -1666,6 +1666,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/DashboardCustomerTopTrendsResponse'
 
+  /dashboard/sales-cockpit:
+    get:
+      tags:
+        - dashboard
+      operationId: getDashboardSalesCockpit
+      summary: Get executive cockpit and sales indicators
+      description: >
+        Returns current-calendar-month sales indicators plus overdue unpaid
+        invoice totals and the 10 most recent orders (orders whose status is
+        not Faturado are preferred; Faturado orders fill the remaining slots).
+      responses:
+        '200':
+          description: Sales cockpit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesCockpitResponse'
+
   /sales/customer-orders-over-time:
     get:
       tags:
@@ -4171,6 +4189,88 @@ components:
           items:
             $ref: '#/components/schemas/OverdueInvoice'
 
+    SalesCockpitResponse:
+      type: object
+      required:
+        - monthlySalesTotal
+        - averageMarkup
+        - unpaidInvoicesCount
+        - unpaidInvoicesAmount
+        - customerQuotations
+        - customerOrders
+        - invoices
+        - amountToReceiveThisMonth
+        - amountReceivedThisMonth
+        - amountDueThisMonth
+        - recentOrders
+      properties:
+        monthlySalesTotal:
+          type: number
+          description: Sum of totalPedidoComImpostos of orders dated in the current month.
+        averageMarkup:
+          type: number
+          description: Average totRen of the items of orders dated in the current month.
+        unpaidInvoicesCount:
+          type: integer
+          description: Number of unpaid receivable installments due in the current month up to today.
+        unpaidInvoicesAmount:
+          type: number
+          description: Sum of valorParcela of unpaid receivable installments due in the current month up to today.
+        customerQuotations:
+          type: integer
+          description: Quotations dated in the current month.
+        customerOrders:
+          type: integer
+          description: Orders dated in the current month.
+        invoices:
+          type: integer
+          description: Placeholder, always 0 until invoices are available.
+        amountToReceiveThisMonth:
+          type: number
+          description: Sum of valorParcela of receivable installments with dataVencimento in the current month.
+        amountReceivedThisMonth:
+          type: number
+          description: Part of amountToReceiveThisMonth already paid (flagPago = '*').
+        amountDueThisMonth:
+          type: number
+          description: Part of amountToReceiveThisMonth still unpaid (amountToReceiveThisMonth - amountReceivedThisMonth).
+        recentOrders:
+          type: array
+          description: Up to 10 orders, newest first, preferring status other than Faturado.
+          items:
+            $ref: '#/components/schemas/CockpitRecentOrder'
+
+    CockpitRecentOrder:
+      type: object
+      required:
+        - customerCode
+        - customerName
+        - orderDate
+        - totalAmount
+        - averageMarkup
+      properties:
+        orderNumber:
+          type: string
+          nullable: true
+        customerCode:
+          type: integer
+        customerName:
+          type: string
+        orderDate:
+          type: string
+          format: date
+        status:
+          type: string
+          nullable: true
+        totalAmount:
+          type: number
+        salesmanName:
+          type: string
+          nullable: true
+        averageMarkup:
+          type: number
+          description: Average totRen of the order items; 0 when the order has no items.
+
     OverdueInvoice:
       type: object
       required:
@@ -4202,7 +4302,7 @@ components:
       properties:
         region:
           type: string
-          description: Customer UF, or "Não informado" when UF is blank.
+          description: Brazilian region (Norte, Nordeste, Centro-Oeste, Sudeste, Sul) derived from the customer UF, or "Não informado" when UF is blank.
         customerCount:
           type: integer
 

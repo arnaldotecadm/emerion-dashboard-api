@@ -233,11 +233,20 @@ class DashboardDataRepository(
     fun getCustomerDistributionByRegion(): List<DashboardCustomerRegionProjection> {
         val query = entityManager.createNativeQuery(
             """
-            select
-                coalesce(nullif(btrim(uf), ''), 'Não informado') as region,
-                count(*) as customer_count
-            from emerion_dashboard.customer
-            group by coalesce(nullif(btrim(uf), ''), 'Não informado')
+            select region, count(*) as customer_count
+            from (
+                select
+                    case
+                        when upper(btrim(uf)) in ('AC', 'AP', 'AM', 'PA', 'RO', 'RR', 'TO') then 'Norte'
+                        when upper(btrim(uf)) in ('AL', 'BA', 'CE', 'MA', 'PB', 'PE', 'PI', 'RN', 'SE') then 'Nordeste'
+                        when upper(btrim(uf)) in ('DF', 'GO', 'MT', 'MS') then 'Centro-Oeste'
+                        when upper(btrim(uf)) in ('ES', 'MG', 'RJ', 'SP') then 'Sudeste'
+                        when upper(btrim(uf)) in ('PR', 'RS', 'SC') then 'Sul'
+                        else 'Não informado'
+                    end as region
+                from emerion_dashboard.customer
+            ) customer_regions
+            group by region
             order by customer_count desc, region
             """.trimIndent(),
         )
@@ -533,7 +542,6 @@ class DashboardDataRepository(
                 coalesce(monthly_customers.customer_count, 0) as customer_count
             from months
             left join monthly_customers on monthly_customers.month_start = months.month_start
-            order by months.month_start desc
             """.trimIndent(),
         )
         query.setParameter("years", years)

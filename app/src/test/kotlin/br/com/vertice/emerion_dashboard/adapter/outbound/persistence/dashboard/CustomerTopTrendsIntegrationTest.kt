@@ -29,7 +29,7 @@ class CustomerTopTrendsIntegrationTest(
         val allTimeBaseline = orderTotalsForAllTime()
         val currentCalendarYearBaseline = orderTotalsForCalendarYear(YearMonth.now().year)
         val initialRegionCount = dashboardRepository.getCustomerDistributionByRegion()
-            .singleOrNull { it.region == "ZZ" }?.customerCount ?: 0
+            .singleOrNull { it.region == "Sudeste" }?.customerCount ?: 0
         val initialActiveCount = dashboardRepository.getActiveCustomerCount()
         val initialNewCustomers = dashboardRepository.getNewCustomersByMonth().associate { it.yearMonth to it.count }
 
@@ -37,13 +37,13 @@ class CustomerTopTrendsIntegrationTest(
         val activeCustomerId = insertCustomer(
             code = firstCode,
             blocked = false,
-            region = "ZZ",
+            region = "SP",
             registeredAt = currentMonth.atDay(10),
         )
         insertCustomer(
             code = firstCode + 1,
             blocked = true,
-            region = "ZZ",
+            region = "SP",
             registeredAt = previousMonth.atDay(10),
         )
 
@@ -57,7 +57,7 @@ class CustomerTopTrendsIntegrationTest(
         val previousYearCustomerId = insertCustomer(
             code = previousYearCustomerCode,
             blocked = true,
-            region = "YY",
+            region = "RS",
             registeredAt = previousYear.atDay(10),
         )
         val previousYearOrderId = insertCustomerOrder(
@@ -67,7 +67,7 @@ class CustomerTopTrendsIntegrationTest(
         )
         insertOrderItem(previousYearOrderId, 800_000_000_000_000L)
 
-        val distribution = dashboardRepository.getCustomerDistributionByRegion().single { it.region == "ZZ" }
+        val distribution = dashboardRepository.getCustomerDistributionByRegion().single { it.region == "Sudeste" }
         assertEquals(initialRegionCount + 2, distribution.customerCount)
         assertEquals(initialActiveCount + 1, dashboardRepository.getActiveCustomerCount())
 
