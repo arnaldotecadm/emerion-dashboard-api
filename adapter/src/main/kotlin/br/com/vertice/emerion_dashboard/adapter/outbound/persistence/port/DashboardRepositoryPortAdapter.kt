@@ -19,45 +19,47 @@ class DashboardRepositoryPortAdapter(
     private val userService: UserService
 ) : DashboardRepositoryPort {
     override fun getDashboardCustomerTopTrends(orderBy: String): List<TopTrends> {
-        return dashboardDataRepository.getDashboardCustomerTopTrends(orderBy).map { it.toModel() }
+        return dashboardDataRepository.getDashboardCustomerTopTrends(orderBy, companyCnpj()).map { it.toModel() }
     }
 
     override fun getDashboardSellerTopTrends(orderBy: String, years: Int?): List<TopTrends> {
-        return dashboardDataRepository.getDashboardSellerTopTrends(orderBy, years).map { it.toModel() }
+        return dashboardDataRepository.getDashboardSellerTopTrends(orderBy, years, companyCnpj()).map { it.toModel() }
     }
 
     override fun getDashboardMonthlyTrends(years: Int?): List<DashboardMonthlyTrend> =
-        dashboardDataRepository.getDashboardMonthlyTrends(years).map { it.toModel() }
+        dashboardDataRepository.getDashboardMonthlyTrends(years, companyCnpj()).map { it.toModel() }
 
     override fun getDashboardOrdersByRegion(): List<DashboardOrdersByRegion> =
-        dashboardDataRepository.getDashboardOrdersByRegion().map { it.toModel() }
+        dashboardDataRepository.getDashboardOrdersByRegion(companyCnpj()).map { it.toModel() }
 
     override fun     getDashboardTotais(years: Int?): DashboardTotais {
-            return dashboardDataRepository.getDashboardTotais(years).toModel()
+            return dashboardDataRepository.getDashboardTotais(years, companyCnpj()).toModel()
     }
 
     override fun getCustomerDistributionByRegion(): List<CustomerRegionDistribution> =
-        dashboardDataRepository.getCustomerDistributionByRegion().map { it.toModel() }
+        dashboardDataRepository.getCustomerDistributionByRegion(companyCnpj()).map { it.toModel() }
 
-    override fun getActiveCustomerCount(): Int = dashboardDataRepository.getActiveCustomerCount()
+    override fun getActiveCustomerCount(): Int = dashboardDataRepository.getActiveCustomerCount(companyCnpj())
 
-    override fun getUnpaidInvoicesAmount(years: Int?) = dashboardDataRepository.getUnpaidInvoicesAmount(years)
+    override fun getUnpaidInvoicesAmount(years: Int?) = dashboardDataRepository.getUnpaidInvoicesAmount(years, companyCnpj())
 
     override fun getCustomerMonthlyAverageTicket(years: Int?): BigDecimal =
-        dashboardDataRepository.getCustomerMonthlyAverageTicket(years)
+        dashboardDataRepository.getCustomerMonthlyAverageTicket(years, companyCnpj())
 
     override fun getMostProfitableCustomers(years: Int?): List<TopTrends> =
-        dashboardDataRepository.getMostProfitableCustomers(years).map { it.toModel() }
+        dashboardDataRepository.getMostProfitableCustomers(years, companyCnpj()).map { it.toModel() }
 
     override fun getOverdueInvoices(years: Int?) =
-        dashboardDataRepository.getOverdueInvoices(years).map { it.toModel() }
+        dashboardDataRepository.getOverdueInvoices(years, companyCnpj()).map { it.toModel() }
 
-    override fun getCockpitMonthlyMetrics() = dashboardDataRepository.getCockpitMonthlyMetrics().toModel()
+    override fun getCockpitMonthlyMetrics() = dashboardDataRepository.getCockpitMonthlyMetrics(companyCnpj()).toModel()
 
-    override fun getUnpaidInvoicesSummary() = dashboardDataRepository.getUnpaidInvoicesSummary().toModel()
+    override fun getUnpaidInvoicesSummary() = dashboardDataRepository.getUnpaidInvoicesSummary(companyCnpj()).toModel()
 
-    override fun getRecentOrders(limit: Int) = dashboardDataRepository.getRecentOrders(limit).map { it.toModel() }
+    override fun getRecentOrders(limit: Int) = dashboardDataRepository.getRecentOrders(limit, companyCnpj()).map { it.toModel() }
 
     override fun getNewCustomersByMonth(years: Int?): List<DashboardMonthlyCount> =
-        dashboardDataRepository.getNewCustomersByMonth(years).map { it.toModel() }
+        dashboardDataRepository.getNewCustomersByMonth(years, companyCnpj()).map { it.toModel() }
+
+    private fun companyCnpj(): String = userService.getCurrentCompanyCnpj()
 }

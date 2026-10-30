@@ -34,9 +34,13 @@ interface CustomerCreditQueryRepository : Repository<CustomerCreditJpaEntity, Lo
                 updated_at AS updatedAt
             FROM customer_credit
             WHERE id = :id
+              AND cnpj_empresa = :cnpjEmpresa
         """,
     )
-    fun findProjectionById(@Param("id") id: Long): CustomerCreditProjection?
+    fun findProjectionById(
+        @Param("id") id: Long,
+        @Param("cnpjEmpresa") cnpjEmpresa: String,
+    ): CustomerCreditProjection?
 
     @Query(
         nativeQuery = true,

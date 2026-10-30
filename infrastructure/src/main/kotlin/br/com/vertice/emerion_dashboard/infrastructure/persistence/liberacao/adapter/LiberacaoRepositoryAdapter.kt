@@ -2,6 +2,7 @@ package br.com.vertice.emerion_dashboard.infrastructure.persistence.liberacao.ad
 
 import br.com.vertice.emerion_dashboard.domain.liberacao.model.Liberacao
 import br.com.vertice.emerion_dashboard.domain.liberacao.repository.LiberacaoRepository
+import br.com.vertice.emerion_dashboard.application.cognitouser.UserService
 import br.com.vertice.emerion_dashboard.domain.shared.Page
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import br.com.vertice.emerion_dashboard.infrastructure.persistence.liberacao.mapper.LiberacaoPersistenceMapper
@@ -15,9 +16,10 @@ import org.springframework.stereotype.Component
 class LiberacaoRepositoryAdapter(
     private val springDataRepository: LiberacaoSpringDataRepository,
     private val queryRepository: LiberacaoQueryRepository,
+    private val userService: UserService,
 ) : LiberacaoRepository {
     override fun findById(id: Long): Liberacao? =
-        queryRepository.findProjectionById(id)?.let(::toDomain)
+        queryRepository.findProjectionById(id, userService.getCurrentCompanyCnpj())?.let(::toDomain)
 
     override fun findByNumeroPedidoAndNumeroLiberacao(numeroPedido: String, numeroLiberacao: Int): Liberacao? =
         springDataRepository.findByNumeroPedidoAndNumeroLiberacao(numeroPedido, numeroLiberacao)
@@ -26,6 +28,7 @@ class LiberacaoRepositoryAdapter(
     override fun findAll(pageRequest: PageRequest, numeroPedido: String?): Page<Liberacao> {
         val result = queryRepository.search(
             numeroPedido?.takeIf { it.isNotBlank() },
+            userService.getCurrentCompanyCnpj(),
             SpringPageRequest.of(pageRequest.page, pageRequest.size),
         )
         return Page(

@@ -3,6 +3,7 @@ package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.port
 import br.com.vertice.emerion_dashboard.adapter.mapper.VendedorPersistenceMapper.toDomain
 import br.com.vertice.emerion_dashboard.adapter.mapper.VendedorPersistenceMapper.toEntity
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.repository.VendedorRepository
+import br.com.vertice.emerion_dashboard.application.cognitouser.UserService
 import br.com.vertice.emerion_dashboard.application.outbound.port.VendedorRepositoryPort
 import br.com.vertice.emerion_dashboard.domain.shared.Page
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
@@ -13,13 +14,14 @@ import org.springframework.data.domain.PageRequest as SpringPageRequest
 @Component
 class VendedorRepositoryPortAdapter(
     private val vendedorRepository: VendedorRepository,
+    private val userService: UserService,
 ) : VendedorRepositoryPort {
 
     override fun findById(id: Long): Vendedor? =
-        vendedorRepository.findProjectionById(id)?.toDomain()
+        vendedorRepository.findProjectionById(id, userService.getCurrentCompanyCnpj())?.toDomain()
 
     override fun findByExternalId(externalId: String): Vendedor? =
-        vendedorRepository.findByExternalId(externalId)?.toDomain()
+        vendedorRepository.findByExternalIdAndCnpjEmpresa(externalId, userService.getCurrentCompanyCnpj())?.toDomain()
 
     override fun findAll(
         pageRequest: PageRequest,
@@ -31,7 +33,7 @@ class VendedorRepositoryPortAdapter(
         val result = vendedorRepository.search(
             nomeContains?.takeIf { it.isNotBlank() },
             ativo?.takeIf { it.isNotBlank() }?.uppercase(),
-            cnpjEmpresa?.takeIf { it.isNotBlank() },
+            userService.getCurrentCompanyCnpj(),
             springPageable,
         )
         return Page(

@@ -2,6 +2,7 @@ package br.com.vertice.emerion_dashboard.infrastructure.persistence.customeraddr
 
 import br.com.vertice.emerion_dashboard.domain.customeraddress.model.CustomerAddress
 import br.com.vertice.emerion_dashboard.domain.customeraddress.repository.CustomerAddressRepository
+import br.com.vertice.emerion_dashboard.application.cognitouser.UserService
 import br.com.vertice.emerion_dashboard.domain.shared.Page
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import br.com.vertice.emerion_dashboard.infrastructure.persistence.customeraddress.mapper.CustomerAddressPersistenceMapper
@@ -23,10 +24,11 @@ import org.springframework.stereotype.Component
 class CustomerAddressRepositoryAdapter(
     private val springDataRepository: CustomerAddressSpringDataRepository,
     private val queryRepository: CustomerAddressQueryRepository,
+    private val userService: UserService,
 ) : CustomerAddressRepository {
 
     override fun findById(id: Long): CustomerAddress? {
-        val header = queryRepository.findHeaderProjectionById(id) ?: return null
+        val header = queryRepository.findHeaderProjectionById(id, userService.getCurrentCompanyCnpj()) ?: return null
         val details = queryRepository.findDetailsByCustomerAddressIds(listOf(id))
         return CustomerAddressPersistenceMapper.toDomain(header, details)
     }
@@ -42,7 +44,7 @@ class CustomerAddressRepositoryAdapter(
         val springPageable = SpringPageRequest.of(pageRequest.page, pageRequest.size)
         val headerPage = queryRepository.searchHeaders(
             cpfCnpjContains?.takeIf { it.isNotBlank() },
-            cnpjEmpresa?.takeIf { it.isNotBlank() },
+            userService.getCurrentCompanyCnpj(),
             springPageable,
         )
         val headerIds = headerPage.content.map { it.id }

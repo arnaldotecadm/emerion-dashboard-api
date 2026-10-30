@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
 interface CustomerRepository : JpaRepository<CustomerJpaEntity, Long> {
-
     fun findByExternalId(externalId: String): CustomerJpaEntity?
+    fun findByExternalIdAndCnpjEmpresa(externalId: String, cnpjEmpresa: String): CustomerJpaEntity?
 
     @Query(
         nativeQuery = true,
@@ -47,9 +47,10 @@ interface CustomerRepository : JpaRepository<CustomerJpaEntity, Long> {
                 updated_at AS updatedAt
             FROM customer
             WHERE id = :id
+              AND cnpj_empresa = :cnpjEmpresa
         """,
     )
-    fun findProjectionById(@Param("id") id: Long): CustomerProjection?
+    fun findProjectionById(@Param("id") id: Long, @Param("cnpjEmpresa") cnpjEmpresa: String): CustomerProjection?
 
     @Query(
         nativeQuery = true,

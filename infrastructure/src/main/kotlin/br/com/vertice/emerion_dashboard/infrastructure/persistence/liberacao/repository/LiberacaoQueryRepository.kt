@@ -35,9 +35,13 @@ interface LiberacaoQueryRepository : Repository<LiberacaoJpaEntity, Long> {
                 updated_at AS updatedAt
             FROM liberacao
             WHERE id = :id
+              AND cnpj_empresa = :cnpjEmpresa
         """,
     )
-    fun findProjectionById(@Param("id") id: Long): LiberacaoProjection?
+    fun findProjectionById(
+        @Param("id") id: Long,
+        @Param("cnpjEmpresa") cnpjEmpresa: String,
+    ): LiberacaoProjection?
 
     @Query(
         nativeQuery = true,
@@ -63,15 +67,21 @@ interface LiberacaoQueryRepository : Repository<LiberacaoJpaEntity, Long> {
                 updated_at AS updatedAt
             FROM liberacao
             WHERE (:numeroPedido IS NULL OR numero_pedido = :numeroPedido)
+              AND cnpj_empresa = :cnpjEmpresa
             ORDER BY data_liberacao DESC, id DESC
         """,
         countQuery = """
             SELECT count(*)
             FROM liberacao
             WHERE (:numeroPedido IS NULL OR numero_pedido = :numeroPedido)
+              AND cnpj_empresa = :cnpjEmpresa
         """,
     )
-    fun search(@Param("numeroPedido") numeroPedido: String?, pageable: Pageable): Page<LiberacaoProjection>
+    fun search(
+        @Param("numeroPedido") numeroPedido: String?,
+        @Param("cnpjEmpresa") cnpjEmpresa: String,
+        pageable: Pageable,
+    ): Page<LiberacaoProjection>
 
     @Query(
         nativeQuery = true,

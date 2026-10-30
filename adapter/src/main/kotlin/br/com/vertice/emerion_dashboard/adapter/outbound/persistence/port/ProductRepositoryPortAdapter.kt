@@ -3,6 +3,7 @@ package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.port
 import br.com.vertice.emerion_dashboard.adapter.mapper.ProductPersistenceMapper.toDomain
 import br.com.vertice.emerion_dashboard.adapter.mapper.ProductPersistenceMapper.toEntity
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.repository.ProductRepository
+import br.com.vertice.emerion_dashboard.application.cognitouser.UserService
 import br.com.vertice.emerion_dashboard.application.outbound.port.ProductRepositoryPort
 import br.com.vertice.emerion_dashboard.domain.product.Product
 import br.com.vertice.emerion_dashboard.domain.shared.Page
@@ -13,13 +14,14 @@ import org.springframework.data.domain.PageRequest as SpringPageRequest
 @Component
 class ProductRepositoryPortAdapter(
     private val productRepository: ProductRepository,
+    private val userService: UserService,
 ) : ProductRepositoryPort {
 
     override fun findById(id: Long): Product? =
-        productRepository.findProjectionById(id)?.toDomain()
+        productRepository.findProjectionById(id, userService.getCurrentCompanyCnpj())?.toDomain()
 
     override fun findByExternalId(externalId: String): Product? =
-        productRepository.findByExternalId(externalId)?.toDomain()
+        productRepository.findByExternalIdAndCnpjEmpresa(externalId, userService.getCurrentCompanyCnpj())?.toDomain()
 
     override fun findAll(
         pageRequest: PageRequest,
@@ -29,7 +31,7 @@ class ProductRepositoryPortAdapter(
         val springPageable = SpringPageRequest.of(pageRequest.page, pageRequest.size)
         val result = productRepository.search(
             nomeContains?.takeIf { it.isNotBlank() },
-            cnpjEmpresa?.takeIf { it.isNotBlank() },
+            userService.getCurrentCompanyCnpj(),
             springPageable,
         )
         return Page(

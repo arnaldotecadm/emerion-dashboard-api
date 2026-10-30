@@ -3,6 +3,7 @@ package br.com.vertice.emerion_dashboard.adapter.outbound.persistence.port
 import br.com.vertice.emerion_dashboard.adapter.mapper.CustomerPersistenceMapper.toDomain
 import br.com.vertice.emerion_dashboard.adapter.mapper.CustomerPersistenceMapper.toEntity
 import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.repository.CustomerRepository
+import br.com.vertice.emerion_dashboard.application.cognitouser.UserService
 import br.com.vertice.emerion_dashboard.application.outbound.port.CustomerRepositoryPort
 import br.com.vertice.emerion_dashboard.domain.customer.Customer
 import br.com.vertice.emerion_dashboard.domain.shared.Page
@@ -13,13 +14,14 @@ import org.springframework.data.domain.PageRequest as SpringPageRequest
 @Component
 class CustomerRepositoryPortAdapter(
     private val customerRepository: CustomerRepository,
+    private val userService: UserService,
 ) : CustomerRepositoryPort {
 
     override fun findById(id: Long): Customer? =
-        customerRepository.findProjectionById(id)?.toDomain()
+        customerRepository.findProjectionById(id, userService.getCurrentCompanyCnpj())?.toDomain()
 
     override fun findByExternalId(externalId: String): Customer? =
-        customerRepository.findByExternalId(externalId)?.toDomain()
+        customerRepository.findByExternalIdAndCnpjEmpresa(externalId, userService.getCurrentCompanyCnpj())?.toDomain()
 
     override fun findAll(
         pageRequest: PageRequest,
@@ -31,7 +33,7 @@ class CustomerRepositoryPortAdapter(
         val result = customerRepository.search(
             bloqueado,
             nomeFantasiaContains?.takeIf { it.isNotBlank() },
-            cnpjEmpresa?.takeIf { it.isNotBlank() },
+            userService.getCurrentCompanyCnpj(),
             springPageable,
         )
         return Page(

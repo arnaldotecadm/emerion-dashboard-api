@@ -2,6 +2,7 @@ package br.com.vertice.emerion_dashboard.infrastructure.persistence.customerorde
 
 import br.com.vertice.emerion_dashboard.domain.customerorder.model.CustomerOrder
 import br.com.vertice.emerion_dashboard.domain.customerorder.repository.CustomerOrderRepository
+import br.com.vertice.emerion_dashboard.application.cognitouser.UserService
 import br.com.vertice.emerion_dashboard.domain.shared.Page
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import br.com.vertice.emerion_dashboard.infrastructure.persistence.customerorder.mapper.CustomerOrderPersistenceMapper
@@ -21,10 +22,11 @@ import org.springframework.stereotype.Component
 class CustomerOrderRepositoryAdapter(
     private val springDataRepository: CustomerOrderSpringDataRepository,
     private val queryRepository: CustomerOrderQueryRepository,
+    private val userService: UserService,
 ) : CustomerOrderRepository {
 
     override fun findById(id: Long): CustomerOrder? {
-        val header = queryRepository.findHeaderProjectionById(id) ?: return null
+        val header = queryRepository.findHeaderProjectionById(id, userService.getCurrentCompanyCnpj()) ?: return null
         val items = queryRepository.findItemsByCustomerOrderIds(listOf(id))
         return CustomerOrderPersistenceMapper.toDomain(header, items)
     }
@@ -49,6 +51,7 @@ class CustomerOrderRepositoryAdapter(
             nomeFantasia?.trim()?.takeIf { it.isNotEmpty() }?.let { "%$it%" },
             numeroPedido?.trim()?.takeIf { it.isNotEmpty() }?.let { "%$it%" },
             period?.takeIf { it.isNotBlank() },
+            userService.getCurrentCompanyCnpj(),
             springPageable,
         )
         val headerIds = headerPage.content.map { it.id }

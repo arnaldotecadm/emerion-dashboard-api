@@ -60,9 +60,13 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
             FROM customer_order co
             left join customer c on c.external_id::int = co.codigo_cliente
             WHERE co.id = :id
+              AND co.cnpj_empresa = :cnpjEmpresa
         """,
     )
-    fun findHeaderProjectionById(@Param("id") id: Long): CustomerOrderHeaderProjection?
+    fun findHeaderProjectionById(
+        @Param("id") id: Long,
+        @Param("cnpjEmpresa") cnpjEmpresa: String,
+    ): CustomerOrderHeaderProjection?
 
     @Query(
         nativeQuery = true,
@@ -104,6 +108,7 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
             WHERE (:codigoCliente IS NULL OR co.codigo_cliente = :codigoCliente)
               AND (:statusPedido IS NULL OR co.status_pedido = :statusPedido)
               AND (:codigoEmpresa IS NULL OR co.codigo_empresa = :codigoEmpresa)
+              AND co.cnpj_empresa = :cnpjEmpresa
               AND (CAST(:nomeFantasia AS text) IS NULL OR c.nome_fantasia ILIKE CAST(:nomeFantasia AS text))
               AND (CAST(:numeroPedido AS text) IS NULL OR co.numero_pedido ILIKE CAST(:numeroPedido AS text))
               AND (
@@ -134,6 +139,7 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
             WHERE (:codigoCliente IS NULL OR codigo_cliente = :codigoCliente)
               AND (:statusPedido IS NULL OR status_pedido = :statusPedido)
               AND (:codigoEmpresa IS NULL OR codigo_empresa = :codigoEmpresa)
+              AND cnpj_empresa = :cnpjEmpresa
               AND (CAST(:nomeFantasia AS text) IS NULL OR c.nome_fantasia ILIKE CAST(:nomeFantasia AS text))
               AND (CAST(:numeroPedido AS text) IS NULL OR numero_pedido ILIKE CAST(:numeroPedido AS text))
               AND (
@@ -164,6 +170,7 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
         @Param("nomeFantasia") nomeFantasia: String?,
         @Param("numeroPedido") numeroPedido: String?,
         @Param("period") period: String?,
+        @Param("cnpjEmpresa") cnpjEmpresa: String,
         pageable: Pageable,
     ): Page<CustomerOrderHeaderProjection>
 

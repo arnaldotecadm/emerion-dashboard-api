@@ -21,7 +21,7 @@ class DashboardDataRepository(
     private val entityManager: EntityManager
 ) {
 
-    fun getDashboardOrdersByRegion(): List<DashboardOrdersByRegionProjection> {
+    fun getDashboardOrdersByRegion(cnpjEmpresa: String): List<DashboardOrdersByRegionProjection> {
         val query = entityManager.createNativeQuery(
             """
             SELECT
@@ -41,10 +41,12 @@ class DashboardDataRepository(
                                      OR co.status_pedido IS NULL
                     THEN co.total_pedido_com_impostos ELSE 0 END), 0) AS outros
             FROM emerion_dashboard.customer_order co
+            WHERE co.cnpj_empresa = :cnpjEmpresa
             GROUP BY regiao
             ORDER BY SUM(co.total_pedido_com_impostos) DESC
             """.trimIndent()
         )
+        query.setParameter("cnpjEmpresa", cnpjEmpresa)
         return query.resultList.map { row ->
             val resultArray = row as Array<*>
             DashboardOrdersByRegionProjection(
@@ -56,7 +58,7 @@ class DashboardDataRepository(
         }
     }
 
-    fun getDashboardMonthlyTrends(years: Int?): List<DashboardMonthlyTrendProjection> {
+    fun getDashboardMonthlyTrends(years: Int?, cnpjEmpresa: String): List<DashboardMonthlyTrendProjection> {
         val query = entityManager.createNativeQuery(
             """
             with bounds as (
@@ -81,6 +83,7 @@ class DashboardDataRepository(
                 from emerion_dashboard.customer_order co
                 where co.data_pedido >= (select start_date from bounds)
                   and co.data_pedido <= current_date
+                  and co.cnpj_empresa = :cnpjEmpresa
                 group by date_trunc('month', co.data_pedido)::date
             ),
             customer_quotations as (
@@ -88,6 +91,7 @@ class DashboardDataRepository(
                 from emerion_dashboard.customer_quotation cq
                 where cq.data_pedido >= (select start_date from bounds)
                   and cq.data_pedido <= current_date
+                  and cq.cnpj_empresa = :cnpjEmpresa
                 group by date_trunc('month', cq.data_pedido)::date
             )
             select
@@ -102,6 +106,7 @@ class DashboardDataRepository(
             """.trimIndent()
         )
         query.setParameter("years", years)
+        query.setParameter("cnpjEmpresa", cnpjEmpresa)
         return query.resultList.map { row ->
             val resultArray = row as Array<*>
             DashboardMonthlyTrendProjection(
@@ -113,7 +118,7 @@ class DashboardDataRepository(
         }
     }
 
-    fun getDashboardCustomerTopTrends(orderBy: String): List<DashboardTopTrendsProjection> {
+    fun getDashboardCustomerTopTrends(orderBy: String, cnpjEmpresa: String): List<DashboardTopTrendsProjection> {
         val query = entityManager.createNativeQuery(
             """
             with top_costumers as (
@@ -122,6 +127,7 @@ class DashboardDataRepository(
                     count(1) as quantidadePedido, 
                     sum(co.total_pedido_com_impostos) as totalFaturado 
                 from emerion_dashboard.customer_order co
+                where co.cnpj_empresa = :cnpjEmpresa
                 group by co.codigo_cliente
             )
             select 
@@ -131,10 +137,12 @@ class DashboardDataRepository(
                 tc.totalfaturado  
             from emerion_dashboard.customer c
             right join top_costumers tc on tc.CodigoCliente = c.external_id::int
+                and c.cnpj_empresa = :cnpjEmpresa
             order by tc.${orderBy} desc
             limit 10
         """.trimIndent()
         )
+        query.setParameter("cnpjEmpresa", cnpjEmpresa)
         return query.resultList.map { row ->
             val resultArray = row as Array<*>
             DashboardTopTrendsProjection(
@@ -146,7 +154,7 @@ class DashboardDataRepository(
         }
     }
 
-    fun getDashboardSellerTopTrends(orderBy: String, years: Int?): List<DashboardTopTrendsProjection> {
+    fun getDashboardSellerTopTrends(orderBy: String, years: Int?, cnpjEmpresa: String): List<DashboardTopTrendsProjection> {
         val query = entityManager.createNativeQuery(
             """
             with top_vendedores as (
@@ -155,8 +163,9 @@ class DashboardDataRepository(
             		count(1) as quantidadePedido, 
             		sum(co.total_pedido_com_impostos) as totalFaturado 
             	from emerion_dashboard.customer_order co
-            	where cast(:years as integer) is null
-            	   or extract(year from co.data_pedido) >= extract(year from current_date) - cast(:years as integer) + 1
+                where (cast(:years as integer) is null
+                   or extract(year from co.data_pedido) >= extract(year from current_date) - cast(:years as integer) + 1)
+                  and co.cnpj_empresa = :cnpjEmpresa
             	group by co.vendedor_external_id 
             )
             select 
@@ -166,11 +175,13 @@ class DashboardDataRepository(
             	tc.totalfaturado  
             from emerion_dashboard.vendedor v
             right join top_vendedores tc on tc.CodigoVendedor = v.external_id::int
+                and v.cnpj_empresa = :cnpjEmpresa
             order by tc.${orderBy} desc
             limit 10
         """.trimIndent()
         )
         query.setParameter("years", years)
+        query.setParameter("cnpjEmpresa", cnpjEmpresa)
         return query.resultList.map { row ->
             val resultArray = row as Array<*>
             DashboardTopTrendsProjection(
@@ -182,7 +193,7 @@ class DashboardDataRepository(
         }
     }
 
-    fun getDashboardTotais(years: Int?): DashboardTotaisProjection {
+    fun getDashboardTotais(years: Int?, cnpjEmpresa: String): DashboardTotaisProjection {
         val query = entityManager.createNativeQuery(
             """
             with pedidos as (
@@ -191,18 +202,21 @@ class DashboardDataRepository(
                     vendedor_external_id,
                     total_pedido_com_impostos
                 from emerion_dashboard.customer_order
-                where cast(:years as integer) is null
-                   or extract(year from data_pedido) >= extract(year from current_date) - cast(:years as integer) + 1
+                where (cast(:years as integer) is null
+                   or extract(year from data_pedido) >= extract(year from current_date) - cast(:years as integer) + 1)
+                  and cnpj_empresa = :cnpjEmpresa
             ),
             totais_clientes as (
                 select count(distinct(id)) as quantidadeClientes
                 from emerion_dashboard.customer c
                 right join pedidos co on c.id = co.codigo_cliente
+                        and c.cnpj_empresa = :cnpjEmpresa
             ),
             totais_vendedores as (
                 select count(distinct(id)) as quantidadeVendedores
                 from emerion_dashboard.vendedor v
                 right join pedidos co on v.external_id::int = co.vendedor_external_id
+                        and v.cnpj_empresa = :cnpjEmpresa
             ),
             pedido_totais as (
                 select
@@ -221,6 +235,7 @@ class DashboardDataRepository(
         """.trimIndent()
         )
         query.setParameter("years", years)
+        query.setParameter("cnpjEmpresa", cnpjEmpresa)
         val resultArray = query.singleResult as Array<*>
         return DashboardTotaisProjection(
             quantidadePedidos = (resultArray[0] as Number).toInt(),
@@ -230,7 +245,7 @@ class DashboardDataRepository(
         )
     }
 
-    fun getCustomerDistributionByRegion(): List<DashboardCustomerRegionProjection> {
+    fun getCustomerDistributionByRegion(cnpjEmpresa: String): List<DashboardCustomerRegionProjection> {
         val query = entityManager.createNativeQuery(
             """
             select region, count(*) as customer_count
@@ -245,11 +260,13 @@ class DashboardDataRepository(
                         else 'Não informado'
                     end as region
                 from emerion_dashboard.customer
+                where cnpj_empresa = :cnpjEmpresa
             ) customer_regions
             group by region
             order by customer_count desc, region
             """.trimIndent(),
         )
+        query.setParameter("cnpjEmpresa", cnpjEmpresa)
         return query.resultList.map { row ->
             val resultArray = row as Array<*>
             DashboardCustomerRegionProjection(
@@ -259,35 +276,40 @@ class DashboardDataRepository(
         }
     }
 
-    fun getActiveCustomerCount(): Int {
+    fun getActiveCustomerCount(cnpjEmpresa: String): Int {
         val query = entityManager.createNativeQuery(
             """
             select count(*)
             from emerion_dashboard.customer
             where bloqueado = false
+              and cnpj_empresa = :cnpjEmpresa
             """.trimIndent(),
         )
+        query.setParameter("cnpjEmpresa", cnpjEmpresa)
         return (query.singleResult as Number).toInt()
     }
 
-    fun getUnpaidInvoicesAmount(years: Int?): BigDecimal {
+    fun getUnpaidInvoicesAmount(years: Int?, cnpjEmpresa: String): BigDecimal {
         val query = entityManager.createNativeQuery(
             """
             select coalesce(sum(trp.valor_parcela), 0)
             from emerion_dashboard.titulo_receber_parcela trp
+            join emerion_dashboard.titulo_receber tr on tr.documento = trp.documento
             where coalesce(trp.flag_pago, '') != '*'
               and trp.data_vencimento <= now()
               and (
                 cast(:years as integer) is null
                 or trp.data_vencimento >= make_date(extract(year from current_date)::int - cast(:years as integer) + 1, 1, 1)
               )
+              and tr.cnpj_empresa = :cnpjEmpresa
             """.trimIndent(),
         )
         query.setParameter("years", years)
+        query.setParameter("cnpjEmpresa", cnpjEmpresa)
         return query.singleResult as BigDecimal
     }
 
-    fun getOverdueInvoices(years: Int?): List<DashboardOverdueInvoiceProjection> {
+    fun getOverdueInvoices(years: Int?, cnpjEmpresa: String): List<DashboardOverdueInvoiceProjection> {
         val query = entityManager.createNativeQuery(
             """
             select
@@ -304,11 +326,13 @@ class DashboardDataRepository(
                 cast(:years as integer) is null
                 or trp.data_vencimento >= make_date(extract(year from current_date)::int - cast(:years as integer) + 1, 1, 1)
               )
+              and tr.cnpj_empresa = :cnpjEmpresa
             order by trp.data_vencimento, trp.id
             limit 5
             """.trimIndent(),
         )
         query.setParameter("years", years)
+        query.setParameter("cnpjEmpresa", cnpjEmpresa)
         return query.resultList.map { row ->
             val resultArray = row as Array<*>
             DashboardOverdueInvoiceProjection(
@@ -321,7 +345,7 @@ class DashboardDataRepository(
         }
     }
 
-    fun getCockpitMonthlyMetrics(): DashboardCockpitMetricsProjection {
+    fun getCockpitMonthlyMetrics(cnpjEmpresa: String): DashboardCockpitMetricsProjection {
         val query = entityManager.createNativeQuery(
             """
             with bounds as (
@@ -334,36 +358,45 @@ class DashboardDataRepository(
                     select sum(co.total_pedido_com_impostos)
                     from emerion_dashboard.customer_order co, bounds b
                     where co.data_pedido >= b.month_start and co.data_pedido < b.next_month_start
+                      and co.cnpj_empresa = :cnpjEmpresa
                 ), 0),
                 coalesce((
                     select round(avg(coi.tot_ren), 2)
                     from emerion_dashboard.customer_order_item coi
                     join emerion_dashboard.customer_order co on co.id = coi.customer_order_id, bounds b
                     where co.data_pedido >= b.month_start and co.data_pedido < b.next_month_start
+                      and co.cnpj_empresa = :cnpjEmpresa
                 ), 0),
                 (
                     select count(*)
                     from emerion_dashboard.customer_order co, bounds b
                     where co.data_pedido >= b.month_start and co.data_pedido < b.next_month_start
+                      and co.cnpj_empresa = :cnpjEmpresa
                 ),
                 (
                     select count(*)
                     from emerion_dashboard.customer_quotation cq, bounds b
                     where cq.data_pedido >= b.month_start and cq.data_pedido < b.next_month_start
+                      and cq.cnpj_empresa = :cnpjEmpresa
                 ),
                 coalesce((
                     select sum(trp.valor_parcela)
-                    from emerion_dashboard.titulo_receber_parcela trp, bounds b
+                    from emerion_dashboard.titulo_receber_parcela trp
+                    join emerion_dashboard.titulo_receber tr on tr.documento = trp.documento, bounds b
                     where trp.data_vencimento >= b.month_start and trp.data_vencimento < b.next_month_start
+                      and tr.cnpj_empresa = :cnpjEmpresa
                 ), 0),
                 coalesce((
                     select sum(trp.valor_parcela)
-                    from emerion_dashboard.titulo_receber_parcela trp, bounds b
+                    from emerion_dashboard.titulo_receber_parcela trp
+                    join emerion_dashboard.titulo_receber tr on tr.documento = trp.documento, bounds b
                     where trp.flag_pago = '*'
                       and trp.data_vencimento >= b.month_start and trp.data_vencimento < b.next_month_start
+                      and tr.cnpj_empresa = :cnpjEmpresa
                 ), 0)
             """.trimIndent(),
         )
+        query.setParameter("cnpjEmpresa", cnpjEmpresa)
         val row = query.singleResult as Array<*>
         return DashboardCockpitMetricsProjection(
             salesTotal = row[0] as BigDecimal,
@@ -375,16 +408,19 @@ class DashboardDataRepository(
         )
     }
 
-    fun getUnpaidInvoicesSummary(): DashboardUnpaidInvoicesProjection {
+    fun getUnpaidInvoicesSummary(cnpjEmpresa: String): DashboardUnpaidInvoicesProjection {
         val query = entityManager.createNativeQuery(
             """
             select count(*), coalesce(sum(trp.valor_parcela), 0)
             from emerion_dashboard.titulo_receber_parcela trp
+            join emerion_dashboard.titulo_receber tr on tr.documento = trp.documento
             where coalesce(trp.flag_pago, '') != '*'
               and trp.data_vencimento >= date_trunc('month', current_date)
               and trp.data_vencimento <= now()
+              and tr.cnpj_empresa = :cnpjEmpresa
             """.trimIndent(),
         )
+        query.setParameter("cnpjEmpresa", cnpjEmpresa)
         val row = query.singleResult as Array<*>
         return DashboardUnpaidInvoicesProjection(
             count = (row[0] as Number).toInt(),
@@ -392,7 +428,7 @@ class DashboardDataRepository(
         )
     }
 
-    fun getRecentOrders(limit: Int): List<DashboardRecentOrderProjection> {
+    fun getRecentOrders(limit: Int, cnpjEmpresa: String): List<DashboardRecentOrderProjection> {
         val query = entityManager.createNativeQuery(
             """
             select * from (
@@ -416,11 +452,14 @@ class DashboardDataRepository(
                         when v.external_id ~ '^[0-9]+$' then v.external_id::numeric
                         else null
                     end = co.vendedor_external_id
+                    and v.cnpj_empresa = :cnpjEmpresa
                 left join emerion_dashboard.customer c
                     on case
                         when c.external_id ~ '^[0-9]+$' then c.external_id::numeric
                         else null
                     end = co.codigo_cliente
+                    and c.cnpj_empresa = :cnpjEmpresa
+                where co.cnpj_empresa = :cnpjEmpresa
                 order by (coalesce(co.status_pedido, '') = 'Faturado'), co.data_pedido desc, co.id desc
                 limit :limit
             ) recent
@@ -428,6 +467,7 @@ class DashboardDataRepository(
             """.trimIndent(),
         )
         query.setParameter("limit", limit)
+        query.setParameter("cnpjEmpresa", cnpjEmpresa)
         return query.resultList.map { row ->
             val resultArray = row as Array<*>
             DashboardRecentOrderProjection(
@@ -443,7 +483,7 @@ class DashboardDataRepository(
         }
     }
 
-    fun getCustomerMonthlyAverageTicket(years: Int?): BigDecimal {
+    fun getCustomerMonthlyAverageTicket(years: Int?, cnpjEmpresa: String): BigDecimal {
         val query = entityManager.createNativeQuery(
             """
             with bounds as (
@@ -457,13 +497,15 @@ class DashboardDataRepository(
             from emerion_dashboard.customer_order
             where data_pedido >= (select start_date from bounds)
               and data_pedido <= current_date
+              and cnpj_empresa = :cnpjEmpresa
             """.trimIndent(),
         )
         query.setParameter("years", years)
+        query.setParameter("cnpjEmpresa", cnpjEmpresa)
         return query.singleResult as BigDecimal
     }
 
-    fun getMostProfitableCustomers(years: Int?): List<DashboardTopTrendsProjection> {
+    fun getMostProfitableCustomers(years: Int?, cnpjEmpresa: String): List<DashboardTopTrendsProjection> {
         val query = entityManager.createNativeQuery(
             """
             with bounds as (
@@ -482,6 +524,7 @@ class DashboardDataRepository(
                 join emerion_dashboard.customer_order_item coi on coi.customer_order_id = co.id
                 where co.data_pedido >= (select start_date from bounds)
                   and co.data_pedido <= current_date
+                  and co.cnpj_empresa = :cnpjEmpresa
                 group by co.codigo_cliente
             )
             select
@@ -495,11 +538,13 @@ class DashboardDataRepository(
                     when c.external_id ~ '^[0-9]+$' then c.external_id::numeric
                     else null
                 end = cp.codigo_cliente
+                and c.cnpj_empresa = :cnpjEmpresa
             order by cp.total_profit desc, cp.codigo_cliente
             limit 10
             """.trimIndent(),
         )
         query.setParameter("years", years)
+        query.setParameter("cnpjEmpresa", cnpjEmpresa)
         return query.resultList.map { row ->
             val resultArray = row as Array<*>
             DashboardTopTrendsProjection(
@@ -511,13 +556,17 @@ class DashboardDataRepository(
         }
     }
 
-    fun getNewCustomersByMonth(years: Int?): List<DashboardNewCustomersByMonthProjection> {
+    fun getNewCustomersByMonth(years: Int?, cnpjEmpresa: String): List<DashboardNewCustomersByMonthProjection> {
         val query = entityManager.createNativeQuery(
             """
             with bounds as (
                 select case
                     when cast(:years as integer) is null
-                        then coalesce((select min(data_cadastro) from emerion_dashboard.customer), current_date)
+                        then coalesce((
+                            select min(data_cadastro)
+                            from emerion_dashboard.customer
+                            where cnpj_empresa = :cnpjEmpresa
+                        ), current_date)
                     else make_date(extract(year from current_date)::int - cast(:years as integer) + 1, 1, 1)
                 end as start_date
             ),
@@ -535,6 +584,7 @@ class DashboardDataRepository(
                 from emerion_dashboard.customer
                 where data_cadastro >= (select start_date from bounds)
                   and data_cadastro < (date_trunc('month', current_date) + interval '1 month')::date
+                  and cnpj_empresa = :cnpjEmpresa
                 group by date_trunc('month', data_cadastro)::date
             )
             select
@@ -545,6 +595,7 @@ class DashboardDataRepository(
             """.trimIndent(),
         )
         query.setParameter("years", years)
+        query.setParameter("cnpjEmpresa", cnpjEmpresa)
         return query.resultList.map { row ->
             val resultArray = row as Array<*>
             DashboardNewCustomersByMonthProjection(

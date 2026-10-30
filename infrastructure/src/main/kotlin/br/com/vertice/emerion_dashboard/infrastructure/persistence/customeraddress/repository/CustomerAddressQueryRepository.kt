@@ -35,9 +35,13 @@ interface CustomerAddressQueryRepository : Repository<CustomerAddressJpaEntity, 
                 updated_at AS updatedAt
             FROM customer_address
             WHERE id = :id
+              AND cnpj_empresa = :cnpjEmpresa
         """,
     )
-    fun findHeaderProjectionById(@Param("id") id: Long): CustomerAddressHeaderProjection?
+    fun findHeaderProjectionById(
+        @Param("id") id: Long,
+        @Param("cnpjEmpresa") cnpjEmpresa: String,
+    ): CustomerAddressHeaderProjection?
 
     @Query(
         nativeQuery = true,

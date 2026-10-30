@@ -11,14 +11,11 @@ class UserService(
     private val cognitoUserRepository: CognitoUserRepository,
 ) {
 
-    @Volatile
-    private var cachedCurrentUser: CognitoUser? = null
+    fun getCurrentUser(): CognitoUser = fetchCurrentUser()
 
-    fun getCurrentUser(): CognitoUser? =
-        cachedCurrentUser ?: synchronized(this) {
-            cachedCurrentUser ?: fetchCurrentUser().also { cachedCurrentUser = it }
-        }
-
+    fun getCurrentCompanyCnpj(): String =
+        getCurrentUser().cnpjEmpresa?.takeIf { it.isNotBlank() }
+            ?: UNASSIGNED_COMPANY_CNPJ
 
     private fun fetchCurrentUser(): CognitoUser {
         val authentication = SecurityContextHolder.getContext().authentication
@@ -32,3 +29,5 @@ class UserService(
         }
     }
 }
+
+private const val UNASSIGNED_COMPANY_CNPJ = "00000000000000"

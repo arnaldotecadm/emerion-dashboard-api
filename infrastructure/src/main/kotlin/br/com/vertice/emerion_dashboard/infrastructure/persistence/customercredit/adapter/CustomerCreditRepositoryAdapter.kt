@@ -2,6 +2,7 @@ package br.com.vertice.emerion_dashboard.infrastructure.persistence.customercred
 
 import br.com.vertice.emerion_dashboard.domain.customercredit.model.CustomerCredit
 import br.com.vertice.emerion_dashboard.domain.customercredit.repository.CustomerCreditRepository
+import br.com.vertice.emerion_dashboard.application.cognitouser.UserService
 import br.com.vertice.emerion_dashboard.domain.shared.Page
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import br.com.vertice.emerion_dashboard.infrastructure.persistence.customercredit.mapper.CustomerCreditPersistenceMapper
@@ -22,10 +23,11 @@ import org.springframework.data.domain.PageRequest as SpringPageRequest
 class  CustomerCreditRepositoryAdapter(
     private val springDataRepository: CustomerCreditSpringDataRepository,
     private val queryRepository: CustomerCreditQueryRepository,
+    private val userService: UserService,
 ) : CustomerCreditRepository {
 
     override fun findById(id: Long): CustomerCredit? =
-        queryRepository.findProjectionById(id)?.let(CustomerCreditPersistenceMapper::toDomain)
+        queryRepository.findProjectionById(id, userService.getCurrentCompanyCnpj())?.let(CustomerCreditPersistenceMapper::toDomain)
 
     override fun findByCustomerExternalIdAndDataAndSequencia(
         customerExternalId: String,
@@ -45,7 +47,7 @@ class  CustomerCreditRepositoryAdapter(
         val result = queryRepository.search(
             customerExternalId?.takeIf { it.isNotBlank() },
             tipo?.takeIf { it.isNotBlank() },
-            cnpjEmpresa?.takeIf { it.isNotBlank() },
+            userService.getCurrentCompanyCnpj(),
             springPageable,
         )
         return Page(

@@ -13,7 +13,7 @@ class SmartStockDataRepository(
     private val entityManager: EntityManager
 ) {
 
-    fun getStockRecommendations(): List<StockRecommendationProjection> {
+    fun getStockRecommendations(cnpjEmpresa: String): List<StockRecommendationProjection> {
         val querySql = """
             select 
                 p.external_id as codigo,
@@ -26,11 +26,13 @@ class SmartStockDataRepository(
                 coalesce(p.markup, 0) as markup,
                 0 as leadTime
             from emerion_dashboard.product p
+            where p.cnpj_empresa = :cnpjEmpresa
             order by p.estoque_atual
             limit 100
         """.trimIndent()
 
         val query = entityManager.createNativeQuery(querySql)
+        query.setParameter("cnpjEmpresa", cnpjEmpresa)
         return query.resultList.map { row ->
             val resultArray = row as Array<*>
             StockRecommendationProjection(
