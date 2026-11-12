@@ -26,7 +26,7 @@ class IngestProductsServiceTest {
 
     @Test
     fun `creates a new product when externalId is not known yet`() {
-        every { productRepository.findByExternalId("FB-1") } returns null
+        every { productRepository.findByExternalId("FB-1",null) } returns null
         val savedSlot = slot<Product>()
         every { productRepository.save(capture(savedSlot)) } answers { savedSlot.captured.copy(id = 1L) }
 
@@ -67,7 +67,7 @@ class IngestProductsServiceTest {
             createdAt = Instant.parse("2025-01-01T00:00:00Z"),
             updatedAt = Instant.parse("2025-01-01T00:00:00Z"),
         )
-        every { productRepository.findByExternalId("FB-2") } returns existing
+        every { productRepository.findByExternalId("FB-2",null,) } returns existing
         every { productRepository.save(any()) } answers { firstArg() }
 
         val result = service.ingest(
@@ -89,8 +89,8 @@ class IngestProductsServiceTest {
 
     @Test
     fun `records a failure for one item without aborting the rest of the batch`() {
-        every { productRepository.findByExternalId("FB-OK") } returns null
-        every { productRepository.findByExternalId("FB-BAD") } throws RuntimeException("db down")
+        every { productRepository.findByExternalId("FB-OK",null) } returns null
+        every { productRepository.findByExternalId("FB-BAD",null) } throws RuntimeException("db down")
         every { productRepository.save(any()) } answers { firstArg<Product>().copy(id = 1L) }
 
         val result = service.ingest(
@@ -118,7 +118,7 @@ class IngestProductsServiceTest {
 
     @Test
     fun `ingestSingle creates a new product when externalId is not known yet`() {
-        every { productRepository.findByExternalId("FB-4") } returns null
+        every { productRepository.findByExternalId("FB-4",null) } returns null
         val savedSlot = slot<Product>()
         every { productRepository.save(capture(savedSlot)) } answers { savedSlot.captured.copy(id = 1L) }
 
@@ -138,7 +138,7 @@ class IngestProductsServiceTest {
 
     @Test
     fun `ingestSingle reports a failure without throwing when the item fails`() {
-        every { productRepository.findByExternalId("FB-5") } throws RuntimeException("db down")
+        every { productRepository.findByExternalId("FB-5",null) } throws RuntimeException("db down")
 
         val result = service.ingestSingle(
             IngestProductCommand(

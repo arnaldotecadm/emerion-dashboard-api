@@ -20,8 +20,11 @@ class CustomerRepositoryPortAdapter(
     override fun findById(id: Long): Customer? =
         customerRepository.findProjectionById(id, userService.getCurrentCompanyCnpj())?.toDomain()
 
-    override fun findByExternalId(externalId: String): Customer? =
-        customerRepository.findByExternalIdAndCnpjEmpresa(externalId, userService.getCurrentCompanyCnpj())?.toDomain()
+    override fun findByExternalId(externalId: String, cnpjEmpresa: String?): Customer? =
+        customerRepository.findByExternalIdAndCnpjEmpresa(
+            externalId,
+            cnpjEmpresa ?: userService.getCurrentCompanyCnpj()
+        )?.toDomain()
 
     override fun findAll(
         pageRequest: PageRequest,
@@ -33,7 +36,7 @@ class CustomerRepositoryPortAdapter(
         val result = customerRepository.search(
             bloqueado,
             nomeFantasiaContains?.takeIf { it.isNotBlank() },
-            userService.getCurrentCompanyCnpj(),
+            cnpjEmpresa ?: userService.getCurrentCompanyCnpj(),
             springPageable,
         )
         return Page(

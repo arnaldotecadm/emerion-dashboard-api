@@ -20,8 +20,9 @@ class ProductRepositoryPortAdapter(
     override fun findById(id: Long): Product? =
         productRepository.findProjectionById(id, userService.getCurrentCompanyCnpj())?.toDomain()
 
-    override fun findByExternalId(externalId: String): Product? =
-        productRepository.findByExternalIdAndCnpjEmpresa(externalId, userService.getCurrentCompanyCnpj())?.toDomain()
+    override fun findByExternalId(externalId: String, cnpjEmpresa: String?): Product? =
+        productRepository.findByExternalIdAndCnpjEmpresa(externalId, cnpjEmpresa ?: userService.getCurrentCompanyCnpj())
+            ?.toDomain()
 
     override fun findAll(
         pageRequest: PageRequest,

@@ -20,8 +20,11 @@ class VendedorRepositoryPortAdapter(
     override fun findById(id: Long): Vendedor? =
         vendedorRepository.findProjectionById(id, userService.getCurrentCompanyCnpj())?.toDomain()
 
-    override fun findByExternalId(externalId: String): Vendedor? =
-        vendedorRepository.findByExternalIdAndCnpjEmpresa(externalId, userService.getCurrentCompanyCnpj())?.toDomain()
+    override fun findByExternalId(externalId: String, cnpjEmpresa: String?): Vendedor? =
+        vendedorRepository.findByExternalIdAndCnpjEmpresa(
+            externalId,
+            cnpjEmpresa ?: userService.getCurrentCompanyCnpj()
+        )?.toDomain()
 
     override fun findAll(
         pageRequest: PageRequest,
@@ -33,7 +36,7 @@ class VendedorRepositoryPortAdapter(
         val result = vendedorRepository.search(
             nomeContains?.takeIf { it.isNotBlank() },
             ativo?.takeIf { it.isNotBlank() }?.uppercase(),
-            userService.getCurrentCompanyCnpj(),
+            cnpjEmpresa ?: userService.getCurrentCompanyCnpj(),
             springPageable,
         )
         return Page(

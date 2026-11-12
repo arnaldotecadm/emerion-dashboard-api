@@ -1,11 +1,11 @@
 package br.com.vertice.emerion_dashboard.application.vendedor
 
 import br.com.vertice.emerion_dashboard.application.outbound.port.VendedorRepositoryPort
+import br.com.vertice.emerion_dashboard.domain.exception.VendedorNotFoundException
 import br.com.vertice.emerion_dashboard.domain.shared.Page
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import br.com.vertice.emerion_dashboard.domain.vendedor.ListVendedoresQuery
 import br.com.vertice.emerion_dashboard.domain.vendedor.Vendedor
-import br.com.vertice.emerion_dashboard.domain.exception.VendedorNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -20,7 +20,7 @@ class VendedorService(
 
     @Transactional(readOnly = true)
     fun getByExternalId(externalId: String): Vendedor =
-        vendedorRepository.findByExternalId(externalId) ?: throw VendedorNotFoundException(externalId)
+        vendedorRepository.findByExternalId(externalId, null) ?: throw VendedorNotFoundException(externalId)
 
     @Transactional(readOnly = true)
     fun list(query: ListVendedoresQuery): Page<Vendedor> =

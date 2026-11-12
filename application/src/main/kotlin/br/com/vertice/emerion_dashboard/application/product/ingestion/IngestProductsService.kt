@@ -54,7 +54,7 @@ class IngestProductsService(
 
     private fun ingestItem(item: IngestProductCommand, now: Instant): IngestItemResult {
         return try {
-            val existing = productRepository.findByExternalId(item.externalId)
+            val existing = productRepository.findByExternalId(item.externalId,item.cnpjEmpresa)
             val toSave = existing?.mergeFromIngestion(
                 cnpjEmpresa = item.cnpjEmpresa,
                 nome = item.nome,

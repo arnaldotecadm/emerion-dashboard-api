@@ -10,7 +10,7 @@ import br.com.vertice.emerion_dashboard.domain.vendedor.Vendedor
 interface VendedorRepositoryPort {
     fun findById(id: Long): Vendedor?
 
-    fun findByExternalId(externalId: String): Vendedor?
+    fun findByExternalId(externalId: String, cnpjEmpresa: String?): Vendedor?
 
     fun findAll(
         pageRequest: PageRequest,

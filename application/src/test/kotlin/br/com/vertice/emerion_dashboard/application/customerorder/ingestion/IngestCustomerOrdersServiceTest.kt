@@ -78,7 +78,7 @@ class IngestCustomerOrdersServiceTest {
 
     @Test
     fun `creates a new order and creates notifications for active users`() {
-        every { customerOrderRepository.findByExternalId("NUM-1") } returns null
+        every { customerOrderRepository.findByExternalId("NUM-1",) } returns null
         val savedSlot = slot<CustomerOrder>()
         every { customerOrderRepository.save(capture(savedSlot)) } answers { savedSlot.captured.copy(id = 1L) }
         every { cognitoUserRepository.findAll() } returns listOf(
@@ -145,7 +145,7 @@ class IngestCustomerOrdersServiceTest {
             createdAt = Instant.parse("2025-01-01T00:00:00Z"),
             updatedAt = Instant.parse("2025-01-01T00:00:00Z"),
         )
-        every { customerOrderRepository.findByExternalId("NUM-2") } returns existing
+        every { customerOrderRepository.findByExternalId("NUM-2",) } returns existing
         every { customerOrderRepository.save(any()) } answers { firstArg() }
         every { cognitoUserRepository.findAll() } returns listOf(cognitoUser(sub = "active-1", enabled = true))
 
@@ -161,8 +161,8 @@ class IngestCustomerOrdersServiceTest {
 
     @Test
     fun `records a failure for one item without aborting the rest of the batch`() {
-        every { customerOrderRepository.findByExternalId("OK") } returns null
-        every { customerOrderRepository.findByExternalId("BAD") } throws RuntimeException("db down")
+        every { customerOrderRepository.findByExternalId("OK",) } returns null
+        every { customerOrderRepository.findByExternalId("BAD",) } throws RuntimeException("db down")
         every { customerOrderRepository.save(any()) } answers { firstArg<CustomerOrder>().copy(id = 1L) }
         every { cognitoUserRepository.findAll() } returns emptyList()
 
@@ -181,7 +181,7 @@ class IngestCustomerOrdersServiceTest {
 
     @Test
     fun `ingestSingle creates a new order when externalId is not known yet`() {
-        every { customerOrderRepository.findByExternalId("NUM-4") } returns null
+        every { customerOrderRepository.findByExternalId("NUM-4",) } returns null
         val savedSlot = slot<CustomerOrder>()
         every { customerOrderRepository.save(capture(savedSlot)) } answers { savedSlot.captured.copy(id = 1L) }
         every { cognitoUserRepository.findAll() } returns emptyList()
@@ -196,7 +196,7 @@ class IngestCustomerOrdersServiceTest {
 
     @Test
     fun `ingestSingle reports a failure without throwing when the item fails`() {
-        every { customerOrderRepository.findByExternalId("NUM-5") } throws RuntimeException("db down")
+        every { customerOrderRepository.findByExternalId("NUM-5",) } throws RuntimeException("db down")
         every { cognitoUserRepository.findAll() } returns emptyList()
 
         val result = service.ingestSingle(orderCommand("NUM-5", listOf(itemCommand("1.1.1"))))

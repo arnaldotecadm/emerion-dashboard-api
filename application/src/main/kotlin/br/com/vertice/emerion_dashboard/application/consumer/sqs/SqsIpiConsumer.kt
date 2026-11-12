@@ -31,9 +31,7 @@ class SqsIpiConsumer(
     }
 
     @SqsListener(
-        "emerion-dashboard-ipi",
-        maxConcurrentMessages = "3",
-        maxMessagesPerPoll = "3",
+        "emerion-dashboard-ipi"
     )
     fun receiveMessage(message: IngestIpiCommand) {
         ingestIpiService.ingestSingle(message)

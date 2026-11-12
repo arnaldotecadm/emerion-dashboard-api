@@ -3,14 +3,14 @@ package br.com.vertice.emerion_dashboard.application.customer.ingestion
 import br.com.vertice.emerion_dashboard.application.config.SQSProducer
 import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestBatchCommand
 import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestCustomerCommand
-import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
-import br.com.vertice.emerion_dashboard.domain.customer.Customer
 import br.com.vertice.emerion_dashboard.application.outbound.port.CustomerRepositoryPort
+import br.com.vertice.emerion_dashboard.domain.customer.Customer
 import br.com.vertice.emerion_dashboard.domain.customeraddress.model.CustomerAddress
 import br.com.vertice.emerion_dashboard.domain.customeraddress.model.CustomerAddressDetail
 import br.com.vertice.emerion_dashboard.domain.customeraddress.repository.CustomerAddressRepository
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -62,7 +62,7 @@ class IngestCustomersService(
 
     private fun ingestItem(item: IngestCustomerCommand, now: Instant): IngestItemResult {
         return try {
-            val existing = customerRepository.findByExternalId(item.externalId)
+            val existing = customerRepository.findByExternalId(item.externalId, item.cnpjEmpresa)
             val toSave = existing?.mergeFromIngestion(
                 cnpjEmpresa = item.cnpjEmpresa,
                 nomeFantasia = item.nomeFantasia,

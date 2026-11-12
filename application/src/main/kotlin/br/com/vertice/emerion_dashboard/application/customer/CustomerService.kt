@@ -1,9 +1,9 @@
 package br.com.vertice.emerion_dashboard.application.customer
 
+import br.com.vertice.emerion_dashboard.application.outbound.port.CustomerRepositoryPort
+import br.com.vertice.emerion_dashboard.domain.customer.Customer
 import br.com.vertice.emerion_dashboard.domain.customer.ListCustomersQuery
 import br.com.vertice.emerion_dashboard.domain.exception.CustomerNotFoundException
-import br.com.vertice.emerion_dashboard.domain.customer.Customer
-import br.com.vertice.emerion_dashboard.application.outbound.port.CustomerRepositoryPort
 import br.com.vertice.emerion_dashboard.domain.shared.Page
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 import org.springframework.stereotype.Service
@@ -20,7 +20,7 @@ class CustomerService(
 
     @Transactional(readOnly = true)
     fun getByExternalId(externalId: String): Customer =
-        customerRepository.findByExternalId(externalId) ?: throw CustomerNotFoundException(externalId)
+        customerRepository.findByExternalId(externalId, null) ?: throw CustomerNotFoundException(externalId)
 
     @Transactional(readOnly = true)
     fun list(query: ListCustomersQuery): Page<Customer> =

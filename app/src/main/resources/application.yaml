@@ -62,9 +62,8 @@ app:
     # DefaultCredentialsProvider.create() and these two properties can be
     # dropped entirely. Never commit real values here - set via the
     # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY env vars.
+    aws-profile: ${AWS_USER_PROFILE}
     region: eu-north-1
-    access-key-id: ${AWS_ACCESS_KEY_ID:}
-    secret-access-key: ${AWS_SECRET_ACCESS_KEY:}
     queues:
       # SQS queue for the emerion-load-service to send ingestion requests to
       # emerion-dashboard (see IngestionRequestListener).

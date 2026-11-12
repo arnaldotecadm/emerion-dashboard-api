@@ -10,7 +10,7 @@ import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
 interface CustomerRepositoryPort {
     fun findById(id: Long): Customer?
 
-    fun findByExternalId(externalId: String): Customer?
+    fun findByExternalId(externalId: String, cnpjEmpresa: String?): Customer?
 
     fun findAll(
         pageRequest: PageRequest,

@@ -166,7 +166,7 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
             ),
         )
 
-        val existing = customerOrderRepository.findByExternalId("order-ext-reingest")!!
+        val existing = customerOrderRepository.findByExternalId("order-ext-reingest",)!!
         val resaved = customerOrderRepository.save(
             existing.mergeFromIngestion(
                 codigoEmpresa = existing.codigoEmpresa,

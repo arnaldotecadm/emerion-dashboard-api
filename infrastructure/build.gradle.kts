@@ -11,12 +11,16 @@ plugins {
 }
 
 dependencies {
+    implementation(platform("software.amazon.awssdk:bom:2.51.2"))
+
     implementation(project(":domain"))
     implementation(project(":application"))
     implementation(project(":adapter"))
 
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("software.amazon.awssdk:sso:2.51.2")
+    implementation("software.amazon.awssdk:ssooidc:2.51.2")
 
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")

@@ -17,6 +17,7 @@ app:
   cors:
     allowed-origins: http://localhost:5173
   aws:
+    aws-profile: aws-user-profile
     region: eu-north-1
     account-id: account-id
     queues:

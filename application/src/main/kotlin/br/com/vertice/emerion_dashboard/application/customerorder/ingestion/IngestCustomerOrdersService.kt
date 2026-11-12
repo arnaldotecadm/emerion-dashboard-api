@@ -69,7 +69,7 @@ class IngestCustomerOrdersService(
 
     private fun ingestItem(item: IngestCustomerOrderCommand, now: Instant): IngestItemResult {
         return try {
-            val existing = customerOrderRepository.findByExternalId(item.externalId)
+            val existing = customerOrderRepository.findByExternalId(item.externalId,)
             val itens = item.itens.map { it.toDomain() }
             val toSave = existing?.mergeFromIngestion(
                 cnpjEmpresa = item.cnpjEmpresa,

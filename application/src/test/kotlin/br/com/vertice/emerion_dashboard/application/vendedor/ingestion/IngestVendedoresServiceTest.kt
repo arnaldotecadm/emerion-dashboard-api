@@ -43,7 +43,7 @@ class IngestVendedoresServiceTest {
 
     @Test
     fun `creates a new vendedor when externalId is not known yet`() {
-        every { vendedorRepository.findByExternalId("FB-1") } returns null
+        every { vendedorRepository.findByExternalId("FB-1", null) } returns null
         val savedSlot = slot<Vendedor>()
         every { vendedorRepository.save(capture(savedSlot)) } answers { savedSlot.captured.copy(id = 1L) }
 
@@ -77,7 +77,7 @@ class IngestVendedoresServiceTest {
             createdAt = Instant.parse("2025-01-01T00:00:00Z"),
             updatedAt = Instant.parse("2025-01-01T00:00:00Z"),
         )
-        every { vendedorRepository.findByExternalId("FB-2") } returns existing
+        every { vendedorRepository.findByExternalId("FB-2", null) } returns existing
         every { vendedorRepository.save(any()) } answers { firstArg() }
 
         val result = service.ingest(
@@ -92,8 +92,8 @@ class IngestVendedoresServiceTest {
 
     @Test
     fun `records a failure for one item without aborting the rest of the batch`() {
-        every { vendedorRepository.findByExternalId("FB-OK") } returns null
-        every { vendedorRepository.findByExternalId("FB-BAD") } throws RuntimeException("db down")
+        every { vendedorRepository.findByExternalId("FB-OK", null) } returns null
+        every { vendedorRepository.findByExternalId("FB-BAD", null) } throws RuntimeException("db down")
         every { vendedorRepository.save(any()) } answers { firstArg<Vendedor>().copy(id = 1L) }
 
         val result = service.ingest(
@@ -108,7 +108,7 @@ class IngestVendedoresServiceTest {
 
     @Test
     fun `ingestSingle creates a new vendedor when externalId is not known yet`() {
-        every { vendedorRepository.findByExternalId("FB-4") } returns null
+        every { vendedorRepository.findByExternalId("FB-4", null) } returns null
         val savedSlot = slot<Vendedor>()
         every { vendedorRepository.save(capture(savedSlot)) } answers { savedSlot.captured.copy(id = 1L) }
 
@@ -121,7 +121,7 @@ class IngestVendedoresServiceTest {
 
     @Test
     fun `ingestSingle reports a failure without throwing when the item fails`() {
-        every { vendedorRepository.findByExternalId("FB-5") } throws RuntimeException("db down")
+        every { vendedorRepository.findByExternalId("FB-5", null) } throws RuntimeException("db down")
 
         val result = service.ingestSingle(command("FB-5", "Bad Vendedor"))
 

@@ -10,11 +10,14 @@ plugins {
 }
 
 dependencies {
+    implementation(platform("software.amazon.awssdk:bom:2.51.2"))
     implementation(project(":domain"))
 
     implementation(libs.spring.boot.starter.security)
     implementation("org.springframework:spring-context")
     implementation("org.springframework:spring-tx")
+    implementation("software.amazon.awssdk:sso")
+    implementation("software.amazon.awssdk:ssooidc")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.slf4j:slf4j-api")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")

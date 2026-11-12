@@ -20,7 +20,7 @@ class ProductService(
 
     @Transactional(readOnly = true)
     fun getByExternalId(externalId: String): Product =
-        productRepository.findByExternalId(externalId) ?: throw ProductNotFoundException(externalId)
+        productRepository.findByExternalId(externalId, null) ?: throw ProductNotFoundException(externalId)
 
     @Transactional(readOnly = true)
     fun list(query: ListProductsQuery): Page<Product> =

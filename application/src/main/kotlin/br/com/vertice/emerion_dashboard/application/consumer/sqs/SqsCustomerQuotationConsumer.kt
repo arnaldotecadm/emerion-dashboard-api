@@ -34,9 +34,7 @@ class SqsCustomerQuotationConsumer(
     }
 
     @SqsListener(
-        "emerion-dashboard-customer-quotation",
-        maxConcurrentMessages = "3",
-        maxMessagesPerPoll = "3",
+        "emerion-dashboard-customer-quotation"
     )
     fun receiveMessage(message: IngestCustomerQuotationCommand) {
         ingestCustomerQuotationService.ingestSingle(message)

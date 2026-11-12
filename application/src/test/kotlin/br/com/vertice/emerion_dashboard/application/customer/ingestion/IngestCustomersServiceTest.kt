@@ -3,10 +3,10 @@ package br.com.vertice.emerion_dashboard.application.customer.ingestion
 import br.com.vertice.emerion_dashboard.application.config.SQSProducer
 import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestBatchCommand
 import br.com.vertice.emerion_dashboard.application.customer.ingestion.model.IngestCustomerCommand
-import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
-import br.com.vertice.emerion_dashboard.domain.customer.Customer
 import br.com.vertice.emerion_dashboard.application.outbound.port.CustomerRepositoryPort
+import br.com.vertice.emerion_dashboard.domain.customer.Customer
 import br.com.vertice.emerion_dashboard.domain.customeraddress.repository.CustomerAddressRepository
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -23,11 +23,12 @@ class IngestCustomersServiceTest {
     private val customerRepository = mockk<CustomerRepositoryPort>()
     private val customerAddressRepository = mockk<CustomerAddressRepository>()
     private val sqsProducer = mockk<SQSProducer>(relaxed = true)
-    private val service = IngestCustomersService(customerRepository, customerAddressRepository, fixedClock, sqsProducer, "")
+    private val service =
+        IngestCustomersService(customerRepository, customerAddressRepository, fixedClock, sqsProducer, "")
 
     @Test
     fun `creates a new customer when externalId is not known yet`() {
-        every { customerRepository.findByExternalId("FB-1") } returns null
+        every { customerRepository.findByExternalId("FB-1", null) } returns null
         val savedSlot = slot<Customer>()
         every { customerRepository.save(capture(savedSlot)) } answers { savedSlot.captured.copy(id = 1L) }
 
@@ -71,7 +72,7 @@ class IngestCustomersServiceTest {
             createdAt = Instant.parse("2025-01-01T00:00:00Z"),
             updatedAt = Instant.parse("2025-01-01T00:00:00Z"),
         )
-        every { customerRepository.findByExternalId("FB-2") } returns existing
+        every { customerRepository.findByExternalId("FB-2", null) } returns existing
         every { customerRepository.save(any()) } answers { firstArg() }
 
         val result = service.ingest(
@@ -98,8 +99,8 @@ class IngestCustomersServiceTest {
 
     @Test
     fun `records a failure for one item without aborting the rest of the batch`() {
-        every { customerRepository.findByExternalId("FB-OK") } returns null
-        every { customerRepository.findByExternalId("FB-BAD") } throws RuntimeException("db down")
+        every { customerRepository.findByExternalId("FB-OK", null) } returns null
+        every { customerRepository.findByExternalId("FB-BAD", null) } throws RuntimeException("db down")
         every { customerRepository.save(any()) } answers { firstArg<Customer>().copy(id = 1L) }
 
         val result = service.ingest(
@@ -137,7 +138,7 @@ class IngestCustomersServiceTest {
 
     @Test
     fun `ingestSingle creates a new customer when externalId is not known yet`() {
-        every { customerRepository.findByExternalId("FB-4") } returns null
+        every { customerRepository.findByExternalId("FB-4", null) } returns null
         val savedSlot = slot<Customer>()
         every { customerRepository.save(capture(savedSlot)) } answers { savedSlot.captured.copy(id = 1L) }
 
@@ -162,7 +163,7 @@ class IngestCustomersServiceTest {
 
     @Test
     fun `ingestSingle reports a failure without throwing when the item fails`() {
-        every { customerRepository.findByExternalId("FB-5") } throws RuntimeException("db down")
+        every { customerRepository.findByExternalId("FB-5", null) } throws RuntimeException("db down")
 
         val result = service.ingestSingle(
             IngestCustomerCommand(

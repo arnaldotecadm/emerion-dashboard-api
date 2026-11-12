@@ -31,9 +31,7 @@ class SqsIcmsConsumer(
     }
 
     @SqsListener(
-        "emerion-dashboard-icms",
-        maxConcurrentMessages = "3",
-        maxMessagesPerPoll = "3",
+        "emerion-dashboard-icms"
     )
     fun receiveMessage(message: IngestIcmsCommand) {
         ingestIcmsService.ingestSingle(message)

@@ -31,9 +31,7 @@ class SqsFincreConsumer(
     }
 
     @SqsListener(
-        "emerion-dashboard-fincre",
-        maxConcurrentMessages = "3",
-        maxMessagesPerPoll = "3",
+        "emerion-dashboard-fincre"
     )
     fun receiveMessage(message: IngestFincreCommand) {
         ingestFincreService.ingestSingle(message)
