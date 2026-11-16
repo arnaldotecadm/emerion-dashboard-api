@@ -1,13 +1,17 @@
 package br.com.vertice.emerion_dashboard.application.liberacao.ingestion
 
+import br.com.vertice.emerion_dashboard.application.config.SQSProducer
 import br.com.vertice.emerion_dashboard.application.liberacao.ingestion.model.IngestLiberacaoCommand
 import br.com.vertice.emerion_dashboard.application.liberacao.ingestion.model.IngestLiberacaoDetalheCommand
 import br.com.vertice.emerion_dashboard.application.liberacao.ingestion.model.IngestLiberacaoItemResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestItemResult
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
 import br.com.vertice.emerion_dashboard.domain.liberacao.model.Liberacao
 import br.com.vertice.emerion_dashboard.domain.liberacao.model.LiberacaoDetalhe
 import br.com.vertice.emerion_dashboard.domain.liberacao.repository.LiberacaoRepository
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
@@ -16,10 +20,23 @@ import java.time.Instant
 @Service
 class IngestLiberacaoService(
     private val liberacaoRepository: LiberacaoRepository,
+    private val sqsProducer: SQSProducer,
+    @Value($$"${app.aws.queues.ingestion-requests.pedlib-batch}") private val batchQueueUrl: String,
     private val clock: Clock = Clock.systemUTC(),
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
+
+    fun ingest(batchId: String, items: List<IngestLiberacaoCommand>): IngestBatchResult {
+        logger.info("Queueing batch '{}' with {} PEDLIB release(s)", batchId, items.size)
+        if (items.isNotEmpty()) {
+            sqsProducer.sendMessageBatch(batchQueueUrl, items)
+        }
+        return IngestBatchResult(
+            batchId = batchId,
+            results = items.map { IngestItemResult(key(it), IngestOutcome.QUEUED, null) },
+        )
+    }
 
     @Transactional
     fun ingestSingle(command: IngestLiberacaoCommand): IngestLiberacaoItemResult {

@@ -1,5 +1,6 @@
 package br.com.vertice.emerion_dashboard.application.liberacao.ingestion
 
+import br.com.vertice.emerion_dashboard.application.config.SQSProducer
 import br.com.vertice.emerion_dashboard.application.liberacao.ingestion.model.IngestLiberacaoCommand
 import br.com.vertice.emerion_dashboard.application.liberacao.ingestion.model.IngestLiberacaoDetalheCommand
 import br.com.vertice.emerion_dashboard.domain.ingestion.IngestOutcome
@@ -17,11 +18,13 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneOffset
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class IngestLiberacaoServiceTest {
     private val clock = Clock.fixed(Instant.parse("2026-08-26T10:00:00Z"), ZoneOffset.UTC)
     private val liberacaoRepository = mockk<LiberacaoRepository>()
-    private val service = IngestLiberacaoService(liberacaoRepository, clock)
+    private val sqsProducer = mockk<SQSProducer>()
+    private val service = IngestLiberacaoService(liberacaoRepository, sqsProducer, "batch-queue", clock)
 
     private fun command(numeroPedido: String = "25687", numeroLiberacao: Int = 1) =
         IngestLiberacaoCommand(
@@ -62,6 +65,34 @@ class IngestLiberacaoServiceTest {
                 ),
             ),
         )
+
+    @Test
+    fun `queues a batch and returns its composite keys`() {
+        val items = listOf(command(), command("25688", 2))
+        every { sqsProducer.sendMessageBatch("batch-queue", items) } returns Unit
+
+        val result = service.ingest("batch-1", items)
+
+        assertEquals("batch-1", result.batchId)
+        assertEquals(listOf("25687:1", "25688:2"), result.results.map { it.externalId })
+        assertEquals(listOf(IngestOutcome.QUEUED, IngestOutcome.QUEUED), result.results.map { it.outcome })
+        assertEquals(2, result.totalReceived)
+        verify(exactly = 1) { sqsProducer.sendMessageBatch("batch-queue", items) }
+        verify(exactly = 0) { liberacaoRepository.save(any()) }
+    }
+
+    @Test
+    fun `does not claim a batch was queued when SQS fails`() {
+        every { sqsProducer.sendMessageBatch(any(), any()) } throws IllegalStateException("queue unavailable")
+
+        assertFailsWith<IllegalStateException> { service.ingest("batch-1", listOf(command())) }
+    }
+
+    @Test
+    fun `returns an empty result without sending an empty batch`() {
+        assertEquals(0, service.ingest("empty", emptyList()).totalReceived)
+        verify(exactly = 0) { sqsProducer.sendMessageBatch(any(), any()) }
+    }
 
     @Test
     fun `creates a release when its composite key is not known yet`() {

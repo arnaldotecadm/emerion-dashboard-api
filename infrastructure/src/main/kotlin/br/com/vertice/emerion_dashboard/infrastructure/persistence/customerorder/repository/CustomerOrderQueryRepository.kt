@@ -134,12 +134,12 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
         """,
         countQuery = """
             SELECT count(*)
-            FROM customer_order
+            FROM customer_order co
             LEFT JOIN customer c ON c.external_id::int = codigo_cliente
             WHERE (:codigoCliente IS NULL OR codigo_cliente = :codigoCliente)
               AND (:statusPedido IS NULL OR status_pedido = :statusPedido)
               AND (:codigoEmpresa IS NULL OR codigo_empresa = :codigoEmpresa)
-              AND cnpj_empresa = :cnpjEmpresa
+              AND co.cnpj_empresa = :cnpjEmpresa
               AND (CAST(:nomeFantasia AS text) IS NULL OR c.nome_fantasia ILIKE CAST(:nomeFantasia AS text))
               AND (CAST(:numeroPedido AS text) IS NULL OR numero_pedido ILIKE CAST(:numeroPedido AS text))
               AND (

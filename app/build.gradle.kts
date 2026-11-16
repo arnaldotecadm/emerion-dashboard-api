@@ -21,6 +21,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+    testImplementation(project(":adapter"))
     testImplementation(libs.kotlin.test.junit5)
     testImplementation(libs.mockk)
     testImplementation("org.springframework.boot:spring-boot-testcontainers")

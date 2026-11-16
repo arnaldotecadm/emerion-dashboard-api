@@ -3,12 +3,17 @@ package br.com.vertice.emerion_dashboard.adapter.mapper
 import br.com.vertice.emerion_dashboard.application.liberacao.ingestion.model.IngestLiberacaoCommand
 import br.com.vertice.emerion_dashboard.application.liberacao.ingestion.model.IngestLiberacaoDetalheCommand
 import br.com.vertice.emerion_dashboard.application.liberacao.ingestion.model.IngestLiberacaoItemResult
+import br.com.vertice.emerion_dashboard.domain.ingestion.IngestBatchResult
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IngestionItemResult
+import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.IngestionResult
+import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.LiberacaoIngestionBatch
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.LiberacaoDetalheIngestionItem
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.LiberacaoIngestionItem
 import java.time.LocalTime
 
 object LiberacaoIngestionRestMapper {
+    fun LiberacaoIngestionBatch.toCommands(): List<IngestLiberacaoCommand> = items.map { it.toCommand() }
+
     fun LiberacaoIngestionItem.toCommand() = IngestLiberacaoCommand(
         cnpjEmpresa = cnpjEmpresa,
         codigoEmpresa = codigoEmpresa,
@@ -52,5 +57,19 @@ object LiberacaoIngestionRestMapper {
         externalId = externalId,
         outcome = IngestionItemResult.Outcome.valueOf(outcome.name),
         errorMessage = errorMessage,
+    )
+
+    fun IngestBatchResult.toResponse() = IngestionResult(
+        batchId = batchId,
+        totalReceived = totalReceived,
+        totalSucceeded = totalSucceeded,
+        totalFailed = totalFailed,
+        results = results.map {
+            IngestionItemResult(
+                externalId = it.externalId,
+                outcome = IngestionItemResult.Outcome.valueOf(it.outcome.name),
+                errorMessage = it.errorMessage,
+            )
+        },
     )
 }

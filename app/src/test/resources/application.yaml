@@ -45,6 +45,9 @@ app:
 
         fincre: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-fincre
         fincre-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-fincre-batch
+
+        pedlib: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-pedlib
+        pedlib-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-pedlib-batch
   security:
     cognito:
       issuer-uri: https://cognito-idp.eu-north-1.amazonaws.com/user-pool-id

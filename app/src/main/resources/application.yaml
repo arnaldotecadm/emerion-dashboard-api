@@ -64,33 +64,37 @@ app:
     # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY env vars.
     aws-profile: ${AWS_USER_PROFILE}
     region: eu-north-1
+    account-id: 405633560433
     queues:
       # SQS queue for the emerion-load-service to send ingestion requests to
       # emerion-dashboard (see IngestionRequestListener).
       ingestion-requests:
-        products: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-products
-        products-batch: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-products-batch
+        products: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-products
+        products-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-products-batch
 
-        customer-orders: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-customer-orders
-        customer-orders-batch: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-customer-orders-batch
+        customer-orders: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-customer-orders
+        customer-orders-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-customer-orders-batch
 
-        customer: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-customer
-        customer-batch: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-customer-batch
+        customer: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-customer
+        customer-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-customer-batch
 
-        vendedor: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-vendedor
-        vendedor-batch: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-vendedor-batch
+        vendedor: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-vendedor
+        vendedor-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-vendedor-batch
 
-        customer-quotation: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-customer-quotation
-        customer-quotation-batch: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-customer-quotation-batch
+        customer-quotation: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-customer-quotation
+        customer-quotation-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-customer-quotation-batch
 
-        ipi: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-ipi
-        ipi-batch: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-ipi-batch
+        ipi: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-ipi
+        ipi-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-ipi-batch
 
-        icms: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-icms
-        icms-batch: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-icms-batch
+        icms: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-icms
+        icms-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-icms-batch
 
-        fincre: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-fincre
-        fincre-batch: https://sqs.eu-north-1.amazonaws.com/405633560433/emerion-dashboard-fincre-batch
+        fincre: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-fincre
+        fincre-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-fincre-batch
+
+        pedlib: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-pedlib
+        pedlib-batch: https://sqs.${app.aws.region}.amazonaws.com/${app.aws.account-id}/emerion-dashboard-pedlib-batch
   security:
     cognito:
       # AWS Cognito user pool that issues the React app's JWTs (validated on

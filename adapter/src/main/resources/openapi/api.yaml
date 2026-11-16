@@ -91,6 +91,44 @@ tags:
       Not consumed by regular React app users.
 
 paths:
+  /ingestion/pedlib:
+    post:
+      tags:
+        - liberacao-ingestion
+      operationId: ingestLiberacoes
+      summary: Queue a batch of PEDLIB releases and their details
+      description: >
+        Queues the batch for asynchronous processing. Each release is upserted
+        by (numeroPedido, numeroLiberacao). A QUEUED outcome confirms batch
+        acceptance, not successful persistence; totalSucceeded counts queued
+        items. The batch is sent as one SQS message and must fit the queue's
+        message-size limit. A retried batch may enqueue an item more than once.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LiberacaoIngestionBatch'
+      responses:
+        '200':
+          description: Batch accepted for processing (see per-item QUEUED outcomes)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionResult'
+        '400':
+          description: Malformed request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Batch could not be queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /ingestion/pedlib/single:
     post:
       tags:
@@ -2692,6 +2730,20 @@ components:
           type: number
         custoPraticado:
           type: number
+
+    LiberacaoIngestionBatch:
+      type: object
+      required:
+        - batchId
+        - items
+      properties:
+        batchId:
+          type: string
+          description: Correlation id supplied by emerion-load-service for tracing/logging.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LiberacaoIngestionItem'
 
     LiberacaoIngestionItem:
       type: object
