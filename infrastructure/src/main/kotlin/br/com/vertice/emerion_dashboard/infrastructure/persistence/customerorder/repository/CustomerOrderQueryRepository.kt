@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.Repository
 import org.springframework.data.repository.query.Param
+import java.time.LocalDate
 
 /**
  * Read-only side of customer order persistence: native SQL mapped straight
@@ -112,22 +113,33 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
               AND (CAST(:nomeFantasia AS text) IS NULL OR c.nome_fantasia ILIKE CAST(:nomeFantasia AS text))
               AND (CAST(:numeroPedido AS text) IS NULL OR co.numero_pedido ILIKE CAST(:numeroPedido AS text))
               AND (
-                    CAST(:period AS text) IS NULL
-                    OR CAST(:period AS text) = 'ALL'
-                    OR (
-                        CAST(:period AS text) = 'WEEK'
-                        AND co.data_pedido >= date_trunc('week', current_date)::date
-                        AND co.data_pedido < (date_trunc('week', current_date) + interval '1 week')::date
+                    (
+                        (CAST(:startDate AS date) IS NOT NULL OR CAST(:endDate AS date) IS NOT NULL)
+                        AND co.data_pedido >= COALESCE(CAST(:startDate AS date), date '1900-01-01')
+                        AND co.data_pedido <= COALESCE(CAST(:endDate AS date), current_date)
                     )
                     OR (
-                        CAST(:period AS text) = 'MONTH'
-                        AND co.data_pedido >= date_trunc('month', current_date)::date
-                        AND co.data_pedido < (date_trunc('month', current_date) + interval '1 month')::date
-                    )
-                    OR (
-                        CAST(:period AS text) = 'YEAR'
-                        AND co.data_pedido >= date_trunc('year', current_date)::date
-                        AND co.data_pedido < (date_trunc('year', current_date) + interval '1 year')::date
+                        CAST(:startDate AS date) IS NULL
+                        AND CAST(:endDate AS date) IS NULL
+                        AND (
+                            CAST(:period AS text) IS NULL
+                            OR CAST(:period AS text) = 'ALL'
+                            OR (
+                                CAST(:period AS text) = 'WEEK'
+                                AND co.data_pedido >= date_trunc('week', current_date)::date
+                                AND co.data_pedido < (date_trunc('week', current_date) + interval '1 week')::date
+                            )
+                            OR (
+                                CAST(:period AS text) = 'MONTH'
+                                AND co.data_pedido >= date_trunc('month', current_date)::date
+                                AND co.data_pedido < (date_trunc('month', current_date) + interval '1 month')::date
+                            )
+                            OR (
+                                CAST(:period AS text) = 'YEAR'
+                                AND co.data_pedido >= date_trunc('year', current_date)::date
+                                AND co.data_pedido < (date_trunc('year', current_date) + interval '1 year')::date
+                            )
+                        )
                     )
               )
             order by co.external_id::int desc
@@ -143,22 +155,33 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
               AND (CAST(:nomeFantasia AS text) IS NULL OR c.nome_fantasia ILIKE CAST(:nomeFantasia AS text))
               AND (CAST(:numeroPedido AS text) IS NULL OR numero_pedido ILIKE CAST(:numeroPedido AS text))
               AND (
-                    CAST(:period AS text) IS NULL
-                    OR CAST(:period AS text) = 'ALL'
-                    OR (
-                        CAST(:period AS text) = 'WEEK'
-                        AND data_pedido >= date_trunc('week', current_date)::date
-                        AND data_pedido < (date_trunc('week', current_date) + interval '1 week')::date
+                    (
+                        (CAST(:startDate AS date) IS NOT NULL OR CAST(:endDate AS date) IS NOT NULL)
+                        AND data_pedido >= COALESCE(CAST(:startDate AS date), date '1900-01-01')
+                        AND data_pedido <= COALESCE(CAST(:endDate AS date), current_date)
                     )
                     OR (
-                        CAST(:period AS text) = 'MONTH'
-                        AND data_pedido >= date_trunc('month', current_date)::date
-                        AND data_pedido < (date_trunc('month', current_date) + interval '1 month')::date
-                    )
-                    OR (
-                        CAST(:period AS text) = 'YEAR'
-                        AND data_pedido >= date_trunc('year', current_date)::date
-                        AND data_pedido < (date_trunc('year', current_date) + interval '1 year')::date
+                        CAST(:startDate AS date) IS NULL
+                        AND CAST(:endDate AS date) IS NULL
+                        AND (
+                            CAST(:period AS text) IS NULL
+                            OR CAST(:period AS text) = 'ALL'
+                            OR (
+                                CAST(:period AS text) = 'WEEK'
+                                AND data_pedido >= date_trunc('week', current_date)::date
+                                AND data_pedido < (date_trunc('week', current_date) + interval '1 week')::date
+                            )
+                            OR (
+                                CAST(:period AS text) = 'MONTH'
+                                AND data_pedido >= date_trunc('month', current_date)::date
+                                AND data_pedido < (date_trunc('month', current_date) + interval '1 month')::date
+                            )
+                            OR (
+                                CAST(:period AS text) = 'YEAR'
+                                AND data_pedido >= date_trunc('year', current_date)::date
+                                AND data_pedido < (date_trunc('year', current_date) + interval '1 year')::date
+                            )
+                        )
                     )
               )
         """,
@@ -170,6 +193,8 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
         @Param("nomeFantasia") nomeFantasia: String?,
         @Param("numeroPedido") numeroPedido: String?,
         @Param("period") period: String?,
+        @Param("startDate") startDate: LocalDate?,
+        @Param("endDate") endDate: LocalDate?,
         @Param("cnpjEmpresa") cnpjEmpresa: String,
         pageable: Pageable,
     ): Page<CustomerOrderHeaderProjection>

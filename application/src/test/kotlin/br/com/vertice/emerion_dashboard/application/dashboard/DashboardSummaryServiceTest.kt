@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test
 import br.com.vertice.emerion_dashboard.domain.dashboard.CockpitMonthlyMetrics
 import br.com.vertice.emerion_dashboard.domain.dashboard.UnpaidInvoicesSummary
 import java.math.BigDecimal
+import java.time.LocalDate
 import kotlin.test.assertEquals
 
 class DashboardSummaryServiceTest {
@@ -21,13 +22,13 @@ class DashboardSummaryServiceTest {
 
     @Test
     fun `returns aligned customer order and quotation counts for every month`() {
-        every { repository.getDashboardTotais(any()) } returns DashboardTotais(
+        every { repository.getDashboardTotais(any(), any(), any()) } returns DashboardTotais(
             quantidadePedidos = 0,
             quantidadeClientes = 0,
             quantidadeVendedores = 0,
             totalFaturado = BigDecimal.ZERO,
         )
-        every { repository.getDashboardMonthlyTrends(any()) } returns listOf(
+        every { repository.getDashboardMonthlyTrends(any(), any(), any()) } returns listOf(
             DashboardMonthlyTrend(
                 "2026-01",
                 customerOrders = 3,
@@ -41,7 +42,7 @@ class DashboardSummaryServiceTest {
                 customerQuotations = 2,
             ),
         )
-        every { repository.getDashboardOrdersByRegion() } returns listOf(
+        every { repository.getDashboardOrdersByRegion(any(), any(), any()) } returns listOf(
             DashboardOrdersByRegion(
                 region = "Sudeste",
                 faturado = BigDecimal("100.00"),
@@ -49,10 +50,15 @@ class DashboardSummaryServiceTest {
                 outros = BigDecimal("10.00"),
             ),
         )
-        every { repository.getDashboardCustomerTopTrends(any()) } returns emptyList()
-        every { repository.getDashboardSellerTopTrends(any(), any()) } returns emptyList()
+        every { repository.getDashboardCustomerTopTrends(any(), any(), any(), any()) } returns emptyList()
+        every { repository.getDashboardSellerTopTrends(any(), any(), any(), any()) } returns emptyList()
 
-        val result = service.getDashboardTopTrends("QUANTIDADEPEDIDO", null)
+        val result = service.getDashboardTopTrends(
+            "QUANTIDADEPEDIDO",
+            years = null,
+            startDate = LocalDate.of(2026, 1, 1),
+            endDate = LocalDate.of(2026, 6, 30),
+        )
 
         assertEquals(
             listOf(
@@ -76,7 +82,7 @@ class DashboardSummaryServiceTest {
 
     @Test
     fun `returns monthly order counts and sales amounts for reuse`() {
-        every { repository.getDashboardMonthlyTrends(any()) } returns listOf(
+        every { repository.getDashboardMonthlyTrends(any(), any(), any()) } returns listOf(
             DashboardMonthlyTrend(
                 "2026-01",
                 customerOrders = 3,
@@ -102,14 +108,14 @@ class DashboardSummaryServiceTest {
 
     @Test
     fun `returns customer-specific top trends`() {
-        every { repository.getCustomerDistributionByRegion() } returns
+        every { repository.getCustomerDistributionByRegion(any(), any(), any()) } returns
             listOf(CustomerRegionDistribution(region = "SP", customerCount = 12))
-        every { repository.getActiveCustomerCount() } returns 10
-        every { repository.getUnpaidInvoicesAmount(any()) } returns BigDecimal("75.00")
-        every { repository.getCustomerMonthlyAverageTicket(any()) } returns BigDecimal("42.50")
-        every { repository.getMostProfitableCustomers(any()) } returns
+        every { repository.getActiveCustomerCount(any(), any(), any()) } returns 10
+        every { repository.getUnpaidInvoicesAmount(any(), any(), any()) } returns BigDecimal("75.00")
+        every { repository.getCustomerMonthlyAverageTicket(any(), any(), any()) } returns BigDecimal("42.50")
+        every { repository.getMostProfitableCustomers(any(), any(), any()) } returns
             listOf(TopTrends(identifier = 1, name = "Customer", amountSales = 2, totalSales = BigDecimal("100.00")))
-        every { repository.getOverdueInvoices(any()) } returns listOf(
+        every { repository.getOverdueInvoices(any(), any(), any()) } returns listOf(
             br.com.vertice.emerion_dashboard.domain.dashboard.OverdueInvoice(
                 customerCode = 7L,
                 customerName = "Customer",
@@ -118,10 +124,12 @@ class DashboardSummaryServiceTest {
                 daysOverdue = 5,
             ),
         )
-        every { repository.getNewCustomersByMonth(any()) } returns
+        every { repository.getNewCustomersByMonth(any(), any(), any()) } returns
             listOf(DashboardMonthlyCount(yearMonth = "2026-01", count = 3))
 
-        val result = service.getCustomerTopTrends(years = 2)
+        val startDate = LocalDate.of(2025, 6, 1)
+        val endDate = LocalDate.of(2026, 6, 30)
+        val result = service.getCustomerTopTrends(years = 2, startDate = startDate, endDate = endDate)
 
         assertEquals(12, result.customerDistributionByRegion.single().customerCount)
         assertEquals(10, result.activeCustomers)
@@ -132,11 +140,13 @@ class DashboardSummaryServiceTest {
         assertEquals(5, result.overdueInvoices.single().daysOverdue)
         assertEquals(7L, result.overdueInvoices.single().customerCode)
         io.mockk.verify {
-            repository.getCustomerMonthlyAverageTicket(2)
-            repository.getUnpaidInvoicesAmount(2)
-            repository.getOverdueInvoices(2)
-            repository.getMostProfitableCustomers(2)
-            repository.getNewCustomersByMonth(2)
+            repository.getCustomerDistributionByRegion(2, startDate, endDate)
+            repository.getActiveCustomerCount(2, startDate, endDate)
+            repository.getCustomerMonthlyAverageTicket(2, startDate, endDate)
+            repository.getUnpaidInvoicesAmount(2, startDate, endDate)
+            repository.getOverdueInvoices(2, startDate, endDate)
+            repository.getMostProfitableCustomers(2, startDate, endDate)
+            repository.getNewCustomersByMonth(2, startDate, endDate)
         }
     }
 

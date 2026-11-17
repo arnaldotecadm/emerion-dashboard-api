@@ -3,6 +3,7 @@ package br.com.vertice.emerion_dashboard.domain.customerorder.repository
 import br.com.vertice.emerion_dashboard.domain.customerorder.model.CustomerOrder
 import br.com.vertice.emerion_dashboard.domain.shared.Page
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
+import java.time.LocalDate
 
 /**
  * Outbound port (driven port) for CustomerOrder persistence. Implemented by
@@ -22,6 +23,8 @@ interface CustomerOrderRepository {
         nomeFantasia: String? = null,
         numeroPedido: String? = null,
         period: String? = null,
+        startDate: LocalDate? = null,
+        endDate: LocalDate? = null,
     ): Page<CustomerOrder>
 
     /** Insert or update (by externalId), replacing the itens list wholesale, and return the persisted order. */

@@ -1,5 +1,7 @@
 package br.com.vertice.emerion_dashboard.application.customerorder.query.model
 
+import java.time.LocalDate
+
 /**
  * Read-side filter/pagination parameters for listing customer orders,
  * translated from the REST query controller's request params.
@@ -13,4 +15,6 @@ data class ListCustomerOrdersQuery(
     val nomeFantasia: String? = null,
     val numeroPedido: String? = null,
     val period: String? = null,
+    val startDate: LocalDate? = null,
+    val endDate: LocalDate? = null,
 )

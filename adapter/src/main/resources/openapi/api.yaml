@@ -1291,12 +1291,26 @@ paths:
             type: string
         - name: period
           in: query
-          description: Filter by the current week (Monday through Sunday), month, year, or all dates.
+          description: Filter by the current week (Monday through Sunday), month, year, or all dates. Ignored when startDate or endDate is supplied.
           required: false
           schema:
             type: string
             enum: [WEEK, MONTH, YEAR, ALL]
             default: ALL
+        - name: startDate
+          in: query
+          description: Include orders from this date onward. When supplied, date filters take precedence over period.
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Include orders through this date. When supplied, date filters take precedence over period.
+          required: false
+          schema:
+            type: string
+            format: date
       responses:
         '200':
           description: Paginated list of customer orders
@@ -1662,13 +1676,26 @@ paths:
           in: query
           required: false
           description: >
-            Limits the totals to orders from the current year (1), the last
-            2 years (2) or the last 3 years (3), by calendar year of
-            dataPedido. Omit to include all orders.
+            Limits the totals by calendar year when no explicit date filter is
+            supplied. Explicit startDate and endDate take precedence.
           schema:
             type: integer
             minimum: 1
             maximum: 3
+        - name: startDate
+          in: query
+          required: false
+          description: Filters orders starting on this date. When supplied, this takes precedence over years.
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          description: Filters orders through this date. When supplied, date filters take precedence over years.
+          schema:
+            type: string
+            format: date
       responses:
         '200':
           description: Dashboard top trends
@@ -1689,13 +1716,26 @@ paths:
           required: false
           description: >
             Limits monthly average ticket, customer profitability, unpaid invoices, and new
-            customer registrations to the current calendar year (1), the
-            last 2 calendar years (2), or the last 3 calendar years (3).
-            Omit to include all data.
+            customer registrations by calendar year when no explicit date filter is
+            supplied. Explicit startDate and endDate take precedence.
           schema:
             type: integer
             minimum: 1
             maximum: 3
+        - name: startDate
+          in: query
+          required: false
+          description: Filters dashboard data starting on this date. When supplied, this takes precedence over years.
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          description: Filters dashboard data through this date. When supplied, date filters take precedence over years.
+          schema:
+            type: string
+            format: date
       responses:
         '200':
           description: Customer top trends
@@ -1730,8 +1770,24 @@ paths:
       summary: Get monthly customer order counts and sales amounts
       description: >
         Returns customer order counts and the sum of totalPedidoComImpostos
-        per month for the last 36 months. Months without orders are returned
-        with zero count and amount.
+        per month. Explicit startDate and endDate filter the returned range;
+        without dates, the last 36 months are returned. Months without orders
+        are returned with zero count and amount.
+      parameters:
+        - name: startDate
+          in: query
+          required: false
+          description: Filters orders starting on this date.
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          description: Filters orders through this date.
+          schema:
+            type: string
+            format: date
       responses:
         '200':
           description: Monthly customer order sales series
@@ -1760,13 +1816,26 @@ paths:
           in: query
           required: false
           description: >
-            Limits the ranking to orders from the current year (1), the last
-            2 years (2) or the last 3 years (3), by calendar year of
-            dataPedido. Omit to include all orders.
+            Limits the ranking by calendar year when no explicit date filter is
+            supplied. Explicit startDate and endDate take precedence.
           schema:
             type: integer
             minimum: 1
             maximum: 3
+        - name: startDate
+          in: query
+          required: false
+          description: Filters orders starting on this date. When supplied, this takes precedence over years.
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          description: Filters orders through this date. When supplied, date filters take precedence over years.
+          schema:
+            type: string
+            format: date
       responses:
         '200':
           description: Top sellers
@@ -4220,7 +4289,7 @@ components:
           type: integer
         unpaidInvoicesAmount:
           type: number
-          description: Sum of valorParcela of unpaid receivable installments already due, filtered by dataVencimento calendar year when years is supplied.
+          description: Sum of valorParcela of unpaid receivable installments already due, filtered between startDate and endDate when supplied, otherwise by dataVencimento calendar year when years is supplied.
         monthlyAverageTicket:
           type: number
           description: Average billed order value across the trailing 12 months.
@@ -4237,7 +4306,8 @@ components:
           type: array
           description: >
             Up to 5 unpaid receivable installments already due, oldest due date
-            first, filtered by dueDate calendar year when years is supplied.
+            first, filtered between startDate and endDate when supplied,
+            otherwise by dueDate calendar year when years is supplied.
           items:
             $ref: '#/components/schemas/OverdueInvoice'
 

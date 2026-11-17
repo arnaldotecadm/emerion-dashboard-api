@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RestController
 import java.time.format.DateTimeFormatter
+import java.time.LocalDate
 
 @RestController
 class DashboardController(
@@ -22,8 +23,12 @@ class DashboardController(
     override fun getDashboardSalesCockpit(): ResponseEntity<SalesCockpitResponse> =
         ResponseEntity.ok(dashboardSummaryService.getSalesCockpit().toResponse())
 
-    override fun getDashboardCustomerTopTrends(years: Int?): ResponseEntity<DashboardCustomerTopTrendsResponse> {
-        val trends = dashboardSummaryService.getCustomerTopTrends(years)
+    override fun getDashboardCustomerTopTrends(
+        years: Int?,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+    ): ResponseEntity<DashboardCustomerTopTrendsResponse> {
+        val trends = dashboardSummaryService.getCustomerTopTrends(years, startDate, endDate)
         return ResponseEntity.ok(
             DashboardCustomerTopTrendsResponse(
                 customerDistributionByRegion = trends.customerDistributionByRegion.map {
@@ -49,8 +54,13 @@ class DashboardController(
         )
     }
 
-    override fun getDashboardTopTrends(orderby: String, years: Int?): ResponseEntity<DashboardTopTrendsResponse> {
-        dashboardSummaryService.getDashboardTopTrends(orderby, years).let { topTrends ->
+    override fun getDashboardTopTrends(
+        orderby: String,
+        years: Int?,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+    ): ResponseEntity<DashboardTopTrendsResponse> {
+        dashboardSummaryService.getDashboardTopTrends(orderby, years, startDate, endDate).let { topTrends ->
             val response = DashboardTopTrendsResponse(
                 topCustomers = topTrends.topCustomers.map { it.toResponse() },
                 topVendedores = topTrends.topVendedores.map { it.toResponse() },

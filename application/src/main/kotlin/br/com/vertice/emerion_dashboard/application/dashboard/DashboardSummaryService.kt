@@ -11,16 +11,26 @@ import br.com.vertice.emerion_dashboard.domain.dashboard.TopTrends
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.time.LocalDate
 
 @Service
 class DashboardSummaryService(
     private val repository: DashboardRepositoryPort
 ) : DashboardSummary {
-    fun getCustomerOrdersOverTime(years: Int? = null): List<CustomerOrdersOverTime> =
-        repository.getDashboardMonthlyTrends(years).map { it.toCustomerOrdersOverTime() }
+    fun getCustomerOrdersOverTime(
+        years: Int? = null,
+        startDate: LocalDate? = null,
+        endDate: LocalDate? = null,
+    ): List<CustomerOrdersOverTime> =
+        repository.getDashboardMonthlyTrends(years, startDate, endDate).map { it.toCustomerOrdersOverTime() }
 
-    fun getSellerTopTrends(orderBy: String, years: Int? = null): List<TopTrends> =
-        repository.getDashboardSellerTopTrends(orderBy, years)
+    fun getSellerTopTrends(
+        orderBy: String,
+        years: Int? = null,
+        startDate: LocalDate? = null,
+        endDate: LocalDate? = null,
+    ): List<TopTrends> =
+        repository.getDashboardSellerTopTrends(orderBy, years, startDate, endDate)
 
     fun getSalesCockpit(): SalesCockpit {
         val metrics = repository.getCockpitMonthlyMetrics()
@@ -40,29 +50,38 @@ class DashboardSummaryService(
         )
     }
 
-    fun getCustomerTopTrends(years: Int? = null): CustomerTopTrends =
+    fun getCustomerTopTrends(
+        years: Int? = null,
+        startDate: LocalDate? = null,
+        endDate: LocalDate? = null,
+    ): CustomerTopTrends =
         CustomerTopTrends(
-            customerDistributionByRegion = repository.getCustomerDistributionByRegion(),
-            activeCustomers = repository.getActiveCustomerCount(),
-            unpaidInvoicesAmount = repository.getUnpaidInvoicesAmount(years),
-            monthlyAverageTicket = repository.getCustomerMonthlyAverageTicket(years),
-            mostProfitableCustomers = repository.getMostProfitableCustomers(years),
-            newCustomersByMonth = repository.getNewCustomersByMonth(years),
-            overdueInvoices = repository.getOverdueInvoices(years),
+            customerDistributionByRegion = repository.getCustomerDistributionByRegion(years, startDate, endDate),
+            activeCustomers = repository.getActiveCustomerCount(years, startDate, endDate),
+            unpaidInvoicesAmount = repository.getUnpaidInvoicesAmount(years, startDate, endDate),
+            monthlyAverageTicket = repository.getCustomerMonthlyAverageTicket(years, startDate, endDate),
+            mostProfitableCustomers = repository.getMostProfitableCustomers(years, startDate, endDate),
+            newCustomersByMonth = repository.getNewCustomersByMonth(years, startDate, endDate),
+            overdueInvoices = repository.getOverdueInvoices(years, startDate, endDate),
         )
 
-    override fun getDashboardTopTrends(orderBy: String, years: Int?): DashboardTopTrends {
-        val totais = repository.getDashboardTotais(years)
-        val monthlyTrends = repository.getDashboardMonthlyTrends(years)
+    override fun getDashboardTopTrends(
+        orderBy: String,
+        years: Int?,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+    ): DashboardTopTrends {
+        val totais = repository.getDashboardTotais(years, startDate, endDate)
+        val monthlyTrends = repository.getDashboardMonthlyTrends(years, startDate, endDate)
         return DashboardTopTrends(
-            topCustomers = repository.getDashboardCustomerTopTrends(orderBy),
-            topVendedores = repository.getDashboardSellerTopTrends(orderBy, years),
+            topCustomers = repository.getDashboardCustomerTopTrends(orderBy, years, startDate, endDate),
+            topVendedores = repository.getDashboardSellerTopTrends(orderBy, years, startDate, endDate),
             customerOrders = monthlyTrends.map {
                 val orderTrend = it.toCustomerOrdersOverTime()
                 DashboardMonthlyCount(orderTrend.yearMonth, orderTrend.orderCount)
             },
             customerQuotations = monthlyTrends.map { DashboardMonthlyCount(it.yearMonth, it.customerQuotations) },
-            ordersByRegion = repository.getDashboardOrdersByRegion(),
+            ordersByRegion = repository.getDashboardOrdersByRegion(years, startDate, endDate),
             quantidadePedidos = totais.quantidadePedidos,
             quantidadeClientes = totais.quantidadeClientes,
             quantidadeVendedores = totais.quantidadeVendedores,

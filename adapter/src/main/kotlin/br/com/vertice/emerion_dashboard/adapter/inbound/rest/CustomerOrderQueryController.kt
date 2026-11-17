@@ -9,6 +9,7 @@ import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.Cust
 import br.com.vertice.emerion_dashboard.infrastructure.rest.generated.model.CustomerOrderResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDate
 
 /**
  * Driving/inbound adapter for the customer order read endpoints consumed by
@@ -32,6 +33,8 @@ class CustomerOrderQueryController(
         nomeFantasia: String?,
         numeroPedido: String?,
         period: String,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
     ): ResponseEntity<CustomerOrderPage> {
         val query = ListCustomerOrdersQuery(
             page = page,
@@ -42,6 +45,8 @@ class CustomerOrderQueryController(
             nomeFantasia = nomeFantasia,
             numeroPedido = numeroPedido,
             period = period,
+            startDate = startDate,
+            endDate = endDate,
         )
         return ResponseEntity.ok(customerOrderQueryService.list(query).toPageResponse())
     }

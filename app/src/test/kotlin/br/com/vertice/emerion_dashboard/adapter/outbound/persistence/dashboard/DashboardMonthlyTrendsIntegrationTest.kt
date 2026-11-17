@@ -59,6 +59,34 @@ class DashboardMonthlyTrendsIntegrationTest(
     }
 
     @Test
+    fun `uses start date instead of years when both filters are supplied`() {
+        val startDate = LocalDate.now().minusYears(1).withMonth(12).withDayOfMonth(15)
+        val endDate = startDate
+        val baseline = dashboardRepository.getDashboardMonthlyTrends(
+            years = 1,
+            startDate = startDate,
+            endDate = endDate,
+        )
+        val baselineStartMonth = baseline.first().yearMonth
+
+        insertCustomerOrder("dashboard-order-before-start-date", startDate.minusDays(1))
+        insertCustomerOrder("dashboard-order-on-start-date", startDate)
+        insertCustomerOrder("dashboard-order-after-end-date", endDate.plusDays(1))
+
+        val trends = dashboardRepository.getDashboardMonthlyTrends(
+            years = 1,
+            startDate = startDate,
+            endDate = endDate,
+        )
+
+        assertEquals(startDate.withDayOfMonth(1).toString().substring(0, 7), baselineStartMonth)
+        assertEquals(
+            baseline.single { it.yearMonth == startDate.toString().substring(0, 7) }.customerOrders + 1,
+            trends.single { it.yearMonth == startDate.toString().substring(0, 7) }.customerOrders,
+        )
+    }
+
+    @Test
     fun `groups order totals by region and billed cancelled or other status`() {
         val baseline = dashboardRepository.getDashboardOrdersByRegion()
             .singleOrNull { it.region == "Sudeste" }

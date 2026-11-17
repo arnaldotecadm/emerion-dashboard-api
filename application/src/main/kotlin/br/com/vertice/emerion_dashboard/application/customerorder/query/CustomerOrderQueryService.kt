@@ -28,5 +28,7 @@ class CustomerOrderQueryService(
             nomeFantasia = query.nomeFantasia,
             numeroPedido = query.numeroPedido,
             period = query.period,
+            startDate = query.startDate,
+            endDate = query.endDate,
         )
 }

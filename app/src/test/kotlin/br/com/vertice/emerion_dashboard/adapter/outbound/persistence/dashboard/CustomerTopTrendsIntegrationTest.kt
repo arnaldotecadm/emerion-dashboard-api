@@ -91,6 +91,12 @@ class CustomerTopTrendsIntegrationTest(
             dashboardRepository.getMostProfitableCustomers(years = 1)
                 .any { it.identifier == previousYearCustomerId.toInt() },
         )
+        assertTrue(
+            dashboardRepository.getMostProfitableCustomers(
+                years = 1,
+                startDate = previousYear.atDay(10),
+            ).any { it.identifier == previousYearCustomerId.toInt() },
+        )
 
         val newCustomers = dashboardRepository.getNewCustomersByMonth().associate { it.yearMonth to it.count }
         val orderedNewCustomers = dashboardRepository.getNewCustomersByMonth()
@@ -141,6 +147,15 @@ class CustomerTopTrendsIntegrationTest(
         assertEquals(
             0,
             (initialCurrentYear + BigDecimal("150.00")).compareTo(dashboardRepository.getUnpaidInvoicesAmount(years = 1)),
+        )
+        assertEquals(
+            0,
+            (initialCurrentYear + BigDecimal("170.00")).compareTo(
+                dashboardRepository.getUnpaidInvoicesAmount(
+                    years = 1,
+                    startDate = LocalDate.now().minusYears(1).withMonth(1).withDayOfMonth(1),
+                ),
+            ),
         )
     }
 

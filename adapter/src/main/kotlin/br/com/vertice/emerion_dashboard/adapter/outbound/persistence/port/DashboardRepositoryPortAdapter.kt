@@ -12,45 +12,84 @@ import br.com.vertice.emerion_dashboard.domain.dashboard.CustomerRegionDistribut
 import br.com.vertice.emerion_dashboard.domain.dashboard.TopTrends
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
+import java.time.LocalDate
 
 @Component
 class DashboardRepositoryPortAdapter(
     private val dashboardDataRepository: DashboardDataRepository,
     private val userService: UserService
 ) : DashboardRepositoryPort {
-    override fun getDashboardCustomerTopTrends(orderBy: String): List<TopTrends> {
-        return dashboardDataRepository.getDashboardCustomerTopTrends(orderBy, companyCnpj()).map { it.toModel() }
+    override fun getDashboardCustomerTopTrends(
+        orderBy: String,
+        years: Int?,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+    ): List<TopTrends> {
+        return dashboardDataRepository.getDashboardCustomerTopTrends(
+            orderBy,
+            years,
+            startDate,
+            endDate,
+            companyCnpj(),
+        ).map { it.toModel() }
     }
 
-    override fun getDashboardSellerTopTrends(orderBy: String, years: Int?): List<TopTrends> {
-        return dashboardDataRepository.getDashboardSellerTopTrends(orderBy, years, companyCnpj()).map { it.toModel() }
+    override fun getDashboardSellerTopTrends(
+        orderBy: String,
+        years: Int?,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+    ): List<TopTrends> {
+        return dashboardDataRepository.getDashboardSellerTopTrends(orderBy, years, startDate, endDate, companyCnpj()).map { it.toModel() }
     }
 
-    override fun getDashboardMonthlyTrends(years: Int?): List<DashboardMonthlyTrend> =
-        dashboardDataRepository.getDashboardMonthlyTrends(years, companyCnpj()).map { it.toModel() }
+    override fun getDashboardMonthlyTrends(
+        years: Int?,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+    ): List<DashboardMonthlyTrend> =
+        dashboardDataRepository.getDashboardMonthlyTrends(years, startDate, endDate, companyCnpj()).map { it.toModel() }
 
-    override fun getDashboardOrdersByRegion(): List<DashboardOrdersByRegion> =
-        dashboardDataRepository.getDashboardOrdersByRegion(companyCnpj()).map { it.toModel() }
+    override fun getDashboardOrdersByRegion(
+        years: Int?,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+    ): List<DashboardOrdersByRegion> =
+        dashboardDataRepository.getDashboardOrdersByRegion(
+            years,
+            startDate,
+            endDate,
+            companyCnpj(),
+        ).map { it.toModel() }
 
-    override fun     getDashboardTotais(years: Int?): DashboardTotais {
-            return dashboardDataRepository.getDashboardTotais(years, companyCnpj()).toModel()
+    override fun getDashboardTotais(years: Int?, startDate: LocalDate?, endDate: LocalDate?): DashboardTotais {
+            return dashboardDataRepository.getDashboardTotais(years, startDate, endDate, companyCnpj()).toModel()
     }
 
-    override fun getCustomerDistributionByRegion(): List<CustomerRegionDistribution> =
-        dashboardDataRepository.getCustomerDistributionByRegion(companyCnpj()).map { it.toModel() }
+    override fun getCustomerDistributionByRegion(
+        years: Int?,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+    ): List<CustomerRegionDistribution> =
+        dashboardDataRepository.getCustomerDistributionByRegion(years, startDate, endDate, companyCnpj()).map { it.toModel() }
 
-    override fun getActiveCustomerCount(): Int = dashboardDataRepository.getActiveCustomerCount(companyCnpj())
+    override fun getActiveCustomerCount(
+        years: Int?,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+    ): Int = dashboardDataRepository.getActiveCustomerCount(years, startDate, endDate, companyCnpj())
 
-    override fun getUnpaidInvoicesAmount(years: Int?) = dashboardDataRepository.getUnpaidInvoicesAmount(years, companyCnpj())
+    override fun getUnpaidInvoicesAmount(years: Int?, startDate: LocalDate?, endDate: LocalDate?) =
+        dashboardDataRepository.getUnpaidInvoicesAmount(years, startDate, endDate, companyCnpj())
 
-    override fun getCustomerMonthlyAverageTicket(years: Int?): BigDecimal =
-        dashboardDataRepository.getCustomerMonthlyAverageTicket(years, companyCnpj())
+    override fun getCustomerMonthlyAverageTicket(years: Int?, startDate: LocalDate?, endDate: LocalDate?): BigDecimal =
+        dashboardDataRepository.getCustomerMonthlyAverageTicket(years, startDate, endDate, companyCnpj())
 
-    override fun getMostProfitableCustomers(years: Int?): List<TopTrends> =
-        dashboardDataRepository.getMostProfitableCustomers(years, companyCnpj()).map { it.toModel() }
+    override fun getMostProfitableCustomers(years: Int?, startDate: LocalDate?, endDate: LocalDate?): List<TopTrends> =
+        dashboardDataRepository.getMostProfitableCustomers(years, startDate, endDate, companyCnpj()).map { it.toModel() }
 
-    override fun getOverdueInvoices(years: Int?) =
-        dashboardDataRepository.getOverdueInvoices(years, companyCnpj()).map { it.toModel() }
+    override fun getOverdueInvoices(years: Int?, startDate: LocalDate?, endDate: LocalDate?) =
+        dashboardDataRepository.getOverdueInvoices(years, startDate, endDate, companyCnpj()).map { it.toModel() }
 
     override fun getCockpitMonthlyMetrics() = dashboardDataRepository.getCockpitMonthlyMetrics(companyCnpj()).toModel()
 
@@ -58,8 +97,8 @@ class DashboardRepositoryPortAdapter(
 
     override fun getRecentOrders(limit: Int) = dashboardDataRepository.getRecentOrders(limit, companyCnpj()).map { it.toModel() }
 
-    override fun getNewCustomersByMonth(years: Int?): List<DashboardMonthlyCount> =
-        dashboardDataRepository.getNewCustomersByMonth(years, companyCnpj()).map { it.toModel() }
+    override fun getNewCustomersByMonth(years: Int?, startDate: LocalDate?, endDate: LocalDate?): List<DashboardMonthlyCount> =
+        dashboardDataRepository.getNewCustomersByMonth(years, startDate, endDate, companyCnpj()).map { it.toModel() }
 
     private fun companyCnpj(): String = userService.getCurrentCompanyCnpj()
 }

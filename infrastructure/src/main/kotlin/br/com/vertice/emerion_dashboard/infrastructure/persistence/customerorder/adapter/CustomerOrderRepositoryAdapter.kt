@@ -10,6 +10,7 @@ import br.com.vertice.emerion_dashboard.infrastructure.persistence.customerorder
 import br.com.vertice.emerion_dashboard.infrastructure.persistence.customerorder.repository.CustomerOrderSpringDataRepository
 import org.springframework.data.domain.PageRequest as SpringPageRequest
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 
 /**
  * Adapter implementing the domain's outbound port (`CustomerOrderRepository`).
@@ -42,6 +43,8 @@ class CustomerOrderRepositoryAdapter(
         nomeFantasia: String?,
         numeroPedido: String?,
         period: String?,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
     ): Page<CustomerOrder> {
         val springPageable = SpringPageRequest.of(pageRequest.page, pageRequest.size)
         val headerPage = queryRepository.searchHeaders(
@@ -51,6 +54,8 @@ class CustomerOrderRepositoryAdapter(
             nomeFantasia?.trim()?.takeIf { it.isNotEmpty() }?.let { "%$it%" },
             numeroPedido?.trim()?.takeIf { it.isNotEmpty() }?.let { "%$it%" },
             period?.takeIf { it.isNotBlank() },
+            startDate,
+            endDate,
             userService.getCurrentCompanyCnpj(),
             springPageable,
         )
