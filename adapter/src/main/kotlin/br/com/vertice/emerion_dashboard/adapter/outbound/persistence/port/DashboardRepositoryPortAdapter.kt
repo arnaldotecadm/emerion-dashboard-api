@@ -91,11 +91,14 @@ class DashboardRepositoryPortAdapter(
     override fun getOverdueInvoices(years: Int?, startDate: LocalDate?, endDate: LocalDate?) =
         dashboardDataRepository.getOverdueInvoices(years, startDate, endDate, companyCnpj()).map { it.toModel() }
 
-    override fun getCockpitMonthlyMetrics() = dashboardDataRepository.getCockpitMonthlyMetrics(companyCnpj()).toModel()
+    override fun getCockpitMonthlyMetrics(years: Int?, startDate: LocalDate?, endDate: LocalDate?) =
+        dashboardDataRepository.getCockpitMonthlyMetrics(years, startDate, endDate, companyCnpj()).toModel()
 
-    override fun getUnpaidInvoicesSummary() = dashboardDataRepository.getUnpaidInvoicesSummary(companyCnpj()).toModel()
+    override fun getUnpaidInvoicesSummary(years: Int?, startDate: LocalDate?, endDate: LocalDate?) =
+        dashboardDataRepository.getUnpaidInvoicesSummary(years, startDate, endDate, companyCnpj()).toModel()
 
-    override fun getRecentOrders(limit: Int) = dashboardDataRepository.getRecentOrders(limit, companyCnpj()).map { it.toModel() }
+    override fun getRecentOrders(limit: Int, years: Int?, startDate: LocalDate?, endDate: LocalDate?) =
+        dashboardDataRepository.getRecentOrders(limit, years, startDate, endDate, companyCnpj()).map { it.toModel() }
 
     override fun getNewCustomersByMonth(years: Int?, startDate: LocalDate?, endDate: LocalDate?): List<DashboardMonthlyCount> =
         dashboardDataRepository.getNewCustomersByMonth(years, startDate, endDate, companyCnpj()).map { it.toModel() }

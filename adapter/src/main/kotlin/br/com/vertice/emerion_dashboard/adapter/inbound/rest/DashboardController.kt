@@ -20,8 +20,12 @@ import java.time.LocalDate
 class DashboardController(
     private val dashboardSummaryService: DashboardSummaryService
 ) : DashboardApi {
-    override fun getDashboardSalesCockpit(): ResponseEntity<SalesCockpitResponse> =
-        ResponseEntity.ok(dashboardSummaryService.getSalesCockpit().toResponse())
+    override fun getDashboardSalesCockpit(
+        years: Int?,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+    ): ResponseEntity<SalesCockpitResponse> =
+        ResponseEntity.ok(dashboardSummaryService.getSalesCockpit(years, startDate, endDate).toResponse())
 
     override fun getDashboardCustomerTopTrends(
         years: Int?,

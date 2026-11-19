@@ -36,8 +36,10 @@ class LiberacaoJpaEntity(
     var codigoEmpresa: Long = 0,
     @Column(name = "data_pedido", nullable = false)
     var dataPedido: LocalDate = LocalDate.now(),
+    @Column(name = "data_faturamento", nullable = true)
+    var dataFaturamento: LocalDate? = null,
     @Column(name = "numero_pedido", nullable = false)
-    var numeroPedido: String = "",
+    var numeroPedido: Long = 0,
     @Column(name = "numero_liberacao", nullable = false)
     var numeroLiberacao: Int = 0,
     @Column(name = "data_liberacao", nullable = false)

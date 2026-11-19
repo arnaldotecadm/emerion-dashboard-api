@@ -32,9 +32,13 @@ class DashboardSummaryService(
     ): List<TopTrends> =
         repository.getDashboardSellerTopTrends(orderBy, years, startDate, endDate)
 
-    fun getSalesCockpit(): SalesCockpit {
-        val metrics = repository.getCockpitMonthlyMetrics()
-        val unpaid = repository.getUnpaidInvoicesSummary()
+    fun getSalesCockpit(
+        years: Int? = null,
+        startDate: LocalDate? = null,
+        endDate: LocalDate? = null,
+    ): SalesCockpit {
+        val metrics = repository.getCockpitMonthlyMetrics(years, startDate, endDate)
+        val unpaid = repository.getUnpaidInvoicesSummary(years, startDate, endDate)
         return SalesCockpit(
             monthlySalesTotal = metrics.salesTotal,
             averageMarkup = metrics.averageMarkup,
@@ -46,7 +50,7 @@ class DashboardSummaryService(
             amountToReceiveThisMonth = metrics.amountToReceive,
             amountReceivedThisMonth = metrics.amountReceived,
             amountDueThisMonth = metrics.amountToReceive - metrics.amountReceived,
-            recentOrders = repository.getRecentOrders(RECENT_ORDERS_LIMIT),
+            recentOrders = repository.getRecentOrders(RECENT_ORDERS_LIMIT, years, startDate, endDate),
         )
     }
 

@@ -32,7 +32,7 @@ class CustomerOrderJpaEntity(
     var id: Long? = null,
 
     @Column(name = "external_id", nullable = false)
-    var externalId: String = "",
+    var externalId: Long = 0,
 
     @Column(name = "cnpj_empresa", nullable = false)
     var cnpjEmpresa: String = "",
@@ -47,7 +47,10 @@ class CustomerOrderJpaEntity(
     var cpfCnpj: String? = null,
 
     @Column(name = "numero_pedido", nullable = false)
-    var numeroPedido: String = "",
+    var numeroPedido: Long = 0,
+
+    @Column(name = "tipo_pedido", nullable = false)
+    var tipoPedido: String = "",
 
     @Column(name = "data_pedido", nullable = false)
     var dataPedido: LocalDate = LocalDate.now(),

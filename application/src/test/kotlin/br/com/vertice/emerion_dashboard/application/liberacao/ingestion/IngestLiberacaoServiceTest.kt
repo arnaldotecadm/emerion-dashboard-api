@@ -26,11 +26,12 @@ class IngestLiberacaoServiceTest {
     private val sqsProducer = mockk<SQSProducer>()
     private val service = IngestLiberacaoService(liberacaoRepository, sqsProducer, "batch-queue", clock)
 
-    private fun command(numeroPedido: String = "25687", numeroLiberacao: Int = 1) =
+    private fun command(numeroPedido: Long = 25687L, numeroLiberacao: Int = 1) =
         IngestLiberacaoCommand(
             cnpjEmpresa = "15323240000102",
             codigoEmpresa = 1,
             dataPedido = LocalDate.parse("2026-08-26"),
+            dataFaturamento = LocalDate.parse("2026-08-26"),
             numeroPedido = numeroPedido,
             numeroLiberacao = numeroLiberacao,
             dataLiberacao = LocalDate.parse("2026-08-26"),
@@ -68,7 +69,7 @@ class IngestLiberacaoServiceTest {
 
     @Test
     fun `queues a batch and returns its composite keys`() {
-        val items = listOf(command(), command("25688", 2))
+        val items = listOf(command(), command(25688L, 2))
         every { sqsProducer.sendMessageBatch("batch-queue", items) } returns Unit
 
         val result = service.ingest("batch-1", items)
@@ -96,7 +97,7 @@ class IngestLiberacaoServiceTest {
 
     @Test
     fun `creates a release when its composite key is not known yet`() {
-        every { liberacaoRepository.findByNumeroPedidoAndNumeroLiberacao("25687", 1) } returns null
+        every { liberacaoRepository.findByNumeroPedidoAndNumeroLiberacao(25687L, 1) } returns null
         val saved = slot<Liberacao>()
         every { liberacaoRepository.save(capture(saved)) } answers { saved.captured.copy(id = 1) }
 
@@ -114,7 +115,7 @@ class IngestLiberacaoServiceTest {
             cnpjEmpresa = "15323240000102",
             codigoEmpresa = 1,
             dataPedido = LocalDate.parse("2026-08-01"),
-            numeroPedido = "25687",
+            numeroPedido = 25687L,
             numeroLiberacao = 1,
             dataLiberacao = LocalDate.parse("2026-08-01"),
             horaLiberacao = LocalTime.MIDNIGHT,
@@ -126,10 +127,11 @@ class IngestLiberacaoServiceTest {
             codigoVendedor = 1,
             comissaoLiberacao = BigDecimal.ZERO,
             totalCusto = BigDecimal.ONE,
+            dataFaturamento = LocalDate.parse("2026-08-26"),
             detalhes = emptyList(),
             now = Instant.parse("2026-08-01T00:00:00Z"),
         ).copy(id = 42)
-        every { liberacaoRepository.findByNumeroPedidoAndNumeroLiberacao("25687", 1) } returns existing
+        every { liberacaoRepository.findByNumeroPedidoAndNumeroLiberacao(25687L, 1) } returns existing
         every { liberacaoRepository.save(any()) } answers { firstArg() }
 
         val result = service.ingestSingle(command())
@@ -148,7 +150,7 @@ class IngestLiberacaoServiceTest {
     fun `returns a failure result when persistence fails`() {
         every {
             liberacaoRepository.findByNumeroPedidoAndNumeroLiberacao(
-                "25687",
+                25687L,
                 1
             )
         } throws RuntimeException("database unavailable")

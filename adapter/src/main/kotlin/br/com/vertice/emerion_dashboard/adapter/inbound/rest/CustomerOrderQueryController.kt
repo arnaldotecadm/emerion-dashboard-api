@@ -31,7 +31,7 @@ class CustomerOrderQueryController(
         statusPedido: String?,
         codigoEmpresa: Int?,
         nomeFantasia: String?,
-        numeroPedido: String?,
+        numeroPedido: Long?,
         period: String,
         startDate: LocalDate?,
         endDate: LocalDate?,

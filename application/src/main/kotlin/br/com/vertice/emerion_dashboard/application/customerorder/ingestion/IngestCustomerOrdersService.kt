@@ -54,7 +54,7 @@ class IngestCustomerOrdersService(
         )
         return IngestBatchResult(batchId = command.batchId, results = command.items.map { item ->
             IngestItemResult(
-                externalId = item.externalId,
+                externalId = item.externalId.toString(),
                 outcome = IngestOutcome.QUEUED,
                 errorMessage = null
             )
@@ -77,6 +77,7 @@ class IngestCustomerOrdersService(
                 codigoCliente = item.codigoCliente,
                 cpfCnpj = item.cpfCnpj,
                 numeroPedido = item.numeroPedido,
+                tipoPedido = item.tipoPedido,
                 dataPedido = item.dataPedido,
                 statusPedido = item.statusPedido,
                 totalPedidoComImpostos = item.totalPedidoComImpostos,
@@ -107,6 +108,7 @@ class IngestCustomerOrdersService(
                 codigoCliente = item.codigoCliente,
                 cpfCnpj = item.cpfCnpj,
                 numeroPedido = item.numeroPedido,
+                tipoPedido = item.tipoPedido,
                 dataPedido = item.dataPedido,
                 statusPedido = item.statusPedido,
                 totalPedidoComImpostos = item.totalPedidoComImpostos,
@@ -136,14 +138,14 @@ class IngestCustomerOrdersService(
                 notifyActiveUsersAboutNewOrder(savedOrder)
             }
             IngestItemResult(
-                externalId = item.externalId,
+                externalId = item.externalId.toString(),
                 outcome = if (existing == null) IngestOutcome.CREATED else IngestOutcome.UPDATED,
                 errorMessage = null,
             )
         } catch (ex: Exception) {
             logger.error("Failed to ingest customer order externalId='{}'", item.externalId, ex)
             IngestItemResult(
-                externalId = item.externalId,
+                externalId = item.externalId.toString(),
                 outcome = IngestOutcome.FAILED,
                 errorMessage = ex.message,
             )
@@ -158,7 +160,7 @@ class IngestCustomerOrdersService(
             return
         }
 
-        val referenceId = order.id?.toString() ?: order.externalId
+        val referenceId = order.id?.toString() ?: order.externalId.toString()
         activeUsers.forEach { user ->
             try {
                 createNotificationUseCase.create(

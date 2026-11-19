@@ -13,7 +13,7 @@ data class ListCustomerOrdersQuery(
     val statusPedido: String?,
     val codigoEmpresa: Int?,
     val nomeFantasia: String? = null,
-    val numeroPedido: String? = null,
+    val numeroPedido: Long? = null,
     val period: String? = null,
     val startDate: LocalDate? = null,
     val endDate: LocalDate? = null,

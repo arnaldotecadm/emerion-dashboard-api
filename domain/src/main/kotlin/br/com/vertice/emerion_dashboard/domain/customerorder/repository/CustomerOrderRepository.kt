@@ -13,7 +13,7 @@ import java.time.LocalDate
 interface CustomerOrderRepository {
     fun findById(id: Long): CustomerOrder?
 
-    fun findByExternalId(externalId: String): CustomerOrder?
+    fun findByExternalId(externalId: Long): CustomerOrder?
 
     fun findAll(
         pageRequest: PageRequest,
@@ -21,7 +21,7 @@ interface CustomerOrderRepository {
         statusPedido: String?,
         codigoEmpresa: Int?,
         nomeFantasia: String? = null,
-        numeroPedido: String? = null,
+        numeroPedido: Long? = null,
         period: String? = null,
         startDate: LocalDate? = null,
         endDate: LocalDate? = null,

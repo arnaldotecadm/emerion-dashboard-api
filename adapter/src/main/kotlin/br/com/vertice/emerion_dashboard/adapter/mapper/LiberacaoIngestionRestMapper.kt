@@ -18,6 +18,7 @@ object LiberacaoIngestionRestMapper {
         cnpjEmpresa = cnpjEmpresa,
         codigoEmpresa = codigoEmpresa,
         dataPedido = dataPedido,
+        dataFaturamento = dataFaturamento,
         numeroPedido = numeroPedido,
         numeroLiberacao = numeroLiberacao,
         dataLiberacao = dataLiberacao,

@@ -1,1 +1,0 @@
-ALTER TABLE titulo_receber_parcela DROP CONSTRAINT uk_titulo_receber_parcela_documento_numero;

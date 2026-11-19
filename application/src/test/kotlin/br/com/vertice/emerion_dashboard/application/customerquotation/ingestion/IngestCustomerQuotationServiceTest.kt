@@ -28,13 +28,13 @@ class IngestCustomerQuotationServiceTest {
         "batch-queue",
     )
     private val item = IngestCustomerQuotationCommand(
-        externalId = "25689",
+        externalId = 25689L,
         cnpjEmpresa = "15323240000102",
         codigoEmpresa = 1,
         codigoCliente = 3206,
         customerExternalId = 3206L,
         dteres = LocalDate.parse("2026-08-27"),
-        numeroPedido = "25689",
+        numeroPedido = 25689L,
         dataPedido = LocalDate.parse("2026-08-27"),
         totalPedidoComImpostos = BigDecimal("20.41"),
         totalPedidoSemImpostos = BigDecimal("19.43"),
@@ -122,17 +122,17 @@ class IngestCustomerQuotationServiceTest {
     @Test
     fun `records a failed quotation when persistence fails`() {
         every {
-            repository.findByCnpjEmpresaAndExternalId(item.cnpjEmpresa, "BAD")
+            repository.findByCnpjEmpresaAndExternalId(item.cnpjEmpresa, 99999L)
         } throws RuntimeException("db down")
 
-        val result = service.ingestSingle(item.copy(externalId = "BAD"))
+        val result = service.ingestSingle(item.copy(externalId = 99999L))
 
         assertEquals(IngestOutcome.FAILED, result.outcome)
     }
 
     @Test
     fun `queues a batch without touching the database`() {
-        val batch = IngestCustomerQuotationBatchCommand("batch-1", listOf(item, item.copy(externalId = "2")))
+        val batch = IngestCustomerQuotationBatchCommand("batch-1", listOf(item, item.copy(externalId = 2L)))
 
         val result = service.ingest(batch)
 

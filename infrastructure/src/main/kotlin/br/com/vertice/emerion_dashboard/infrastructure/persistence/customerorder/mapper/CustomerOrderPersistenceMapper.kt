@@ -24,6 +24,7 @@ object CustomerOrderPersistenceMapper {
             nomeFantasia = header.nomeFantasia,
             cpfCnpj = header.cpfCnpj,
             numeroPedido = header.numeroPedido,
+            tipoPedido = header.tipoPedido,
             dataPedido = header.dataPedido,
             statusPedido = header.statusPedido,
             totalPedidoComImpostos = header.totalPedidoComImpostos,
@@ -128,6 +129,7 @@ object CustomerOrderPersistenceMapper {
             nomeFantasia = null,
             cpfCnpj = entity.cpfCnpj,
             numeroPedido = entity.numeroPedido,
+            tipoPedido = entity.tipoPedido,
             dataPedido = entity.dataPedido,
             statusPedido = entity.statusPedido,
             totalPedidoComImpostos = entity.totalPedidoComImpostos,
@@ -242,6 +244,7 @@ object CustomerOrderPersistenceMapper {
         entity.codigoCliente = domain.codigoCliente
         entity.cpfCnpj = domain.cpfCnpj
         entity.numeroPedido = domain.numeroPedido
+        entity.tipoPedido = domain.tipoPedido
         entity.dataPedido = domain.dataPedido
         entity.statusPedido = domain.statusPedido
         entity.totalPedidoComImpostos = domain.totalPedidoComImpostos

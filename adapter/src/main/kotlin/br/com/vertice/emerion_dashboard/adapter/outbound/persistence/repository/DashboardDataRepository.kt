@@ -554,45 +554,62 @@ class DashboardDataRepository(
         }
     }
 
-    fun getCockpitMonthlyMetrics(cnpjEmpresa: String): DashboardCockpitMetricsProjection {
+    fun getCockpitMonthlyMetrics(
+        years: Int?,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+        cnpjEmpresa: String,
+    ): DashboardCockpitMetricsProjection {
         val query = entityManager.createNativeQuery(
             """
             with bounds as (
                 select
-                    date_trunc('month', current_date)::date as month_start,
-                    (date_trunc('month', current_date) + interval '1 month')::date as next_month_start
+                    case
+                        when cast(:startDate as date) is not null or cast(:endDate as date) is not null
+                            then coalesce(cast(:startDate as date), date '1900-01-01')
+                        when cast(:years as integer) is not null
+                            then make_date(extract(year from current_date)::int - cast(:years as integer) + 1, 1, 1)
+                        else date_trunc('month', current_date)::date
+                    end as start_date,
+                    case
+                        when cast(:startDate as date) is not null or cast(:endDate as date) is not null
+                            then coalesce(cast(:endDate as date), current_date) + 1
+                        when cast(:years as integer) is not null
+                            then current_date + 1
+                        else (date_trunc('month', current_date) + interval '1 month')::date
+                    end as end_date
             )
             select
                 coalesce((
                     select sum(co.total_pedido_com_impostos)
                     from emerion_dashboard.customer_order co, bounds b
-                    where co.data_pedido >= b.month_start and co.data_pedido < b.next_month_start
+                    where co.data_pedido >= b.start_date and co.data_pedido < b.end_date
                       and co.cnpj_empresa = :cnpjEmpresa
                 ), 0),
                 coalesce((
                     select round(avg(coi.tot_ren), 2)
                     from emerion_dashboard.customer_order_item coi
                     join emerion_dashboard.customer_order co on co.id = coi.customer_order_id, bounds b
-                    where co.data_pedido >= b.month_start and co.data_pedido < b.next_month_start
+                    where co.data_pedido >= b.start_date and co.data_pedido < b.end_date
                       and co.cnpj_empresa = :cnpjEmpresa
                 ), 0),
                 (
                     select count(*)
                     from emerion_dashboard.customer_order co, bounds b
-                    where co.data_pedido >= b.month_start and co.data_pedido < b.next_month_start
+                    where co.data_pedido >= b.start_date and co.data_pedido < b.end_date
                       and co.cnpj_empresa = :cnpjEmpresa
                 ),
                 (
                     select count(*)
                     from emerion_dashboard.customer_quotation cq, bounds b
-                    where cq.data_pedido >= b.month_start and cq.data_pedido < b.next_month_start
+                    where cq.data_pedido >= b.start_date and cq.data_pedido < b.end_date
                       and cq.cnpj_empresa = :cnpjEmpresa
                 ),
                 coalesce((
                     select sum(trp.valor_parcela)
                     from emerion_dashboard.titulo_receber_parcela trp
                     join emerion_dashboard.titulo_receber tr on tr.documento = trp.documento, bounds b
-                    where trp.data_vencimento >= b.month_start and trp.data_vencimento < b.next_month_start
+                    where trp.data_vencimento >= b.start_date and trp.data_vencimento < b.end_date
                       and tr.cnpj_empresa = :cnpjEmpresa
                 ), 0),
                 coalesce((
@@ -600,11 +617,14 @@ class DashboardDataRepository(
                     from emerion_dashboard.titulo_receber_parcela trp
                     join emerion_dashboard.titulo_receber tr on tr.documento = trp.documento, bounds b
                     where trp.flag_pago = '*'
-                      and trp.data_vencimento >= b.month_start and trp.data_vencimento < b.next_month_start
+                      and trp.data_vencimento >= b.start_date and trp.data_vencimento < b.end_date
                       and tr.cnpj_empresa = :cnpjEmpresa
                 ), 0)
             """.trimIndent(),
         )
+        query.setParameter("years", years)
+        query.setParameter("startDate", startDate)
+        query.setParameter("endDate", endDate)
         query.setParameter("cnpjEmpresa", cnpjEmpresa)
         val row = query.singleResult as Array<*>
         return DashboardCockpitMetricsProjection(
@@ -617,18 +637,38 @@ class DashboardDataRepository(
         )
     }
 
-    fun getUnpaidInvoicesSummary(cnpjEmpresa: String): DashboardUnpaidInvoicesProjection {
+    fun getUnpaidInvoicesSummary(
+        years: Int?,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+        cnpjEmpresa: String,
+    ): DashboardUnpaidInvoicesProjection {
         val query = entityManager.createNativeQuery(
             """
             select count(*), coalesce(sum(trp.valor_parcela), 0)
             from emerion_dashboard.titulo_receber_parcela trp
             join emerion_dashboard.titulo_receber tr on tr.documento = trp.documento
             where coalesce(trp.flag_pago, '') != '*'
-              and trp.data_vencimento >= date_trunc('month', current_date)
-              and trp.data_vencimento <= now()
+              and trp.data_vencimento >= case
+                  when cast(:startDate as date) is not null or cast(:endDate as date) is not null
+                      then coalesce(cast(:startDate as date), date '1900-01-01')
+                  when cast(:years as integer) is not null
+                      then make_date(extract(year from current_date)::int - cast(:years as integer) + 1, 1, 1)
+                  else date_trunc('month', current_date)::date
+              end
+              and trp.data_vencimento <= case
+                  when cast(:startDate as date) is not null or cast(:endDate as date) is not null
+                      then coalesce(cast(:endDate as date), current_date)
+                  when cast(:years as integer) is not null
+                      then current_date
+                  else current_date
+              end
               and tr.cnpj_empresa = :cnpjEmpresa
             """.trimIndent(),
         )
+        query.setParameter("years", years)
+        query.setParameter("startDate", startDate)
+        query.setParameter("endDate", endDate)
         query.setParameter("cnpjEmpresa", cnpjEmpresa)
         val row = query.singleResult as Array<*>
         return DashboardUnpaidInvoicesProjection(
@@ -637,7 +677,13 @@ class DashboardDataRepository(
         )
     }
 
-    fun getRecentOrders(limit: Int, cnpjEmpresa: String): List<DashboardRecentOrderProjection> {
+    fun getRecentOrders(
+        limit: Int,
+        years: Int?,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+        cnpjEmpresa: String,
+    ): List<DashboardRecentOrderProjection> {
         val query = entityManager.createNativeQuery(
             """
             select * from (
@@ -669,6 +715,25 @@ class DashboardDataRepository(
                     end = co.codigo_cliente
                     and c.cnpj_empresa = :cnpjEmpresa
                 where co.cnpj_empresa = :cnpjEmpresa
+                  and (
+                      (
+                          (cast(:startDate as date) is not null or cast(:endDate as date) is not null)
+                          and co.data_pedido >= coalesce(cast(:startDate as date), date '1900-01-01')
+                          and co.data_pedido <= coalesce(cast(:endDate as date), current_date)
+                      )
+                      or (
+                          cast(:startDate as date) is null
+                          and cast(:endDate as date) is null
+                          and (
+                              cast(:years as integer) is null
+                              or co.data_pedido >= make_date(
+                                  extract(year from current_date)::int - cast(:years as integer) + 1,
+                                  1,
+                                  1
+                              )
+                          )
+                      )
+                  )
                 order by (coalesce(co.status_pedido, '') = 'Faturado'), co.data_pedido desc, co.id desc
                 limit :limit
             ) recent
@@ -676,6 +741,9 @@ class DashboardDataRepository(
             """.trimIndent(),
         )
         query.setParameter("limit", limit)
+        query.setParameter("years", years)
+        query.setParameter("startDate", startDate)
+        query.setParameter("endDate", endDate)
         query.setParameter("cnpjEmpresa", cnpjEmpresa)
         return query.resultList.map { row ->
             val resultArray = row as Array<*>

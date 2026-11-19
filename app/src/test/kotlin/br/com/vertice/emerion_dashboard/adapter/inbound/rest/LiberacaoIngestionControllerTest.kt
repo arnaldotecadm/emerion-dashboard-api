@@ -21,8 +21,8 @@ class LiberacaoIngestionControllerTest {
     fun `maps a batch into commands and returns queued outcomes`() {
         val service = mockk<IngestLiberacaoService>()
         val controller = LiberacaoIngestionController(service)
-        val first = item("100", 1)
-        val second = item("101", 2)
+        val first = item(100L, 1)
+        val second = item(101L, 2)
         every { service.ingest("batch-1", any()) } returns IngestBatchResult(
             "batch-1",
             listOf(
@@ -38,16 +38,17 @@ class LiberacaoIngestionControllerTest {
         assertEquals(listOf(IngestionItemResult.Outcome.QUEUED, IngestionItemResult.Outcome.QUEUED), result.results!!.map { it.outcome })
         verify {
             service.ingest("batch-1", match {
-                it.map { command -> command.numeroPedido } == listOf("100", "101") &&
+                it.map { command -> command.numeroPedido } == listOf(100L, 101L) &&
                     it.all { command -> command.horaLiberacao == LocalTime.parse("08:50:13") }
             })
         }
     }
 
-    private fun item(numeroPedido: String, numeroLiberacao: Int) = LiberacaoIngestionItem(
+    private fun item(numeroPedido: Long, numeroLiberacao: Int) = LiberacaoIngestionItem(
         cnpjEmpresa = "test",
         codigoEmpresa = 1,
         dataPedido = LocalDate.parse("2026-08-26"),
+        dataFaturamento = LocalDate.parse("2026-08-26"),
         numeroPedido = numeroPedido,
         numeroLiberacao = numeroLiberacao,
         dataLiberacao = LocalDate.parse("2026-08-27"),

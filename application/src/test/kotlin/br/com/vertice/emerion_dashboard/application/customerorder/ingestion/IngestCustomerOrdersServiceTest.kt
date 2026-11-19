@@ -54,14 +54,15 @@ class IngestCustomerOrdersServiceTest {
         seqRe2 = 1,
     )
 
-    private fun orderCommand(externalId: String, itens: List<IngestCustomerOrderItemCommand>) =
+    private fun orderCommand(externalId: Long, itens: List<IngestCustomerOrderItemCommand>) =
         IngestCustomerOrderCommand(
             externalId = externalId,
             cnpjEmpresa = "12345678000100",
             codigoEmpresa = 1,
             codigoCliente = 100,
             cpfCnpj = null,
-            numeroPedido = "NF-1",
+            numeroPedido = 1L,
+            tipoPedido = "NORMAL",
             dataPedido = LocalDate.parse("2025-06-01"),
             statusPedido = "FATURADO",
             totalPedidoComImpostos = BigDecimal("20.00"),
@@ -78,7 +79,7 @@ class IngestCustomerOrdersServiceTest {
 
     @Test
     fun `creates a new order and creates notifications for active users`() {
-        every { customerOrderRepository.findByExternalId("NUM-1",) } returns null
+        every { customerOrderRepository.findByExternalId(1L,) } returns null
         val savedSlot = slot<CustomerOrder>()
         every { customerOrderRepository.save(capture(savedSlot)) } answers { savedSlot.captured.copy(id = 1L) }
         every { cognitoUserRepository.findAll() } returns listOf(
@@ -99,7 +100,7 @@ class IngestCustomerOrdersServiceTest {
         val result = service.ingest(
             IngestBatchCommand(
                 batchId = "batch-1",
-                items = listOf(orderCommand("NUM-1", listOf(itemCommand("1.1.1")))),
+                items = listOf(orderCommand(1L, listOf(itemCommand("1.1.1")))),
             ),
         )
 
@@ -113,12 +114,13 @@ class IngestCustomerOrdersServiceTest {
     fun `updates an existing order when externalId is already known (idempotent re-run)`() {
         val existing = CustomerOrder(
             id = 42L,
-            externalId = "NUM-2",
+            externalId = 2L,
             codigoEmpresa = 1,
             codigoCliente = 100,
             cnpjEmpresa = "12345678000100",
             cpfCnpj = null,
-            numeroPedido = "NF-2",
+            numeroPedido = 2L,
+            tipoPedido = "NORMAL",
             dataPedido = LocalDate.parse("2025-01-01"),
             statusPedido = "ABERTO",
             totalPedidoComImpostos = BigDecimal("10.00"),
@@ -145,14 +147,14 @@ class IngestCustomerOrdersServiceTest {
             createdAt = Instant.parse("2025-01-01T00:00:00Z"),
             updatedAt = Instant.parse("2025-01-01T00:00:00Z"),
         )
-        every { customerOrderRepository.findByExternalId("NUM-2",) } returns existing
+        every { customerOrderRepository.findByExternalId(2L,) } returns existing
         every { customerOrderRepository.save(any()) } answers { firstArg() }
         every { cognitoUserRepository.findAll() } returns listOf(cognitoUser(sub = "active-1", enabled = true))
 
         val result = service.ingest(
             IngestBatchCommand(
                 batchId = "batch-2",
-                items = listOf(orderCommand("NUM-2", listOf(itemCommand("1.1.1"), itemCommand("2.2.2")))),
+                items = listOf(orderCommand(2L, listOf(itemCommand("1.1.1"), itemCommand("2.2.2")))),
             ),
         )
 
@@ -161,8 +163,8 @@ class IngestCustomerOrdersServiceTest {
 
     @Test
     fun `records a failure for one item without aborting the rest of the batch`() {
-        every { customerOrderRepository.findByExternalId("OK",) } returns null
-        every { customerOrderRepository.findByExternalId("BAD",) } throws RuntimeException("db down")
+        every { customerOrderRepository.findByExternalId(3L,) } returns null
+        every { customerOrderRepository.findByExternalId(4L,) } throws RuntimeException("db down")
         every { customerOrderRepository.save(any()) } answers { firstArg<CustomerOrder>().copy(id = 1L) }
         every { cognitoUserRepository.findAll() } returns emptyList()
 
@@ -170,8 +172,8 @@ class IngestCustomerOrdersServiceTest {
             IngestBatchCommand(
                 batchId = "batch-3",
                 items = listOf(
-                    orderCommand("OK", listOf(itemCommand("1.1.1"))),
-                    orderCommand("BAD", listOf(itemCommand("1.1.1"))),
+                    orderCommand(3L, listOf(itemCommand("1.1.1"))),
+                    orderCommand(4L, listOf(itemCommand("1.1.1"))),
                 ),
             ),
         )
@@ -181,25 +183,25 @@ class IngestCustomerOrdersServiceTest {
 
     @Test
     fun `ingestSingle creates a new order when externalId is not known yet`() {
-        every { customerOrderRepository.findByExternalId("NUM-4",) } returns null
+        every { customerOrderRepository.findByExternalId(5L,) } returns null
         val savedSlot = slot<CustomerOrder>()
         every { customerOrderRepository.save(capture(savedSlot)) } answers { savedSlot.captured.copy(id = 1L) }
         every { cognitoUserRepository.findAll() } returns emptyList()
 
-        val result = service.ingestSingle(orderCommand("NUM-4", listOf(itemCommand("1.1.1"))))
+        val result = service.ingestSingle(orderCommand(5L, listOf(itemCommand("1.1.1"))))
 
         assertEquals(IngestOutcome.CREATED, result.outcome)
-        assertEquals("NUM-4", result.externalId)
+        assertEquals("5", result.externalId)
         assertEquals("SP", savedSlot.captured.ufPedido)
         verify(exactly = 1) { customerOrderRepository.save(any()) }
     }
 
     @Test
     fun `ingestSingle reports a failure without throwing when the item fails`() {
-        every { customerOrderRepository.findByExternalId("NUM-5",) } throws RuntimeException("db down")
+        every { customerOrderRepository.findByExternalId(6L,) } throws RuntimeException("db down")
         every { cognitoUserRepository.findAll() } returns emptyList()
 
-        val result = service.ingestSingle(orderCommand("NUM-5", listOf(itemCommand("1.1.1"))))
+        val result = service.ingestSingle(orderCommand(6L, listOf(itemCommand("1.1.1"))))
 
         assertEquals(IngestOutcome.FAILED, result.outcome)
         assertEquals("db down", result.errorMessage)

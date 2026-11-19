@@ -22,7 +22,7 @@ class LiberacaoQueryController(
         ResponseEntity.ok(liberacaoQueryService.list(ListLiberacoesQuery(page = page, size = size)).toPageResponse())
 
     override fun listLiberacoesByNumeroPedido(
-        numeroPedido: String,
+        numeroPedido: Long,
         page: Int,
         size: Int,
     ): ResponseEntity<LiberacaoPage> =

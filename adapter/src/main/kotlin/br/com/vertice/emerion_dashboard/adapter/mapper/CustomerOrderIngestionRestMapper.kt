@@ -31,6 +31,7 @@ object CustomerOrderIngestionRestMapper {
             codigoCliente = codigoCliente,
             cpfCnpj = cpfCnpj,
             numeroPedido = numeroPedido,
+            tipoPedido = tipoPedido,
             dataPedido = dataPedido.toLocalOrderDate(),
             statusPedido = statusPedido,
             totalPedidoComImpostos = totalPedidoComImpostos,

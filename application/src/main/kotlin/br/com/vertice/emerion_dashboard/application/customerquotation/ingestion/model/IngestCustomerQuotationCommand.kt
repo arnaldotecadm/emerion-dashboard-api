@@ -4,13 +4,13 @@ import java.math.BigDecimal
 import java.time.LocalDate
 
 data class IngestCustomerQuotationCommand(
-    val externalId: String,
+    val externalId: Long,
     val cnpjEmpresa: String,
     val codigoEmpresa: Int,
     val codigoCliente: Int,
     val customerExternalId: Long,
     val dteres: LocalDate,
-    val numeroPedido: String,
+    val numeroPedido: Long,
     val dataPedido: LocalDate,
     val totalPedidoComImpostos: BigDecimal,
     val totalPedidoSemImpostos: BigDecimal,
@@ -30,5 +30,5 @@ data class IngestCustomerQuotationCommand(
     val regimeTributario: String?,
     val nomeRegimeTributario: String?,
     val codigoPadraoFaturamento: String?,
-    val numeroCotacao: Int?,
+    val numeroCotacao: Long?,
 )

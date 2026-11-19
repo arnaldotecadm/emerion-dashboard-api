@@ -5,12 +5,13 @@ import java.time.LocalDate
 
 /** Input command for a single customer order inside an ingestion batch. */
 data class IngestCustomerOrderCommand(
-    val externalId: String,
+    val externalId: Long,
     val cnpjEmpresa: String,
     val codigoEmpresa: Int,
     val codigoCliente: Int,
     val cpfCnpj: String?,
-    val numeroPedido: String,
+    val numeroPedido: Long,
+    val tipoPedido: String,
     val dataPedido: LocalDate,
     val statusPedido: String?,
     val totalPedidoComImpostos: BigDecimal,

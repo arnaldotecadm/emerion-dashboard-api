@@ -53,6 +53,8 @@ tags:
       app.
   - name: liberacoes
     description: Read endpoints for PEDLIB releases consumed by the React frontend.
+  - name: faturamento
+    description: Manager-facing billing and sales summaries.
   - name: customer-address-ingestion
     description: >
       Endpoints called by emerion-load-service to push a customer's full
@@ -233,7 +235,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
         - name: page
           in: query
           schema:
@@ -254,6 +257,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LiberacaoPage'
+
+  /faturamento/resumo:
+    get:
+      tags:
+        - faturamento
+      operationId: getFaturamentoResumo
+      summary: Get manager billing summary
+      parameters:
+        - name: startDate
+          in: query
+          required: true
+          description: Includes releases from this date, inclusive.
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: true
+          description: Includes releases through this date, inclusive.
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Billing summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FaturamentoResumoResponse'
 
   /ingestion/customers:
     post:
@@ -1285,10 +1317,11 @@ paths:
             type: string
         - name: numeroPedido
           in: query
-          description: Partial (contains) match on the order number, e.g. `719` matches `A7190`.
+          description: Exact match on the numeric order number.
           required: false
           schema:
-            type: string
+            type: integer
+            format: int64
         - name: period
           in: query
           description: Filter by the current week (Monday through Sunday), month, year, or all dates. Ignored when startDate or endDate is supplied.
@@ -1751,9 +1784,36 @@ paths:
       operationId: getDashboardSalesCockpit
       summary: Get executive cockpit and sales indicators
       description: >
-        Returns current-calendar-month sales indicators plus overdue unpaid
-        invoice totals and the 10 most recent orders (orders whose status is
-        not Faturado are preferred; Faturado orders fill the remaining slots).
+        Returns sales indicators plus unpaid invoice totals and the 10 most
+        recent orders. When supplied, startDate and endDate filter the data;
+        otherwise years filters from the start of the corresponding calendar
+        year through today. With no filters, the existing current-month
+        indicators and recent-order behavior are preserved.
+      parameters:
+        - name: years
+          in: query
+          required: false
+          description: >
+            Limits cockpit data by calendar year when no explicit date filter
+            is supplied.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 3
+        - name: startDate
+          in: query
+          required: false
+          description: Filters cockpit data starting on this date.
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          description: Filters cockpit data through this date.
+          schema:
+            type: string
+            format: date
       responses:
         '200':
           description: Sales cockpit
@@ -2830,6 +2890,7 @@ components:
         - totalLiberadoComImpostos
         - situacaoLiberacao
         - codigoVendedor
+        - nomeVendedor
         - comissaoLiberacao
         - totalCusto
         - detalhes
@@ -2842,8 +2903,13 @@ components:
         dataPedido:
           type: string
           format: date
-        numeroPedido:
+        dataFaturamento:
           type: string
+          format: date
+          nullable: true
+        numeroPedido:
+          type: integer
+          format: int64
         numeroLiberacao:
           type: integer
         dataLiberacao:
@@ -2966,7 +3032,8 @@ components:
           type: string
           format: date
         numeroPedido:
-          type: string
+          type: integer
+          format: int64
         numeroLiberacao:
           type: integer
         dataLiberacao:
@@ -3015,6 +3082,136 @@ components:
             $ref: '#/components/schemas/LiberacaoResponse'
         pagination:
           $ref: '#/components/schemas/PaginationInfo'
+
+    FaturamentoResumoResponse:
+      type: object
+      required:
+        - topSoldItems
+        - topCustomers
+        - salesByUf
+        - salespeople
+        - salespersonTotals
+      properties:
+        topSoldItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopSoldItem'
+        topCustomers:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopLiberacaoCustomer'
+        salesByUf:
+          type: array
+          items:
+            $ref: '#/components/schemas/LiberacaoSalesByUf'
+        salespeople:
+          type: array
+          items:
+            $ref: '#/components/schemas/LiberacaoSalespersonSummary'
+        salespersonTotals:
+          type: array
+          items:
+            $ref: '#/components/schemas/LiberacaoSalespersonTotals'
+
+    TopSoldItem:
+      type: object
+      required:
+        - codigoGrupo
+        - codigoSubGrupo
+        - codigoProduto
+        - descricaoItemLiberacao
+        - totalSeparado
+      properties:
+        codigoGrupo:
+          type: string
+        codigoSubGrupo:
+          type: string
+        codigoProduto:
+          type: string
+        descricaoItemLiberacao:
+          type: string
+        totalSeparado:
+          type: number
+
+    TopLiberacaoCustomer:
+      type: object
+      required:
+        - codigoCliente
+        - nomeFantasia
+        - totalLiberadoComImpostos
+      properties:
+        codigoCliente:
+          type: integer
+          format: int64
+        nomeFantasia:
+          type: string
+        totalLiberadoComImpostos:
+          type: number
+
+    LiberacaoSalesByUf:
+      type: object
+      required:
+        - uf
+        - amount
+        - representationPercentage
+      properties:
+        uf:
+          type: string
+        amount:
+          type: number
+        representationPercentage:
+          type: number
+
+    LiberacaoSalespersonSummary:
+      type: object
+      required:
+        - codigoVendedor
+        - nomeVendedor
+        - clientesResponsaveis
+        - clientesComCompra
+        - representationPercentage
+      properties:
+        codigoVendedor:
+          type: integer
+          format: int64
+        nomeVendedor:
+          type: string
+        clientesResponsaveis:
+          type: integer
+        clientesComCompra:
+          type: integer
+        representationPercentage:
+          type: number
+
+    LiberacaoSalespersonTotals:
+      type: object
+      required:
+        - codigoVendedor
+        - nomeVendedor
+        - totalFaturado
+        - totalComissao
+        - totalDespesas
+        - custosTotais
+        - totalIcms
+        - totalSemNota
+      properties:
+        codigoVendedor:
+          type: integer
+          format: int64
+        nomeVendedor:
+          type: string
+        totalFaturado:
+          type: number
+        totalComissao:
+          type: number
+        totalDespesas:
+          type: number
+        custosTotais:
+          type: number
+        totalIcms:
+          type: number
+        totalSemNota:
+          type: number
 
     CustomerOrderItemIngestionItem:
       type: object
@@ -3236,7 +3433,8 @@ components:
         - totalSubstituicaoTributaria
       properties:
         externalId:
-          type: string
+          type: integer
+          format: int64
           description: Legacy quotation identifier, used with cnpjEmpresa as the upsert key.
         cnpjEmpresa:
           type: string
@@ -3252,7 +3450,8 @@ components:
           type: string
           format: date
         numeroPedido:
-          type: string
+          type: integer
+          format: int64
         dataPedido:
           type: string
           format: date
@@ -3302,7 +3501,7 @@ components:
           nullable: true
         numeroCotacao:
           type: integer
-          format: int32
+          format: int64
           nullable: true
 
     CustomerQuotationIngestionBatch:
@@ -3330,6 +3529,7 @@ components:
         - codigoEmpresa
         - codigoCliente
         - numeroPedido
+        - tipoPedido
         - dataPedido
         - totalPedidoComImpostos
         - totalPedidoSemImpostos
@@ -3341,7 +3541,8 @@ components:
         - itens
       properties:
         externalId:
-          type: string
+          type: integer
+          format: int64
           description: >
             Order's legacy Firebird primary key (numres), used as the
             upsert/idempotency key.
@@ -3357,6 +3558,9 @@ components:
           nullable: true
           description: The order's customer's own CPF/CNPJ (distinct from cnpjEmpresa, the retailer's CNPJ).
         numeroPedido:
+          type: integer
+          format: int64
+        tipoPedido:
           type: string
         dataPedido:
           type: string
@@ -3920,7 +4124,8 @@ components:
           type: integer
           format: int64
         externalId:
-          type: string
+          type: integer
+          format: int64
         codigoEmpresa:
           type: integer
         codigoCliente:
@@ -3932,6 +4137,9 @@ components:
           type: string
           nullable: true
         numeroPedido:
+          type: integer
+          format: int64
+        tipoPedido:
           type: string
         dataPedido:
           type: string

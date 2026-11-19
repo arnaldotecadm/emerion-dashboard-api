@@ -33,8 +33,8 @@ class SqsLiberacaoConsumerTest {
 
     @Test
     fun `deserializes a batch and forwards each release to the single queue`() {
-        val first = command("100", 1)
-        val second = command("101", 2)
+        val first = command(100L, 1)
+        val second = command(101L, 2)
         every { producer.sendMessage("single-queue", any()) } returns Unit
 
         consumer.receiveBatch(objectMapper.writeValueAsString(listOf(first, second)))
@@ -45,8 +45,8 @@ class SqsLiberacaoConsumerTest {
 
     @Test
     fun `propagates fan out failures so the batch can be retried`() {
-        val first = command("100", 1)
-        val second = command("101", 2)
+        val first = command(100L, 1)
+        val second = command(101L, 2)
         every { producer.sendMessage("single-queue", first) } returns Unit
         every { producer.sendMessage("single-queue", second) } throws IllegalStateException("queue unavailable")
 
@@ -59,7 +59,7 @@ class SqsLiberacaoConsumerTest {
 
     @Test
     fun `processes a single release and retries failures`() {
-        val item = command("100", 1)
+        val item = command(100L, 1)
         every { service.ingestSingle(item) } returns
             IngestLiberacaoItemResult("100:1", IngestOutcome.CREATED, null) andThen
             IngestLiberacaoItemResult("100:1", IngestOutcome.FAILED, "database unavailable")
@@ -94,7 +94,7 @@ class SqsLiberacaoConsumerTest {
                     val realProducer = SQSProducer(client, objectMapper)
                     val batchService = IngestLiberacaoService(mockk(), realProducer, "$endpoint/batch")
                     val batchConsumer = SqsLiberacaoConsumer(objectMapper, realProducer, service, "$endpoint/single")
-                    val items = listOf(command("100", 1), command("101", 2))
+                    val items = listOf(command(100L, 1), command(101L, 2))
 
                     batchService.ingest("batch-1", items)
                     assertEquals("$endpoint/batch", requests.single().first)
@@ -108,10 +108,11 @@ class SqsLiberacaoConsumerTest {
         }
     }
 
-    private fun command(numeroPedido: String, numeroLiberacao: Int) = IngestLiberacaoCommand(
+    private fun command(numeroPedido: Long, numeroLiberacao: Int) = IngestLiberacaoCommand(
         cnpjEmpresa = "test",
         codigoEmpresa = 1,
         dataPedido = LocalDate.parse("2026-08-26"),
+        dataFaturamento = LocalDate.parse("2026-08-26"),
         numeroPedido = numeroPedido,
         numeroLiberacao = numeroLiberacao,
         dataLiberacao = LocalDate.parse("2026-08-27"),

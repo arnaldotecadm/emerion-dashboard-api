@@ -35,6 +35,7 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
                 co.cpf_cnpj AS cpfCnpj,
                 co.cnpj_empresa AS cnpjEmpresa,
                 co.numero_pedido AS numeroPedido,
+                co.tipo_pedido AS tipoPedido,
                 co.data_pedido AS dataPedido,
                 co.status_pedido AS statusPedido,
                 co.total_pedido_com_impostos AS totalPedidoComImpostos,
@@ -81,6 +82,7 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
                 co.cpf_cnpj AS cpfCnpj,
                 co.cnpj_empresa AS cnpjEmpresa,
                 co.numero_pedido AS numeroPedido,
+                co.tipo_pedido AS tipoPedido,
                 co.data_pedido AS dataPedido,
                 co.status_pedido AS statusPedido,
                 co.total_pedido_com_impostos AS totalPedidoComImpostos,
@@ -111,7 +113,7 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
               AND (:codigoEmpresa IS NULL OR co.codigo_empresa = :codigoEmpresa)
               AND co.cnpj_empresa = :cnpjEmpresa
               AND (CAST(:nomeFantasia AS text) IS NULL OR c.nome_fantasia ILIKE CAST(:nomeFantasia AS text))
-              AND (CAST(:numeroPedido AS text) IS NULL OR co.numero_pedido ILIKE CAST(:numeroPedido AS text))
+              AND (:numeroPedido IS NULL OR co.numero_pedido = :numeroPedido)
               AND (
                     (
                         (CAST(:startDate AS date) IS NOT NULL OR CAST(:endDate AS date) IS NOT NULL)
@@ -142,7 +144,7 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
                         )
                     )
               )
-            order by co.external_id::int desc
+            order by co.external_id desc
         """,
         countQuery = """
             SELECT count(*)
@@ -153,7 +155,7 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
               AND (:codigoEmpresa IS NULL OR codigo_empresa = :codigoEmpresa)
               AND co.cnpj_empresa = :cnpjEmpresa
               AND (CAST(:nomeFantasia AS text) IS NULL OR c.nome_fantasia ILIKE CAST(:nomeFantasia AS text))
-              AND (CAST(:numeroPedido AS text) IS NULL OR numero_pedido ILIKE CAST(:numeroPedido AS text))
+              AND (:numeroPedido IS NULL OR numero_pedido = :numeroPedido)
               AND (
                     (
                         (CAST(:startDate AS date) IS NOT NULL OR CAST(:endDate AS date) IS NOT NULL)
@@ -191,7 +193,7 @@ interface CustomerOrderQueryRepository : Repository<CustomerOrderJpaEntity, Long
         @Param("statusPedido") statusPedido: String?,
         @Param("codigoEmpresa") codigoEmpresa: Int?,
         @Param("nomeFantasia") nomeFantasia: String?,
-        @Param("numeroPedido") numeroPedido: String?,
+        @Param("numeroPedido") numeroPedido: Long?,
         @Param("period") period: String?,
         @Param("startDate") startDate: LocalDate?,
         @Param("endDate") endDate: LocalDate?,

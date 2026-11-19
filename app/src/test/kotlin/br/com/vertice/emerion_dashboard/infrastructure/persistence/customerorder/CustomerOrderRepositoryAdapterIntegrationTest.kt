@@ -43,12 +43,12 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
         val now = Instant.parse("2024-01-01T00:00:00Z")
         val saved = customerOrderRepository.save(
             CustomerOrder.newFromIngestion(
-                externalId = "order-ext-1",
+                externalId = 1L,
                 cnpjEmpresa = "12345678000199",
                 codigoEmpresa = 1,
                 codigoCliente = 1,
                 cpfCnpj = null,
-                numeroPedido = "NF-1",
+                numeroPedido = 1L,
                 dataPedido = LocalDate.parse("2024-01-01"),
                 statusPedido = "ABERTO",
                 totalPedidoComImpostos = BigDecimal("100.0000"),
@@ -76,12 +76,12 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
         val now = Instant.parse("2024-01-01T00:00:00Z")
         customerOrderRepository.save(
             CustomerOrder.newFromIngestion(
-                externalId = "order-ext-other",
+                externalId = 2L,
                 cnpjEmpresa = "12345678000199",
                 codigoEmpresa = 2,
                 codigoCliente = 2,
                 cpfCnpj = null,
-                numeroPedido = "NF-2",
+                numeroPedido = 2L,
                 dataPedido = LocalDate.parse("2024-01-01"),
                 statusPedido = "FECHADO",
                 totalPedidoComImpostos = BigDecimal("10.0000"),
@@ -98,12 +98,12 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
         )
         customerOrderRepository.save(
             CustomerOrder.newFromIngestion(
-                externalId = "order-ext-match",
+                externalId = 3L,
                 cnpjEmpresa = "12345678000199",
                 codigoEmpresa = 3,
                 codigoCliente = 3,
                 cpfCnpj = null,
-                numeroPedido = "NF-3",
+                numeroPedido = 3L,
                 dataPedido = LocalDate.parse("2024-01-01"),
                 statusPedido = "ABERTO",
                 totalPedidoComImpostos = BigDecimal("10.0000"),
@@ -126,16 +126,16 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
             codigoEmpresa = 3,
         )
 
-        assertEquals(listOf("order-ext-match"), page.content.map { it.externalId })
+        assertEquals(listOf(3L), page.content.map { it.externalId })
 
         val byFragment = customerOrderRepository.findAll(
             pageRequest = PageRequest(page = 0, size = 10),
             codigoCliente = null,
             statusPedido = null,
             codigoEmpresa = null,
-            numeroPedido = "f-3",
+            numeroPedido = 3L,
         )
-        assertEquals(listOf("order-ext-match"), byFragment.content.map { it.externalId })
+        assertEquals(listOf(3L), byFragment.content.map { it.externalId })
         assertEquals(1L, byFragment.totalElements)
     }
 
@@ -145,12 +145,12 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
         val later = Instant.parse("2024-02-01T00:00:00Z")
         val firstSave = customerOrderRepository.save(
             CustomerOrder.newFromIngestion(
-                externalId = "order-ext-reingest",
+                externalId = 4L,
                 cnpjEmpresa = "12345678000199",
                 codigoEmpresa = 4,
                 codigoCliente = 4,
                 cpfCnpj = null,
-                numeroPedido = "NF-4",
+                numeroPedido = 4L,
                 dataPedido = LocalDate.parse("2024-01-01"),
                 statusPedido = "ABERTO",
                 totalPedidoComImpostos = BigDecimal("10.0000"),
@@ -166,7 +166,7 @@ class CustomerOrderRepositoryAdapterIntegrationTest(
             ),
         )
 
-        val existing = customerOrderRepository.findByExternalId("order-ext-reingest",)!!
+        val existing = customerOrderRepository.findByExternalId(4L)!!
         val resaved = customerOrderRepository.save(
             existing.mergeFromIngestion(
                 codigoEmpresa = existing.codigoEmpresa,

@@ -28,7 +28,8 @@ class LiberacaoRepositoryAdapterIntegrationTest(
                 cnpjEmpresa = "15323240000102",
                 codigoEmpresa = 1,
                 dataPedido = LocalDate.parse("2026-08-26"),
-                numeroPedido = "25687",
+                dataFaturamento = LocalDate.parse("2026-08-26"),
+                numeroPedido = 25687L,
                 numeroLiberacao = 1,
                 dataLiberacao = LocalDate.parse("2026-08-26"),
                 horaLiberacao = LocalTime.parse("08:50:13"),
@@ -65,10 +66,10 @@ class LiberacaoRepositoryAdapterIntegrationTest(
             ),
         )
 
-        val found = liberacaoRepository.findByNumeroPedidoAndNumeroLiberacao("25687", 1)
+        val found = liberacaoRepository.findByNumeroPedidoAndNumeroLiberacao(25687L, 1)
 
         assertEquals(saved.id, found?.id)
-        assertEquals("25687", found?.numeroPedido)
+        assertEquals(25687L, found?.numeroPedido)
         assertEquals(1, found?.numeroLiberacao)
         assertEquals("15323240000102", found?.cnpjEmpresa)
         assertEquals(1, found?.detalhes?.single()?.numeroSequenciaLiberacao)
@@ -76,7 +77,7 @@ class LiberacaoRepositoryAdapterIntegrationTest(
 
         val readProjection = liberacaoRepository.findById(saved.id!!)
         val secondRelease = liberacaoRepository.save(saved.copy(id = null, numeroLiberacao = 2))
-        val matchingOrder = liberacaoRepository.findAll(PageRequest(page = 0, size = 20), "25687")
+        val matchingOrder = liberacaoRepository.findAll(PageRequest(page = 0, size = 20), 25687L)
 
         assertEquals(saved.id, readProjection?.id)
         assertEquals(BigDecimal("282.2400"), readProjection?.totalCusto)

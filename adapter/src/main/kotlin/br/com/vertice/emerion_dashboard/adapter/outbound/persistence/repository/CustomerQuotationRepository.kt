@@ -4,5 +4,5 @@ import br.com.vertice.emerion_dashboard.adapter.outbound.persistence.entity.Cust
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface CustomerQuotationRepository : JpaRepository<CustomerQuotationJpaEntity, Long> {
-    fun findByCnpjEmpresaAndExternalId(cnpjEmpresa: String, externalId: String): CustomerQuotationJpaEntity?
+    fun findByCnpjEmpresaAndExternalId(cnpjEmpresa: String, externalId: Long): CustomerQuotationJpaEntity?
 }

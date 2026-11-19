@@ -21,6 +21,7 @@ object CustomerOrderQueryRestMapper {
             nomeFantasia = nomeFantasia,
             cpfCnpj = cpfCnpj,
             numeroPedido = numeroPedido,
+            tipoPedido = tipoPedido,
             dataPedido = dataPedido,
             statusPedido = statusPedido,
             totalPedidoComImpostos = totalPedidoComImpostos,

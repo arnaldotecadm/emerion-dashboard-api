@@ -14,13 +14,14 @@ import java.time.LocalDate
  */
 interface CustomerOrderHeaderProjection {
     val id: Long
-    val externalId: String
+    val externalId: Long
     val cnpjEmpresa: String
     val codigoEmpresa: Int
     val codigoCliente: Int
     val nomeFantasia: String?
     val cpfCnpj: String?
-    val numeroPedido: String
+    val numeroPedido: Long
+    val tipoPedido: String
     val dataPedido: LocalDate
     val statusPedido: String?
     val totalPedidoComImpostos: BigDecimal

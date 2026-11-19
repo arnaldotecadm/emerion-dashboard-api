@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 class CustomerQuotationRepositoryPortAdapter(
     private val customerQuotationRepository: CustomerQuotationRepository,
 ) : CustomerQuotationRepositoryPort {
-    override fun findByCnpjEmpresaAndExternalId(cnpjEmpresa: String, externalId: String): CustomerQuotation? =
+    override fun findByCnpjEmpresaAndExternalId(cnpjEmpresa: String, externalId: Long): CustomerQuotation? =
         customerQuotationRepository.findByCnpjEmpresaAndExternalId(cnpjEmpresa, externalId)?.toDomain()
 
     override fun save(customerQuotation: CustomerQuotation): CustomerQuotation {

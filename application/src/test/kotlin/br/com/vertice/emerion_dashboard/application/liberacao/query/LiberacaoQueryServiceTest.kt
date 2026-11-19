@@ -3,6 +3,7 @@ package br.com.vertice.emerion_dashboard.application.liberacao.query
 import br.com.vertice.emerion_dashboard.application.liberacao.query.model.ListLiberacoesQuery
 import br.com.vertice.emerion_dashboard.domain.exception.LiberacaoNotFoundException
 import br.com.vertice.emerion_dashboard.domain.liberacao.model.Liberacao
+import br.com.vertice.emerion_dashboard.domain.liberacao.model.TopSoldItem
 import br.com.vertice.emerion_dashboard.domain.liberacao.repository.LiberacaoRepository
 import br.com.vertice.emerion_dashboard.domain.shared.Page
 import br.com.vertice.emerion_dashboard.domain.shared.PageRequest
@@ -24,7 +25,8 @@ class LiberacaoQueryServiceTest {
         cnpjEmpresa = "15323240000102",
         codigoEmpresa = 1,
         dataPedido = LocalDate.parse("2026-08-26"),
-        numeroPedido = "25687",
+        dataFaturamento = LocalDate.parse("2026-08-26"),
+        numeroPedido = 25687L,
         numeroLiberacao = 1,
         dataLiberacao = LocalDate.parse("2026-08-26"),
         horaLiberacao = LocalTime.parse("14:30:46"),
@@ -58,8 +60,20 @@ class LiberacaoQueryServiceTest {
     @Test
     fun `list delegates pagination and optional order number to the repository`() {
         val page = Page(content = listOf(liberacao), page = 0, size = 20, totalElements = 1)
-        every { liberacaoRepository.findAll(PageRequest(0, 20), "25687") } returns page
+        every { liberacaoRepository.findAll(PageRequest(0, 20), 25687L) } returns page
 
-        assertEquals(page, service.list(ListLiberacoesQuery(page = 0, size = 20, numeroPedido = "25687")))
+        assertEquals(page, service.list(ListLiberacoesQuery(page = 0, size = 20, numeroPedido = 25687L)))
+    }
+
+    @Test
+    fun `getTopSoldItems delegates date filters to the repository`() {
+        val startDate = LocalDate.parse("2026-08-01")
+        val endDate = LocalDate.parse("2026-08-31")
+        val items = listOf(
+            TopSoldItem("1", "2", "3", "Product", BigDecimal("12.00")),
+        )
+        every { liberacaoRepository.findTopSoldItems(startDate, endDate) } returns items
+
+        assertEquals(items, service.getTopSoldItems(startDate, endDate))
     }
 }

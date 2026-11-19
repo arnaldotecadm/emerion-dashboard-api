@@ -32,7 +32,7 @@ class CustomerOrderRepositoryAdapter(
         return CustomerOrderPersistenceMapper.toDomain(header, items)
     }
 
-    override fun findByExternalId(externalId: String): CustomerOrder? =
+    override fun findByExternalId(externalId: Long): CustomerOrder? =
         springDataRepository.findByExternalId(externalId)?.let(CustomerOrderPersistenceMapper::toDomain)
 
     override fun findAll(
@@ -41,7 +41,7 @@ class CustomerOrderRepositoryAdapter(
         statusPedido: String?,
         codigoEmpresa: Int?,
         nomeFantasia: String?,
-        numeroPedido: String?,
+        numeroPedido: Long?,
         period: String?,
         startDate: LocalDate?,
         endDate: LocalDate?,
@@ -52,7 +52,7 @@ class CustomerOrderRepositoryAdapter(
             statusPedido?.takeIf { it.isNotBlank() },
             codigoEmpresa,
             nomeFantasia?.trim()?.takeIf { it.isNotEmpty() }?.let { "%$it%" },
-            numeroPedido?.trim()?.takeIf { it.isNotEmpty() }?.let { "%$it%" },
+            numeroPedido,
             period?.takeIf { it.isNotBlank() },
             startDate,
             endDate,

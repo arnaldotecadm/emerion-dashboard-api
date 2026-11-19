@@ -24,13 +24,13 @@ import java.time.LocalDate
 )
 class CustomerQuotationJpaEntity(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long? = null,
-    @Column(name = "external_id", nullable = false) var externalId: String = "",
+    @Column(name = "external_id", nullable = false) var externalId: Long = 0,
     @Column(name = "cnpj_empresa", nullable = false) var cnpjEmpresa: String = "",
     @Column(name = "codigo_empresa", nullable = false) var codigoEmpresa: Int = 0,
     @Column(name = "codigo_cliente", nullable = false) var codigoCliente: Int = 0,
     @Column(name = "customer_external_id", nullable = false) var customerExternalId: Long = 0,
     @Column(name = "dteres", nullable = false) var dteres: LocalDate = LocalDate.now(),
-    @Column(name = "numero_pedido", nullable = false) var numeroPedido: String = "",
+    @Column(name = "numero_pedido", nullable = false) var numeroPedido: Long = 0,
     @Column(name = "data_pedido", nullable = false) var dataPedido: LocalDate = LocalDate.now(),
     @Column(name = "total_pedido_com_impostos", nullable = false) var totalPedidoComImpostos: BigDecimal = BigDecimal.ZERO,
     @Column(name = "total_pedido_sem_impostos", nullable = false) var totalPedidoSemImpostos: BigDecimal = BigDecimal.ZERO,
@@ -50,7 +50,7 @@ class CustomerQuotationJpaEntity(
     @Column(name = "regime_tributario") var regimeTributario: String? = null,
     @Column(name = "nome_regime_tributario") var nomeRegimeTributario: String? = null,
     @Column(name = "codigo_padrao_faturamento") var codigoPadraoFaturamento: String? = null,
-    @Column(name = "numero_cotacao") var numeroCotacao: Int? = null,
+    @Column(name = "numero_cotacao") var numeroCotacao: Long? = null,
     @Column(name = "created_at", nullable = false) var createdAt: Instant = Instant.now(),
     @Column(name = "updated_at", nullable = false) var updatedAt: Instant = Instant.now(),
 )

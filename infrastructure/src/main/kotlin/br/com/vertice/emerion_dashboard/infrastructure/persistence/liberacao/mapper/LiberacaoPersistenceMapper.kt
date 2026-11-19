@@ -14,6 +14,7 @@ object LiberacaoPersistenceMapper {
             cnpjEmpresa = entity.cnpjEmpresa,
             codigoEmpresa = entity.codigoEmpresa,
             dataPedido = entity.dataPedido,
+            dataFaturamento = entity.dataFaturamento,
             numeroPedido = entity.numeroPedido,
             numeroLiberacao = entity.numeroLiberacao,
             dataLiberacao = entity.dataLiberacao,
@@ -40,6 +41,7 @@ object LiberacaoPersistenceMapper {
             cnpjEmpresa = projection.cnpjEmpresa,
             codigoEmpresa = projection.codigoEmpresa,
             dataPedido = projection.dataPedido,
+            dataFaturamento = projection.dataFaturamento,
             numeroPedido = projection.numeroPedido,
             numeroLiberacao = projection.numeroLiberacao,
             dataLiberacao = projection.dataLiberacao,
@@ -104,6 +106,7 @@ object LiberacaoPersistenceMapper {
         entity.cnpjEmpresa = domain.cnpjEmpresa
         entity.codigoEmpresa = domain.codigoEmpresa
         entity.dataPedido = domain.dataPedido
+        entity.dataFaturamento = domain.dataFaturamento
         entity.numeroPedido = domain.numeroPedido
         entity.numeroLiberacao = domain.numeroLiberacao
         entity.dataLiberacao = domain.dataLiberacao

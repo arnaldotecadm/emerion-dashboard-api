@@ -67,9 +67,22 @@ interface DashboardRepositoryPort {
         startDate: LocalDate? = null,
         endDate: LocalDate? = null,
     ): List<DashboardMonthlyCount>
-    fun getCockpitMonthlyMetrics(): br.com.vertice.emerion_dashboard.domain.dashboard.CockpitMonthlyMetrics
-    fun getUnpaidInvoicesSummary(): br.com.vertice.emerion_dashboard.domain.dashboard.UnpaidInvoicesSummary
-    fun getRecentOrders(limit: Int): List<br.com.vertice.emerion_dashboard.domain.dashboard.RecentOrder>
+    fun getCockpitMonthlyMetrics(
+        years: Int? = null,
+        startDate: LocalDate? = null,
+        endDate: LocalDate? = null,
+    ): br.com.vertice.emerion_dashboard.domain.dashboard.CockpitMonthlyMetrics
+    fun getUnpaidInvoicesSummary(
+        years: Int? = null,
+        startDate: LocalDate? = null,
+        endDate: LocalDate? = null,
+    ): br.com.vertice.emerion_dashboard.domain.dashboard.UnpaidInvoicesSummary
+    fun getRecentOrders(
+        limit: Int,
+        years: Int? = null,
+        startDate: LocalDate? = null,
+        endDate: LocalDate? = null,
+    ): List<br.com.vertice.emerion_dashboard.domain.dashboard.RecentOrder>
     fun getOverdueInvoices(
         years: Int? = null,
         startDate: LocalDate? = null,
