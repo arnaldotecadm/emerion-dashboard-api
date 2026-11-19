@@ -54,7 +54,7 @@ class IngestCustomerOrdersService(
         )
         return IngestBatchResult(batchId = command.batchId, results = command.items.map { item ->
             IngestItemResult(
-                externalId = item.externalId.toString(),
+                externalId = item.externalId,
                 outcome = IngestOutcome.QUEUED,
                 errorMessage = null
             )
@@ -138,14 +138,14 @@ class IngestCustomerOrdersService(
                 notifyActiveUsersAboutNewOrder(savedOrder)
             }
             IngestItemResult(
-                externalId = item.externalId.toString(),
+                externalId = item.externalId,
                 outcome = if (existing == null) IngestOutcome.CREATED else IngestOutcome.UPDATED,
                 errorMessage = null,
             )
         } catch (ex: Exception) {
             logger.error("Failed to ingest customer order externalId='{}'", item.externalId, ex)
             IngestItemResult(
-                externalId = item.externalId.toString(),
+                externalId = item.externalId,
                 outcome = IngestOutcome.FAILED,
                 errorMessage = ex.message,
             )

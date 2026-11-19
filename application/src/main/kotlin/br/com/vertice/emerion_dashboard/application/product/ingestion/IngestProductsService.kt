@@ -43,7 +43,7 @@ class IngestProductsService(
         )
         return IngestBatchResult(
             batchId = command.batchId,
-            results = command.items.map { IngestItemResult(it.externalId, IngestOutcome.QUEUED, null) })
+            results = command.items.map { IngestItemResult(externalIdString = it.externalId, outcome = IngestOutcome.QUEUED, errorMessage = null) })
     }
 
     @Transactional
@@ -165,14 +165,14 @@ class IngestProductsService(
             )
             productRepository.save(toSave)
             IngestItemResult(
-                externalId = item.externalId,
+                externalIdString = item.externalId,
                 outcome = if (existing == null) IngestOutcome.CREATED else IngestOutcome.UPDATED,
                 errorMessage = null,
             )
         } catch (ex: Exception) {
             logger.error("Failed to ingest product externalId='{}'", item.externalId, ex)
             IngestItemResult(
-                externalId = item.externalId,
+                externalIdString = item.externalId,
                 outcome = IngestOutcome.FAILED,
                 errorMessage = ex.message,
             )

@@ -20,7 +20,7 @@ class CustomerRepositoryPortAdapter(
     override fun findById(id: Long): Customer? =
         customerRepository.findProjectionById(id, userService.getCurrentCompanyCnpj())?.toDomain()
 
-    override fun findByExternalId(externalId: String, cnpjEmpresa: String?): Customer? =
+    override fun findByExternalId(externalId: Long, cnpjEmpresa: String?): Customer? =
         customerRepository.findByExternalIdAndCnpjEmpresa(
             externalId,
             cnpjEmpresa ?: userService.getCurrentCompanyCnpj()

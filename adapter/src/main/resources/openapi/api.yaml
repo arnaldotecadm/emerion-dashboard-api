@@ -445,7 +445,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         '200':
           description: Customer found
@@ -1076,7 +1077,8 @@ paths:
           description: Exact match on the owning customer's externalId (codCli)
           required: false
           schema:
-            type: string
+            type: integer
+            format: int64
         - name: tipo
           in: query
           description: Exact match on entry tipo (ENTRADA or SAIDA)
@@ -1538,7 +1540,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         '200':
           description: Vendedor found
@@ -1934,7 +1937,8 @@ components:
         - bloqueado
       properties:
         externalId:
-          type: string
+          type: integer
+          format: int64
           description: Original Firebird primary key, used as the upsert/idempotency key.
         cnpjEmpresa:
           type: string
@@ -2079,7 +2083,8 @@ components:
       type: object
       properties:
         externalId:
-          type: string
+          type: integer
+          format: int64
         outcome:
           type: string
           enum: [CREATED, UPDATED, FAILED, QUEUED]
@@ -2110,7 +2115,8 @@ components:
           type: integer
           format: int64
         externalId:
-          type: string
+          type: integer
+          format: int64
         cnpjEmpresa:
           type: string
         nomeFantasia:
@@ -2728,7 +2734,8 @@ components:
         - enderecos
       properties:
         externalId:
-          type: string
+          type: integer
+          format: int64
           description: >
             Customer's legacy Firebird primary key (codCli), used as the
             upsert/idempotency key.
@@ -2770,7 +2777,8 @@ components:
         - tipo
       properties:
         customerExternalId:
-          type: string
+          type: integer
+          format: int64
           description: >
             Customer's legacy Firebird primary key (codCli). Combined with
             sequencia, used as the upsert/idempotency key.
@@ -3856,7 +3864,8 @@ components:
           type: integer
           format: int64
         externalId:
-          type: string
+          type: integer
+          format: int64
         cnpjEmpresa:
           type: string
         cpfCnpj:
@@ -3890,7 +3899,8 @@ components:
           type: integer
           format: int64
         customerExternalId:
-          type: string
+          type: integer
+          format: int64
         cnpjEmpresa:
           type: string
         sequencia:
@@ -4228,7 +4238,8 @@ components:
         - nome
       properties:
         externalId:
-          type: string
+          type: integer
+          format: int64
           description: Original Firebird primary key (codVen), used as the upsert/idempotency key.
         cnpjEmpresa:
           type: string
@@ -4288,7 +4299,8 @@ components:
           type: integer
           format: int64
         externalId:
-          type: string
+          type: integer
+          format: int64
         cnpjEmpresa:
           type: string
         nome:

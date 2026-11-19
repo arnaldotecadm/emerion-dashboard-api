@@ -55,7 +55,7 @@ class IngestCustomerCreditsService(
     }
 
     private fun ingestItem(item: IngestCustomerCreditCommand, now: Instant): IngestItemResult {
-        val itemLabel = "${item.customerExternalId}:${item.sequencia ?: "-"}"
+        val itemLabel = item.customerExternalId
         return try {
             val existing = item.sequencia?.let {
                 customerCreditRepository.findByCustomerExternalIdAndDataAndSequencia(

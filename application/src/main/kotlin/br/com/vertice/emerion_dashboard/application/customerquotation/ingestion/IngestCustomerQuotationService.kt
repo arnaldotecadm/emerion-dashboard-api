@@ -114,5 +114,5 @@ class IngestCustomerQuotationService(
         IngestItemResult(key(item), IngestOutcome.FAILED, ex.message)
     }
 
-    private fun key(item: IngestCustomerQuotationCommand) = "${item.cnpjEmpresa}:${item.externalId}"
+    private fun key(item: IngestCustomerQuotationCommand) = item.externalId
 }

@@ -13,7 +13,7 @@ import java.time.Instant
  */
 interface CustomerAddressHeaderProjection {
     val id: Long
-    val externalId: String
+    val externalId: Long
     val cnpjEmpresa: String
     val cpfCnpj: String?
     val createdAt: Instant

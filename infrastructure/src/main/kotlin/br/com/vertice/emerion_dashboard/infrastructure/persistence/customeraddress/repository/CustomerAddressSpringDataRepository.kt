@@ -4,5 +4,5 @@ import br.com.vertice.emerion_dashboard.infrastructure.persistence.customeraddre
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface CustomerAddressSpringDataRepository : JpaRepository<CustomerAddressJpaEntity, Long> {
-    fun findByExternalId(externalId: String): CustomerAddressJpaEntity?
+    fun findByExternalId(externalId: Long): CustomerAddressJpaEntity?
 }

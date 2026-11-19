@@ -11,12 +11,12 @@ class CustomerOrderPersistenceMapperTest {
     @Test
     fun `maps ufPedido between domain and persistence entity`() {
         val order = CustomerOrder.newFromIngestion(
-            externalId = "uf-pedido-test",
+            externalId = 123,
             cnpjEmpresa = "12345678000199",
             codigoEmpresa = 1,
             codigoCliente = 3206,
             cpfCnpj = null,
-            numeroPedido = "NF-UF",
+            numeroPedido = 456,
             dataPedido = LocalDate.parse("2026-10-11"),
             statusPedido = "ABERTO",
             totalPedidoComImpostos = BigDecimal.ZERO,

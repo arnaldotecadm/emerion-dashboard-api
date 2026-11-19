@@ -9,7 +9,7 @@ import java.time.Instant
  */
 data class CustomerAddress(
     val id: Long?,
-    val externalId: String,
+    val externalId: Long,
     val cnpjEmpresa: String,
     val cpfCnpj: String?,
     val enderecos: List<CustomerAddressDetail>,
@@ -19,7 +19,7 @@ data class CustomerAddress(
     companion object {
         /** Factory for a brand-new address set coming from ingestion (no id yet). */
         fun newFromIngestion(
-            externalId: String,
+            externalId: Long,
             cnpjEmpresa: String,
             cpfCnpj: String?,
             enderecos: List<CustomerAddressDetail>,

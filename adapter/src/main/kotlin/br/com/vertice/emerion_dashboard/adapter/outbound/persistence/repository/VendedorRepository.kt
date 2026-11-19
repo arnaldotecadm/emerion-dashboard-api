@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
 interface VendedorRepository : JpaRepository<VendedorJpaEntity, Long> {
-    fun findByExternalId(externalId: String): VendedorJpaEntity?
-    fun findByExternalIdAndCnpjEmpresa(externalId: String, cnpjEmpresa: String): VendedorJpaEntity?
+    fun findByExternalId(externalId: Long): VendedorJpaEntity?
+    fun findByExternalIdAndCnpjEmpresa(externalId: Long, cnpjEmpresa: String): VendedorJpaEntity?
 
     @Query(
         nativeQuery = true,

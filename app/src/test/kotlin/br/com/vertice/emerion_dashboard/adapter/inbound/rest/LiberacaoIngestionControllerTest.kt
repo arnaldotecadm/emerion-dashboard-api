@@ -26,15 +26,15 @@ class LiberacaoIngestionControllerTest {
         every { service.ingest("batch-1", any()) } returns IngestBatchResult(
             "batch-1",
             listOf(
-                IngestItemResult("100:1", IngestOutcome.QUEUED, null),
-                IngestItemResult("101:2", IngestOutcome.QUEUED, null),
+                IngestItemResult(externalId = 100L, outcome = IngestOutcome.QUEUED, errorMessage = null),
+                IngestItemResult(externalId = 101L, outcome = IngestOutcome.QUEUED, errorMessage = null),
             ),
         )
 
         val result = controller.ingestLiberacoes(LiberacaoIngestionBatch("batch-1", listOf(first, second))).body!!
 
         assertEquals(2, result.totalReceived)
-        assertEquals(listOf("100:1", "101:2"), result.results!!.map { it.externalId })
+        assertEquals(listOf(100L, 101L), result.results!!.map { it.externalId })
         assertEquals(listOf(IngestionItemResult.Outcome.QUEUED, IngestionItemResult.Outcome.QUEUED), result.results!!.map { it.outcome })
         verify {
             service.ingest("batch-1", match {

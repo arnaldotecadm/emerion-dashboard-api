@@ -28,7 +28,7 @@ class IngestCustomersServiceTest {
 
     @Test
     fun `creates a new customer when externalId is not known yet`() {
-        every { customerRepository.findByExternalId("FB-1", null) } returns null
+        every { customerRepository.findByExternalId(1L, null) } returns null
         val savedSlot = slot<Customer>()
         every { customerRepository.save(capture(savedSlot)) } answers { savedSlot.captured.copy(id = 1L) }
 
@@ -37,7 +37,7 @@ class IngestCustomersServiceTest {
                 batchId = "batch-1",
                 items = listOf(
                     IngestCustomerCommand(
-                        externalId = "FB-1",
+                        externalId = 1L,
                         cnpjEmpresa = "12345678000199",
                         nomeFantasia = "Acme",
                         razaoSocial = "Acme Corp Ltda",
@@ -61,7 +61,7 @@ class IngestCustomersServiceTest {
     fun `updates an existing customer when externalId is already known (idempotent re-run)`() {
         val existing = Customer(
             id = 42L,
-            externalId = "FB-2",
+            externalId = 2L,
             cnpjEmpresa = "12345678000199",
             nomeFantasia = "Old Name",
             razaoSocial = "Old Razao Social Ltda",
@@ -72,7 +72,7 @@ class IngestCustomersServiceTest {
             createdAt = Instant.parse("2025-01-01T00:00:00Z"),
             updatedAt = Instant.parse("2025-01-01T00:00:00Z"),
         )
-        every { customerRepository.findByExternalId("FB-2", null) } returns existing
+        every { customerRepository.findByExternalId(2L, null) } returns existing
         every { customerRepository.save(any()) } answers { firstArg() }
 
         val result = service.ingest(
@@ -80,7 +80,7 @@ class IngestCustomersServiceTest {
                 batchId = "batch-2",
                 items = listOf(
                     IngestCustomerCommand(
-                        externalId = "FB-2",
+                        externalId = 2L,
                         cnpjEmpresa = "12345678000199",
                         nomeFantasia = "New Name",
                         razaoSocial = "New Razao Social Ltda",
@@ -99,8 +99,8 @@ class IngestCustomersServiceTest {
 
     @Test
     fun `records a failure for one item without aborting the rest of the batch`() {
-        every { customerRepository.findByExternalId("FB-OK", null) } returns null
-        every { customerRepository.findByExternalId("FB-BAD", null) } throws RuntimeException("db down")
+        every { customerRepository.findByExternalId(3L, null) } returns null
+        every { customerRepository.findByExternalId(4L, null) } throws RuntimeException("db down")
         every { customerRepository.save(any()) } answers { firstArg<Customer>().copy(id = 1L) }
 
         val result = service.ingest(
@@ -108,7 +108,7 @@ class IngestCustomersServiceTest {
                 batchId = "batch-3",
                 items = listOf(
                     IngestCustomerCommand(
-                        externalId = "FB-OK",
+                        externalId = 3L,
                         cnpjEmpresa = "12345678000199",
                         nomeFantasia = "Ok Co",
                         razaoSocial = "Ok Co Ltda",
@@ -119,7 +119,7 @@ class IngestCustomersServiceTest {
                         createdAt = null,
                     ),
                     IngestCustomerCommand(
-                        externalId = "FB-BAD",
+                        externalId = 4L,
                         cnpjEmpresa = "12345678000199",
                         nomeFantasia = "Bad Co",
                         razaoSocial = "Bad Co Ltda",
@@ -138,13 +138,13 @@ class IngestCustomersServiceTest {
 
     @Test
     fun `ingestSingle creates a new customer when externalId is not known yet`() {
-        every { customerRepository.findByExternalId("FB-4", null) } returns null
+        every { customerRepository.findByExternalId(4L, "12345678000199") } returns null
         val savedSlot = slot<Customer>()
         every { customerRepository.save(capture(savedSlot)) } answers { savedSlot.captured.copy(id = 1L) }
 
         val result = service.ingestSingle(
             IngestCustomerCommand(
-                externalId = "FB-4",
+                externalId = 4L,
                 cnpjEmpresa = "12345678000199",
                 nomeFantasia = "Acme",
                 razaoSocial = "Acme Corp Ltda",
@@ -157,17 +157,17 @@ class IngestCustomersServiceTest {
         )
 
         assertEquals(IngestOutcome.CREATED, result.outcome)
-        assertEquals("FB-4", result.externalId)
+        assertEquals(4L, result.externalId)
         verify(exactly = 1) { customerRepository.save(any()) }
     }
 
     @Test
     fun `ingestSingle reports a failure without throwing when the item fails`() {
-        every { customerRepository.findByExternalId("FB-5", null) } throws RuntimeException("db down")
+        every { customerRepository.findByExternalId(5L, "12345678000199") } throws RuntimeException("db down")
 
         val result = service.ingestSingle(
             IngestCustomerCommand(
-                externalId = "FB-5",
+                externalId = 5L,
                 cnpjEmpresa = "12345678000199",
                 nomeFantasia = "Bad Co",
                 razaoSocial = "Bad Co Ltda",

@@ -44,7 +44,7 @@ class CustomerAddressRepositoryAdapterIntegrationTest(
         val now = Instant.parse("2024-01-01T00:00:00Z")
         val saved = customerAddressRepository.save(
             CustomerAddress.newFromIngestion(
-                externalId = "addr-ext-1",
+                externalId = 1L,
                 cnpjEmpresa = "00000000000191",
                 cpfCnpj = "12345678900",
                 enderecos = listOf(detail("FATURAMENTO"), detail("ENTREGA")),
@@ -66,7 +66,7 @@ class CustomerAddressRepositoryAdapterIntegrationTest(
         val now = Instant.parse("2024-01-01T00:00:00Z")
         customerAddressRepository.save(
             CustomerAddress.newFromIngestion(
-                externalId = "addr-ext-other",
+                externalId = 2L,
                 cnpjEmpresa = "12345678000199",
                 cpfCnpj = "11111111111",
                 enderecos = listOf(detail("FATURAMENTO")),
@@ -75,7 +75,7 @@ class CustomerAddressRepositoryAdapterIntegrationTest(
         )
         customerAddressRepository.save(
             CustomerAddress.newFromIngestion(
-                externalId = "addr-ext-match",
+                externalId = 3L,
                 cnpjEmpresa = "99999999000199",
                 cpfCnpj = "99999999999",
                 enderecos = listOf(detail("COBRANCA")),
@@ -89,6 +89,6 @@ class CustomerAddressRepositoryAdapterIntegrationTest(
             cnpjEmpresa = "99999999000199",
         )
 
-        assertEquals(listOf("addr-ext-match"), page.content.map { it.externalId })
+        assertEquals(listOf(3L), page.content.map { it.externalId })
     }
 }

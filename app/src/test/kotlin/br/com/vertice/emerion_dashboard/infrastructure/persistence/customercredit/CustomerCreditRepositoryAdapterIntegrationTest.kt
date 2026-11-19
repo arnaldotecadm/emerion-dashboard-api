@@ -30,7 +30,7 @@ class CustomerCreditRepositoryAdapterIntegrationTest(
         val now = Instant.parse("2024-01-01T00:00:00Z")
         val saved = customerCreditRepository.save(
             CustomerCredit.newFromIngestion(
-                customerExternalId = "cust-ext-1",
+                customerExternalId = 1L,
                 cnpjEmpresa = "12345678000199",
                 sequencia = "1",
                 data = LocalDate.now(),
@@ -54,7 +54,7 @@ class CustomerCreditRepositoryAdapterIntegrationTest(
         val now = Instant.parse("2024-01-01T00:00:00Z")
         customerCreditRepository.save(
             CustomerCredit.newFromIngestion(
-                customerExternalId = "cust-ext-other",
+                customerExternalId = 2L,
                 cnpjEmpresa = "12345678000198",
                 sequencia = "1",
                 data = LocalDate.now(),
@@ -69,7 +69,7 @@ class CustomerCreditRepositoryAdapterIntegrationTest(
         )
         customerCreditRepository.save(
             CustomerCredit.newFromIngestion(
-                customerExternalId = "cust-ext-match",
+                customerExternalId = 3L,
                 cnpjEmpresa = "12345678000199",
                 sequencia = "1",
                 data = LocalDate.now(),
@@ -85,11 +85,11 @@ class CustomerCreditRepositoryAdapterIntegrationTest(
 
         val page = customerCreditRepository.findAll(
             pageRequest = PageRequest(page = 0, size = 10),
-            customerExternalId = "cust-ext-match",
+            customerExternalId = 3L,
             tipo = "ENTRADA",
             cnpjEmpresa = "12345678000199",
         )
 
-        assertEquals(listOf("cust-ext-match"), page.content.map { it.customerExternalId })
+        assertEquals(listOf(3L), page.content.map { it.customerExternalId })
     }
 }

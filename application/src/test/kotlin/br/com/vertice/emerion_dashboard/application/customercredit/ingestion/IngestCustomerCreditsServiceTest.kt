@@ -23,7 +23,7 @@ class IngestCustomerCreditsServiceTest {
     private val customerCreditRepository = mockk<CustomerCreditRepository>()
     private val service = IngestCustomerCreditsService(customerCreditRepository, fixedClock)
 
-    private fun command(customerExternalId: String, sequencia: String?, data: LocalDate? = LocalDate.parse("2025-06-01")) = IngestCustomerCreditCommand(
+    private fun command(customerExternalId: Long, sequencia: String?, data: LocalDate? = LocalDate.parse("2025-06-01")) = IngestCustomerCreditCommand(
         customerExternalId = customerExternalId,
         cnpjEmpresa = "12345678000199",
         sequencia = sequencia,
@@ -40,7 +40,7 @@ class IngestCustomerCreditsServiceTest {
     fun `creates a new credit entry when the (customerExternalId, sequencia) key is not known yet`() {
         every {
             customerCreditRepository.findByCustomerExternalIdAndDataAndSequencia(
-                "100",
+                100L,
                 LocalDate.parse("2025-06-01"),
                 "1"
             )
@@ -49,14 +49,14 @@ class IngestCustomerCreditsServiceTest {
         every { customerCreditRepository.save(capture(savedSlot)) } answers { savedSlot.captured.copy(id = 1L) }
 
         val result = service.ingest(
-            IngestBatchCommand(batchId = "batch-1", items = listOf(command("100", "1"))),
+            IngestBatchCommand(batchId = "batch-1", items = listOf(command(100L, "1"))),
         )
 
         assertEquals(1, result.totalReceived)
         assertEquals(1, result.totalSucceeded)
         assertEquals(0, result.totalFailed)
         assertEquals(IngestOutcome.CREATED, result.results.single().outcome)
-        assertEquals("100", savedSlot.captured.customerExternalId)
+        assertEquals(100L, savedSlot.captured.customerExternalId)
         verify(exactly = 1) { customerCreditRepository.save(any()) }
     }
 
@@ -64,7 +64,7 @@ class IngestCustomerCreditsServiceTest {
     fun `updates an existing credit entry when the (customerExternalId, sequencia) key is already known (idempotent re-run)`() {
         val existing = CustomerCredit(
             id = 42L,
-            customerExternalId = "200",
+            customerExternalId = 200L,
             cnpjEmpresa = "12345678000199",
             sequencia = "5",
             data = LocalDate.parse("2025-01-01"),
@@ -79,7 +79,7 @@ class IngestCustomerCreditsServiceTest {
         )
         every {
             customerCreditRepository.findByCustomerExternalIdAndDataAndSequencia(
-                "200",
+                200L,
                 LocalDate.parse("2025-01-01"),
                 "5"
             )
@@ -91,7 +91,7 @@ class IngestCustomerCreditsServiceTest {
                 batchId = "batch-2",
                 items = listOf(
                     command(
-                        customerExternalId = "200",
+                        customerExternalId = 200L,
                         data = LocalDate.parse("2025-01-01"),
                         sequencia = "5"
                     )
@@ -108,7 +108,7 @@ class IngestCustomerCreditsServiceTest {
         val savedSlot = slot<CustomerCredit>()
         every { customerCreditRepository.save(capture(savedSlot)) } answers { savedSlot.captured.copy(id = 1L) }
 
-        val result = service.ingestSingle(command("300", null))
+        val result = service.ingestSingle(command(300L, null))
 
         assertEquals(IngestOutcome.CREATED, result.outcome)
         verify(exactly = 0) {
@@ -125,14 +125,14 @@ class IngestCustomerCreditsServiceTest {
     fun `records a failure for one item without aborting the rest of the batch`() {
         every {
             customerCreditRepository.findByCustomerExternalIdAndDataAndSequencia(
-                "OK",
+                201L,
                 LocalDate.parse("2025-06-01"),
                 "1"
             )
         } returns null
         every {
             customerCreditRepository.findByCustomerExternalIdAndDataAndSequencia(
-                "BAD",
+                202L,
                 LocalDate.parse("2025-06-01"),
                 "1"
             )
@@ -142,7 +142,7 @@ class IngestCustomerCreditsServiceTest {
         val result = service.ingest(
             IngestBatchCommand(
                 batchId = "batch-3",
-                items = listOf(command("OK", "1"), command("BAD", "1")),
+                items = listOf(command(201L, "1"), command(202L, "1")),
             ),
         )
 
@@ -155,13 +155,13 @@ class IngestCustomerCreditsServiceTest {
     fun `ingestSingle reports a failure without throwing when the item fails`() {
         every {
             customerCreditRepository.findByCustomerExternalIdAndDataAndSequencia(
-                "400",
+                400L,
                 LocalDate.parse("2025-06-01"),
                 "1"
             )
         } throws RuntimeException("db down")
 
-        val result = service.ingestSingle(command("400", "1"))
+        val result = service.ingestSingle(command(400L, "1"))
 
         assertEquals(IngestOutcome.FAILED, result.outcome)
         assertEquals("db down", result.errorMessage)

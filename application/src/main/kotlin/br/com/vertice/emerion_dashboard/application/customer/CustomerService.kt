@@ -19,7 +19,7 @@ class CustomerService(
         customerRepository.findById(id) ?: throw CustomerNotFoundException(id)
 
     @Transactional(readOnly = true)
-    fun getByExternalId(externalId: String): Customer =
+    fun getByExternalId(externalId: Long): Customer =
         customerRepository.findByExternalId(externalId, null) ?: throw CustomerNotFoundException(externalId)
 
     @Transactional(readOnly = true)

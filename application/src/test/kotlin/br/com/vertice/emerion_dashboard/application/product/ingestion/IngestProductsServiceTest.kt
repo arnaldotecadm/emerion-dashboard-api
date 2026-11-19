@@ -118,7 +118,7 @@ class IngestProductsServiceTest {
 
     @Test
     fun `ingestSingle creates a new product when externalId is not known yet`() {
-        every { productRepository.findByExternalId("FB-4",null) } returns null
+        every { productRepository.findByExternalId("FB-4","12345678000199") } returns null
         val savedSlot = slot<Product>()
         every { productRepository.save(capture(savedSlot)) } answers { savedSlot.captured.copy(id = 1L) }
 
@@ -132,13 +132,13 @@ class IngestProductsServiceTest {
         )
 
         assertEquals(IngestOutcome.CREATED, result.outcome)
-        assertEquals("FB-4", result.externalId)
+        assertEquals("FB-4", result.externalIdString)
         verify(exactly = 1) { productRepository.save(any()) }
     }
 
     @Test
     fun `ingestSingle reports a failure without throwing when the item fails`() {
-        every { productRepository.findByExternalId("FB-5",null) } throws RuntimeException("db down")
+        every { productRepository.findByExternalId("FB-5","12345678000199") } throws RuntimeException("db down")
 
         val result = service.ingestSingle(
             IngestProductCommand(

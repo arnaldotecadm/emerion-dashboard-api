@@ -191,7 +191,7 @@ class IngestCustomerOrdersServiceTest {
         val result = service.ingestSingle(orderCommand(5L, listOf(itemCommand("1.1.1"))))
 
         assertEquals(IngestOutcome.CREATED, result.outcome)
-        assertEquals("5", result.externalId)
+        assertEquals(5L, result.externalId)
         assertEquals("SP", savedSlot.captured.ufPedido)
         verify(exactly = 1) { customerOrderRepository.save(any()) }
     }

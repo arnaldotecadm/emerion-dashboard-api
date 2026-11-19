@@ -13,7 +13,7 @@ import java.time.LocalDate
  */
 data class Vendedor(
     val id: Long?,
-    val externalId: String,
+    val externalId: Long,
     val cnpjEmpresa: String,
     val nome: String,
     val apelido: String?,
@@ -32,7 +32,7 @@ data class Vendedor(
     companion object {
         /** Factory for a brand-new vendedor coming from ingestion (no id yet). */
         fun newFromIngestion(
-            externalId: String,
+            externalId: Long,
             cnpjEmpresa: String,
             nome: String,
             apelido: String?,

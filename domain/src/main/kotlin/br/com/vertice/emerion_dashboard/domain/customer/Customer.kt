@@ -13,7 +13,7 @@ import java.math.BigDecimal
  */
 data class Customer(
     val id: Long?,
-    val externalId: String,
+    val externalId: Long,
     val cnpjEmpresa: String,
     val nomeFantasia: String,
     val razaoSocial: String,
@@ -45,7 +45,7 @@ data class Customer(
     companion object {
         /** Factory for a brand-new customer coming from ingestion (no id yet). */
         fun newFromIngestion(
-            externalId: String,
+            externalId: Long,
             cnpjEmpresa: String,
             nomeFantasia: String,
             razaoSocial: String,

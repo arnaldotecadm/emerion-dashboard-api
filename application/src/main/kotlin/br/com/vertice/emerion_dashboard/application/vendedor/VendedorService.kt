@@ -19,7 +19,7 @@ class VendedorService(
         vendedorRepository.findById(id) ?: throw VendedorNotFoundException(id)
 
     @Transactional(readOnly = true)
-    fun getByExternalId(externalId: String): Vendedor =
+    fun getByExternalId(externalId: Long): Vendedor =
         vendedorRepository.findByExternalId(externalId, null) ?: throw VendedorNotFoundException(externalId)
 
     @Transactional(readOnly = true)

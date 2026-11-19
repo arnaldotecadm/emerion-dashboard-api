@@ -34,7 +34,7 @@ class IngestLiberacaoService(
         }
         return IngestBatchResult(
             batchId = batchId,
-            results = items.map { IngestItemResult(key(it), IngestOutcome.QUEUED, null) },
+            results = items.map { IngestItemResult(externalIdString = key(it), outcome = IngestOutcome.QUEUED, errorMessage = null) },
         )
     }
 
@@ -87,13 +87,13 @@ class IngestLiberacaoService(
             )
             liberacaoRepository.save(toSave)
             IngestLiberacaoItemResult(
-                externalId = key,
+                externalIdString = key,
                 outcome = if (existing == null) IngestOutcome.CREATED else IngestOutcome.UPDATED,
                 errorMessage = null,
             )
         } catch (ex: Exception) {
             logger.error("Failed to ingest PEDLIB release '{}'", key, ex)
-            IngestLiberacaoItemResult(key, IngestOutcome.FAILED, ex.message)
+            IngestLiberacaoItemResult(externalIdString = key, outcome = IngestOutcome.FAILED, errorMessage = ex.message)
         }
     }
 

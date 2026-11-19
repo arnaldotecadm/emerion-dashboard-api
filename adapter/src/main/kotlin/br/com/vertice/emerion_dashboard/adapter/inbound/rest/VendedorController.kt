@@ -20,7 +20,7 @@ class VendedorController(
         return ResponseEntity.ok(vendedor.toResponse())
     }
 
-    override fun getVendedorByExternalId(externalId: String): ResponseEntity<VendedorResponse> {
+    override fun getVendedorByExternalId(externalId: Long): ResponseEntity<VendedorResponse> {
         val vendedor = vendedorService.getByExternalId(externalId)
         return ResponseEntity.ok(vendedor.toResponse())
     }

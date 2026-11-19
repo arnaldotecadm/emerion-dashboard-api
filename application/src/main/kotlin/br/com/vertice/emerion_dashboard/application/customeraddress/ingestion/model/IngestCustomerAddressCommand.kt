@@ -2,7 +2,7 @@ package br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.m
 
 /** Input command for a single customer's full address set inside an ingestion batch. */
 data class IngestCustomerAddressCommand(
-    val externalId: String,
+    val externalId: Long,
     val cnpjEmpresa: String,
     val cpfCnpj: String?,
     val enderecos: List<IngestCustomerAddressDetailCommand>,

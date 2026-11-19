@@ -26,7 +26,7 @@ class CustomerCreditQueryController(
     override fun listCustomerCredits(
         page: Int,
         size: Int,
-        customerExternalId: String?,
+        customerExternalId: Long?,
         tipo: String?,
         cnpjEmpresa: String?,
     ): ResponseEntity<CustomerCreditPage> {

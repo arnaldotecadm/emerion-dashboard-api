@@ -61,8 +61,8 @@ class SqsLiberacaoConsumerTest {
     fun `processes a single release and retries failures`() {
         val item = command(100L, 1)
         every { service.ingestSingle(item) } returns
-            IngestLiberacaoItemResult("100:1", IngestOutcome.CREATED, null) andThen
-            IngestLiberacaoItemResult("100:1", IngestOutcome.FAILED, "database unavailable")
+            IngestLiberacaoItemResult(externalIdString = "100:1", outcome = IngestOutcome.CREATED, errorMessage = null) andThen
+            IngestLiberacaoItemResult(externalIdString = "100:1", outcome = IngestOutcome.FAILED, errorMessage = "database unavailable")
 
         consumer.receiveSingle(item)
         assertFailsWith<IllegalStateException> { consumer.receiveSingle(item) }

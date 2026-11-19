@@ -10,7 +10,7 @@ import java.time.LocalDate
  * upsert key is (customerExternalId, sequencia); see IngestCustomerCreditsService.
  */
 data class IngestCustomerCreditCommand(
-    val customerExternalId: String,
+    val customerExternalId: Long,
     val cnpjEmpresa: String,
     val sequencia: String?,
     val data: LocalDate,

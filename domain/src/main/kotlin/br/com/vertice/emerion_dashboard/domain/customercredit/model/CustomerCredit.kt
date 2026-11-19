@@ -16,7 +16,7 @@ import java.time.LocalDate
  */
 data class CustomerCredit(
     val id: Long?,
-    val customerExternalId: String,
+    val customerExternalId: Long,
     val cnpjEmpresa: String,
     val sequencia: String?,
     val data: LocalDate,
@@ -32,7 +32,7 @@ data class CustomerCredit(
     companion object {
         /** Factory for a brand-new credit entry coming from ingestion (no id yet). */
         fun newFromIngestion(
-            customerExternalId: String,
+            customerExternalId: Long,
             cnpjEmpresa: String,
             sequencia: String?,
             data: LocalDate,

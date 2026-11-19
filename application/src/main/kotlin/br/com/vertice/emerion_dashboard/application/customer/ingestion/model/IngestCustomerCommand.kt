@@ -7,7 +7,7 @@ import br.com.vertice.emerion_dashboard.application.customeraddress.ingestion.mo
 
 /** Input command for a single customer inside an ingestion batch. */
 data class IngestCustomerCommand(
-    val externalId: String,
+    val externalId: Long,
     val cnpjEmpresa: String,
     val nomeFantasia: String,
     val razaoSocial: String,

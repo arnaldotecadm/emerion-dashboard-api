@@ -29,7 +29,7 @@ class VendedorRepositoryPortAdapterIntegrationTest(
         val now = Instant.parse("2024-01-01T00:00:00Z")
         val saved = vendedorRepository.save(
             Vendedor.newFromIngestion(
-                externalId = "vend-ext-1",
+                externalId = 1L,
                 cnpjEmpresa = "12345678000199",
                 nome = "Fulano de Tal",
                 apelido = "Fulano",
@@ -56,7 +56,7 @@ class VendedorRepositoryPortAdapterIntegrationTest(
         val now = Instant.parse("2024-01-01T00:00:00Z")
         vendedorRepository.save(
             Vendedor.newFromIngestion(
-                externalId = "vend-ext-other",
+                externalId = 2L,
                 cnpjEmpresa = "12345678000199",
                 nome = "Outro Vendedor",
                 apelido = null,
@@ -74,7 +74,7 @@ class VendedorRepositoryPortAdapterIntegrationTest(
         )
         vendedorRepository.save(
             Vendedor.newFromIngestion(
-                externalId = "vend-ext-match",
+                externalId = 3L,
                 cnpjEmpresa = "12345678000199",
                 nome = "Vendedor Especial",
                 apelido = null,
@@ -98,6 +98,6 @@ class VendedorRepositoryPortAdapterIntegrationTest(
             cnpjEmpresa = null,
         )
 
-        assertEquals(listOf("vend-ext-match"), page.content.map { it.externalId })
+        assertEquals(listOf(3L), page.content.map { it.externalId })
     }
 }

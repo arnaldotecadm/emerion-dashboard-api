@@ -20,7 +20,7 @@ class VendedorRepositoryPortAdapter(
     override fun findById(id: Long): Vendedor? =
         vendedorRepository.findProjectionById(id, userService.getCurrentCompanyCnpj())?.toDomain()
 
-    override fun findByExternalId(externalId: String, cnpjEmpresa: String?): Vendedor? =
+    override fun findByExternalId(externalId: Long, cnpjEmpresa: String?): Vendedor? =
         vendedorRepository.findByExternalIdAndCnpjEmpresa(
             externalId,
             cnpjEmpresa ?: userService.getCurrentCompanyCnpj()

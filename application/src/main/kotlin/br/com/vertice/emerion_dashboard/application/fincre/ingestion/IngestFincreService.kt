@@ -31,7 +31,7 @@ class IngestFincreService(
         logger.info("FINCRE batch '{}' queued with {} item(s)", command.batchId, command.items.size)
         return IngestBatchResult(
             command.batchId,
-            command.items.map { IngestItemResult(key(it), IngestOutcome.QUEUED, null) },
+            command.items.map { IngestItemResult(externalIdString = key(it), outcome = IngestOutcome.QUEUED, errorMessage = null) },
         )
     }
 
@@ -79,13 +79,13 @@ class IngestFincreService(
         )
         fincreRepository.save(toSave)
         IngestItemResult(
-            key(item),
-            if (existing == null) IngestOutcome.CREATED else IngestOutcome.UPDATED,
-            null
+            externalIdString = key(item),
+            outcome = if (existing == null) IngestOutcome.CREATED else IngestOutcome.UPDATED,
+            errorMessage = null
         )
     } catch (ex: Exception) {
         logger.error("Failed to ingest FINCRE cnpjEmpresa='{}', documento='{}'", item.cnpjEmpresa, item.documento, ex)
-        IngestItemResult(key(item), IngestOutcome.FAILED, ex.message)
+        IngestItemResult(externalIdString = key(item), outcome = IngestOutcome.FAILED, errorMessage = ex.message)
     }
 
     private fun IngestFincreParcelaCommand.toDomain() = FincreParcela(

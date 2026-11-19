@@ -73,7 +73,7 @@ interface CustomerCreditQueryRepository : Repository<CustomerCreditJpaEntity, Lo
         """,
     )
     fun search(
-        @Param("customerExternalId") customerExternalId: String?,
+        @Param("customerExternalId") customerExternalId: Long?,
         @Param("tipo") tipo: String?,
         @Param("cnpjEmpresa") cnpjEmpresa: String?,
         pageable: Pageable,

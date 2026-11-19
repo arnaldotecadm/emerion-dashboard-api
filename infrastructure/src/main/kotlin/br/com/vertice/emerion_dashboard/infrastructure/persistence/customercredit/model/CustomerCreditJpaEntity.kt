@@ -31,7 +31,7 @@ class CustomerCreditJpaEntity(
     var id: Long? = null,
 
     @Column(name = "customer_external_id", nullable = false)
-    var customerExternalId: String = "",
+    var customerExternalId: Long = 0L,
 
     @Column(name = "cnpj_empresa", nullable = false)
     var cnpjEmpresa: String = "",

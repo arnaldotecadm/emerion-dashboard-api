@@ -20,7 +20,7 @@ class CustomerController(
         return ResponseEntity.ok(customer.toResponse())
     }
 
-    override fun getCustomerByExternalId(externalId: String): ResponseEntity<CustomerResponse> {
+    override fun getCustomerByExternalId(externalId: Long): ResponseEntity<CustomerResponse> {
         val customer = customerService.getByExternalId(externalId)
         return ResponseEntity.ok(customer.toResponse())
     }

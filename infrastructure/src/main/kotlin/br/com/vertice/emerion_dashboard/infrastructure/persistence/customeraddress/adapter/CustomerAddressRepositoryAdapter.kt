@@ -33,7 +33,7 @@ class CustomerAddressRepositoryAdapter(
         return CustomerAddressPersistenceMapper.toDomain(header, details)
     }
 
-    override fun findByExternalId(externalId: String): CustomerAddress? =
+    override fun findByExternalId(externalId: Long): CustomerAddress? =
         springDataRepository.findByExternalId(externalId)?.let(CustomerAddressPersistenceMapper::toDomain)
 
     override fun findAll(

@@ -29,7 +29,7 @@ class IngestIpiService(
         logger.info("IPI batch '{}' queued with {} item(s)", command.batchId, command.items.size)
         return IngestBatchResult(
             command.batchId,
-            command.items.map { IngestItemResult(key(it), IngestOutcome.QUEUED, null) },
+            command.items.map { IngestItemResult(externalIdString = it.codigoIpi, outcome = IngestOutcome.QUEUED, errorMessage = null) },
         )
     }
 
@@ -84,10 +84,10 @@ class IngestIpiService(
             now = now,
         )
         ipiRepository.save(toSave)
-        IngestItemResult(key(item), if (existing == null) IngestOutcome.CREATED else IngestOutcome.UPDATED, null)
+        IngestItemResult(externalIdString = item.codigoIpi, outcome = if (existing == null) IngestOutcome.CREATED else IngestOutcome.UPDATED, errorMessage = null)
     } catch (ex: Exception) {
         logger.error("Failed to ingest IPI cnpjEmpresa='{}', codigoIpi='{}'", item.cnpjEmpresa, item.codigoIpi, ex)
-        IngestItemResult(key(item), IngestOutcome.FAILED, ex.message)
+        IngestItemResult(externalIdString = item.codigoIpi, outcome = IngestOutcome.FAILED, errorMessage = ex.message)
     }
 
     private fun key(item: IngestIpiCommand) = "${item.cnpjEmpresa}:${item.codigoIpi}"

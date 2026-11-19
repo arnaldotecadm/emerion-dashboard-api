@@ -8,7 +8,7 @@ package br.com.vertice.emerion_dashboard.application.customercredit.query.model
 data class ListCustomerCreditsQuery(
     val page: Int,
     val size: Int,
-    val customerExternalId: String?,
+    val customerExternalId: Long?,
     val tipo: String?,
     val cnpjEmpresa: String?,
 )

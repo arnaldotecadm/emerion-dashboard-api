@@ -11,7 +11,7 @@ import java.time.LocalDate
  */
 interface CustomerCreditProjection {
     val id: Long
-    val customerExternalId: String
+    val customerExternalId: Long
     val cnpjEmpresa: String
     val sequencia: String?
     val data: LocalDate

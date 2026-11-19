@@ -30,7 +30,7 @@ class  CustomerCreditRepositoryAdapter(
         queryRepository.findProjectionById(id, userService.getCurrentCompanyCnpj())?.let(CustomerCreditPersistenceMapper::toDomain)
 
     override fun findByCustomerExternalIdAndDataAndSequencia(
-        customerExternalId: String,
+        customerExternalId: Long,
         data: LocalDate,
         sequencia: String
     ): CustomerCredit? =
@@ -39,13 +39,13 @@ class  CustomerCreditRepositoryAdapter(
 
     override fun findAll(
         pageRequest: PageRequest,
-        customerExternalId: String?,
+        customerExternalId: Long?,
         tipo: String?,
         cnpjEmpresa: String?,
     ): Page<CustomerCredit> {
         val springPageable = SpringPageRequest.of(pageRequest.page, pageRequest.size)
         val result = queryRepository.search(
-            customerExternalId?.takeIf { it.isNotBlank() },
+            customerExternalId,
             tipo?.takeIf { it.isNotBlank() },
             userService.getCurrentCompanyCnpj(),
             springPageable,

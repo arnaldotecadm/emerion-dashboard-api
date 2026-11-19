@@ -75,7 +75,7 @@ class IngestLiberacaoServiceTest {
         val result = service.ingest("batch-1", items)
 
         assertEquals("batch-1", result.batchId)
-        assertEquals(listOf("25687:1", "25688:2"), result.results.map { it.externalId })
+        assertEquals(listOf("25687:1", "25688:2"), result.results.map { it.externalIdString })
         assertEquals(listOf(IngestOutcome.QUEUED, IngestOutcome.QUEUED), result.results.map { it.outcome })
         assertEquals(2, result.totalReceived)
         verify(exactly = 1) { sqsProducer.sendMessageBatch("batch-queue", items) }
@@ -104,7 +104,7 @@ class IngestLiberacaoServiceTest {
         val result = service.ingestSingle(command())
 
         assertEquals(IngestOutcome.CREATED, result.outcome)
-        assertEquals("25687:1", result.externalId)
+        assertEquals("25687:1", result.externalIdString)
         assertEquals(1, saved.captured.detalhes.size)
         assertEquals(Instant.parse("2026-08-26T10:00:00Z"), saved.captured.createdAt)
     }

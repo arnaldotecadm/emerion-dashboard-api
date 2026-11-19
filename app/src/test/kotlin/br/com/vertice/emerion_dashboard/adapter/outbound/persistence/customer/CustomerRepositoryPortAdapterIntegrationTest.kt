@@ -27,7 +27,7 @@ class CustomerRepositoryPortAdapterIntegrationTest(
         val now = Instant.parse("2024-01-01T00:00:00Z")
         val saved = customerRepository.save(
             Customer.newFromIngestion(
-                externalId = "ext-1",
+                externalId = 1L,
                 cnpjEmpresa = "12345678000199",
                 nomeFantasia = "Fantasia 1",
                 razaoSocial = "Razao 1",
@@ -50,7 +50,7 @@ class CustomerRepositoryPortAdapterIntegrationTest(
         val now = Instant.parse("2024-01-01T00:00:00Z")
         customerRepository.save(
             Customer.newFromIngestion(
-                externalId = "ext-blocked",
+                externalId = 2L,
                 cnpjEmpresa = "12345678000199",
                 nomeFantasia = "Blocked Customer",
                 razaoSocial = "Razao Blocked",
@@ -64,7 +64,7 @@ class CustomerRepositoryPortAdapterIntegrationTest(
         )
         customerRepository.save(
             Customer.newFromIngestion(
-                externalId = "ext-active",
+                externalId = 3L,
                 cnpjEmpresa = "12345678000199",
                 nomeFantasia = "Active Customer",
                 razaoSocial = "Razao Active",
@@ -84,6 +84,6 @@ class CustomerRepositoryPortAdapterIntegrationTest(
             cnpjEmpresa = "12345678000199",
         )
 
-        assertEquals(listOf("ext-active"), page.content.map { it.externalId })
+        assertEquals(listOf(3L), page.content.map { it.externalId })
     }
 }

@@ -14,11 +14,11 @@ interface CustomerCreditRepository {
     fun findById(id: Long): CustomerCredit?
 
     /** Looks up an existing entry by its natural key. Returns null if sequencia is null (no reliable key). */
-    fun findByCustomerExternalIdAndDataAndSequencia(customerExternalId: String, data: LocalDate, sequencia: String): CustomerCredit?
+    fun findByCustomerExternalIdAndDataAndSequencia(customerExternalId: Long, data: LocalDate, sequencia: String): CustomerCredit?
 
     fun findAll(
         pageRequest: PageRequest,
-        customerExternalId: String?,
+        customerExternalId: Long?,
         tipo: String?,
         cnpjEmpresa: String?,
     ): Page<CustomerCredit>

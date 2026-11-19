@@ -6,7 +6,7 @@ import java.time.LocalDate
 
 interface CustomerCreditSpringDataRepository : JpaRepository<CustomerCreditJpaEntity, Long> {
     fun findByCustomerExternalIdAndDataAndSequencia(
-        customerExternalId: String,
+        customerExternalId: Long,
         data: LocalDate,
         sequencia: String
     ): CustomerCreditJpaEntity?
