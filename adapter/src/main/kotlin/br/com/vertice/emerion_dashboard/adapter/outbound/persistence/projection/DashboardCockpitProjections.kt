@@ -18,7 +18,7 @@ data class DashboardUnpaidInvoicesProjection(
 )
 
 data class DashboardRecentOrderProjection(
-    val orderNumber: String?,
+    val orderNumber: Long?,
     val customerCode: Int,
     val customerName: String,
     val orderDate: LocalDate,

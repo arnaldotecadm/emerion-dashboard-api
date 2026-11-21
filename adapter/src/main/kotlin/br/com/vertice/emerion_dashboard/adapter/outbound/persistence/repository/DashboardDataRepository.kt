@@ -371,10 +371,7 @@ class DashboardDataRepository(
                       select 1
                       from emerion_dashboard.customer_order co
                       where co.cnpj_empresa = :cnpjEmpresa
-                        and co.codigo_cliente = case
-                            when c.external_id ~ '^[0-9]+$' then c.external_id::bigint
-                            else null
-                        end
+                        and co.codigo_cliente = c.external_id
                         and (
                             (
                                 (cast(:startDate as date) is not null or cast(:endDate as date) is not null)
@@ -429,10 +426,7 @@ class DashboardDataRepository(
                   select 1
                   from emerion_dashboard.customer_order co
                   where co.cnpj_empresa = :cnpjEmpresa
-                    and co.codigo_cliente = case
-                        when c.external_id ~ '^[0-9]+$' then c.external_id::bigint
-                        else null
-                    end
+                    and co.codigo_cliente = c.external_id
                     and (
                         (
                             (cast(:startDate as date) is not null or cast(:endDate as date) is not null)
@@ -703,16 +697,10 @@ class DashboardDataRepository(
                     co.id
                 from emerion_dashboard.customer_order co
                 left join emerion_dashboard.vendedor v
-                    on case
-                        when v.external_id ~ '^[0-9]+$' then v.external_id::numeric
-                        else null
-                    end = co.vendedor_external_id
+                    on v.external_id = co.vendedor_external_id
                     and v.cnpj_empresa = :cnpjEmpresa
                 left join emerion_dashboard.customer c
-                    on case
-                        when c.external_id ~ '^[0-9]+$' then c.external_id::numeric
-                        else null
-                    end = co.codigo_cliente
+                    on c.external_id = co.codigo_cliente
                     and c.cnpj_empresa = :cnpjEmpresa
                 where co.cnpj_empresa = :cnpjEmpresa
                   and (
@@ -748,7 +736,7 @@ class DashboardDataRepository(
         return query.resultList.map { row ->
             val resultArray = row as Array<*>
             DashboardRecentOrderProjection(
-                orderNumber = resultArray[0] as String?,
+                orderNumber = resultArray[0] as Long?,
                 customerCode = (resultArray[1] as Number).toInt(),
                 customerName = resultArray[2].toString(),
                 orderDate = resultArray[3] as java.time.LocalDate,
@@ -831,10 +819,7 @@ class DashboardDataRepository(
                 cp.total_profit as total_sales
             from customer_profit cp
             left join emerion_dashboard.customer c
-                on case
-                    when c.external_id ~ '^[0-9]+$' then c.external_id::numeric
-                    else null
-                end = cp.codigo_cliente
+                on c.external_id = cp.codigo_cliente
                 and c.cnpj_empresa = :cnpjEmpresa
             order by cp.total_profit desc, cp.codigo_cliente
             limit 10
